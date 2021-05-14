@@ -21,6 +21,7 @@
         <module>won-utils-shacl2java</module>
         <module>won-utils-content</module>
         <module>won-utils-dns</module>
+        <module>won-utils-blend</module>
     </modules>
     <packaging>pom</packaging>
 </project>

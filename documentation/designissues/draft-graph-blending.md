@@ -140,7 +140,8 @@ For each n in var(g1), there are the following solutions:
 * 1 solution in which n is not blended at all
 * 1 solution for each m in var(g2), in which n is blended with m
 * 1 solution for each m in const(g2), in which n is blended with m
-symmetrically the same is true for each n in var(g2).
+
+Symmetrically the same is done for each n in var(g2).
 Removal of duplicate solutions yields the set of solutions.
 
 ## Heuristic
