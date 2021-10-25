@@ -555,27 +555,31 @@ public class Shacl2JavaInstanceFactory {
                         } else if (valueNode.isURI()) {
                             dependencyCandidates.add(URI.create(valueNode.getURI()));
                         }
-                        Field field = null;
-                        try {
-                            SatisfiedFieldDependency fieldDependency = selectFieldByType(fieldsForPath, instance,
-                                            dependencyCandidates);
-                            if (fieldDependency == null) {
+                        if (dependencyCandidates.size() > 0) {
+                            Field field = null;
+                            try {
+                                SatisfiedFieldDependency fieldDependency = selectFieldByType(fieldsForPath, instance,
+                                                dependencyCandidates);
+                                if (fieldDependency == null) {
+                                    throw new IllegalArgumentException(
+                                                    makeWiringErrorMessage(instance, focusNode, dependencyCandidates,
+                                                                    null,
+                                                                    null)
+                                                                    + ": unable to identify appropriate field to set");
+                                }
+                                field = fieldDependency.getField();
+                                Object dependency = fieldDependency.getDependency();
+                                setDependency(instance, field.getName(), dependency);
+                                if (logger.isDebugEnabled()) {
+                                    logger.debug("wired {} ",
+                                                    makeWiringMessage(instance, focusNode, dependency, field));
+                                }
+                            } catch (Throwable e) {
                                 throw new IllegalArgumentException(
-                                                makeWiringErrorMessage(instance, focusNode, dependencyCandidates, null,
-                                                                null)
-                                                                + ": unable to identify appropriate field to set");
+                                                makeWiringErrorMessage(instance, focusNode, dependencyCandidates, field,
+                                                                e),
+                                                e);
                             }
-                            field = fieldDependency.getField();
-                            Object dependency = fieldDependency.getDependency();
-                            setDependency(instance, field.getName(), dependency);
-                            if (logger.isDebugEnabled()) {
-                                logger.debug("wired {} ",
-                                                makeWiringMessage(instance, focusNode, dependency, field));
-                            }
-                        } catch (Throwable e) {
-                            throw new IllegalArgumentException(
-                                            makeWiringErrorMessage(instance, focusNode, dependencyCandidates, field, e),
-                                            e);
                         }
                     }
                 }

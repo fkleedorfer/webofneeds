@@ -2,16 +2,6 @@ package won.shacl2java.sourcegen.typegen.logic;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
-import java.net.URI;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
@@ -23,6 +13,10 @@ import won.shacl2java.sourcegen.typegen.TypesPostprocessor;
 import won.shacl2java.sourcegen.typegen.mapping.ShapeTypeImplTypes;
 import won.shacl2java.sourcegen.typegen.mapping.ShapeTypeInterfaceTypes;
 import won.shacl2java.sourcegen.typegen.mapping.ShapeTypeSpecs;
+
+import java.net.URI;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ShapeTypeInterfaceImplementer implements TypesPostprocessor {
     private Shacl2JavaConfig config;
@@ -48,8 +42,7 @@ public class ShapeTypeInterfaceImplementer implements TypesPostprocessor {
         if (!config.isInterfacesForRdfTypes()) {
             return Collections.emptyMap();
         }
-        return StreamSupport
-                        .stream(Spliterators.spliteratorUnknownSize(shapes.iteratorAll(), Spliterator.ORDERED), false)
+        return shapes.getShapeMap().values().stream().filter(s -> s.getShapeNode().isURI())
                         .distinct()
                         .filter(s -> s.isNodeShape())
                         .map(shape -> {

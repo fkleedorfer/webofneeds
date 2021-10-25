@@ -1,13 +1,10 @@
 package won.shacl2java.constraints;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import org.apache.jena.datatypes.RDFDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shacl.parser.Shape;
+
+import java.util.*;
 
 public class PropertySpec {
     private Integer shMinCount;
@@ -100,6 +97,7 @@ public class PropertySpec {
 
     public boolean isSingletonProperty() {
         return Integer.valueOf(1).equals(shMaxCount)
+                        || Integer.valueOf(0).equals(shMaxCount) // handle maxCount 0, e.g. in rdf list shapes
                         || (shInOrHasValue != null && shInOrHasValue.size() == 1);
     }
 
@@ -113,7 +111,6 @@ public class PropertySpec {
     }
 
     public void setShMinCount(Integer shMinCount) {
-        ;
         this.shMinCount = ensureNotModifying(this.shMinCount, shMinCount);
     }
 
@@ -131,7 +128,6 @@ public class PropertySpec {
 
     public void setShDatatype(RDFDatatype shDatatype) {
         this.shDatatype = ensureNotModifying(this.shDatatype, shDatatype);
-        ;
     }
 
     public Node getShNodeKind() {
@@ -181,14 +177,15 @@ public class PropertySpec {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         PropertySpec that = (PropertySpec) o;
         return negated == that.negated &&
-                        Objects.equals(shMinCount, that.shMinCount) &&
-                        Objects.equals(shMaxCount, that.shMaxCount) &&
+                        Objects.equals(isSingletonProperty(), that.isSingletonProperty()) &&
                         Objects.equals(shDatatype, that.shDatatype) &&
                         Objects.equals(shNodeKind, that.shNodeKind) &&
                         Objects.equals(shNodeShape, that.shNodeShape) &&
@@ -198,8 +195,8 @@ public class PropertySpec {
 
     @Override
     public int hashCode() {
-        return Objects.hash(shMinCount, shMaxCount, shDatatype, shNodeKind, shNodeShape, shClass, negated,
-                        shInOrHasValue);
+        return Objects.hash(shDatatype, shNodeKind, shNodeShape, shClass, negated,
+                        shInOrHasValue, isSingletonProperty());
     }
 
     @Override

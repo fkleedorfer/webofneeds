@@ -2,23 +2,21 @@ package won.shacl2java.util;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
 import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.graph.Triple;
 import org.apache.jena.shacl.parser.PropertyShape;
 import org.apache.jena.shacl.parser.Shape;
-import org.apache.jena.sparql.path.P_Inverse;
-import org.apache.jena.sparql.path.P_Link;
-import org.apache.jena.sparql.path.Path;
-import org.apache.jena.sparql.path.PathVisitorBase;
+import org.apache.jena.sparql.path.*;
 import won.shacl2java.Shacl2JavaConfig;
 
+import java.net.URI;
+import java.util.Optional;
+import java.util.regex.Matcher;
+
 public class NameUtils {
+    public static String sanitizeFieldName(String fieldName) {
+        return fieldName.replaceAll("\\-", "_");
+    }
+
     public static String setterNameForField(FieldSpec field) {
         return setterNameForField(field.name);
     }
@@ -90,10 +88,35 @@ public class NameUtils {
 
     public static Optional<String> propertyNameForPath(Path path) {
         StringBuilder propertyName = new StringBuilder();
-        path.visit(new PathVisitorBase() {
+        PathVisitor propertyNamePathVisitor = new PathVisitorBase() {
             @Override
             public void visit(P_Link pathNode) {
                 propertyName.append(pathNode.getNode().getLocalName());
+            }
+
+            @Override
+            public void visit(P_ZeroOrOne pathNode) {
+                pathNode.getSubPath().visit(this);
+            }
+
+            @Override
+            public void visit(P_ZeroOrMore1 pathNode) {
+                pathNode.getSubPath().visit(this);
+            }
+
+            @Override
+            public void visit(P_ZeroOrMoreN pathNode) {
+                pathNode.getSubPath().visit(this);
+            }
+
+            @Override
+            public void visit(P_OneOrMore1 pathNode) {
+                pathNode.getSubPath().visit(this);
+            }
+
+            @Override
+            public void visit(P_OneOrMoreN pathNode) {
+                pathNode.getSubPath().visit(this);
             }
 
             public void visit(P_Inverse pathNode) {
@@ -103,7 +126,8 @@ public class NameUtils {
                     propertyName.append("Inv");
                 }
             }
-        });
+        };
+        path.visit(propertyNamePathVisitor);
         String ret = propertyName.toString();
         if (ret.length() == 0) {
             return Optional.empty();

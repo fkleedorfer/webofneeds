@@ -717,7 +717,7 @@ public class MainTypesPostprocessor implements TypesPostprocessor {
         }
 
         public String getFieldName() {
-            String name = basePropertyName;
+            String name = NameUtils.sanitizeFieldName(basePropertyName);
             if (!propertySpec.isSingletonProperty()) {
                 name = plural(name);
             }
@@ -787,7 +787,7 @@ public class MainTypesPostprocessor implements TypesPostprocessor {
         }
 
         public String getFieldName() {
-            String name = basePropertyName;
+            String name = NameUtils.sanitizeFieldName(basePropertyName);
             if (!propertySpec.isSingletonProperty()) {
                 name = plural(name);
             }

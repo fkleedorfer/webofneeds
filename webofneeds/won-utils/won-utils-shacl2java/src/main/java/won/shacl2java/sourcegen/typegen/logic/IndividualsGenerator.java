@@ -18,8 +18,9 @@ import won.shacl2java.sourcegen.typegen.support.ProducerConsumerMap;
 import won.shacl2java.util.NameUtils;
 import won.shacl2java.validation.ResettableErrorHandler;
 
-import java.util.*;
-import java.util.stream.StreamSupport;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static javax.lang.model.element.Modifier.*;
 import static org.apache.jena.shacl.validation.VLib.focusNodes;
@@ -50,8 +51,7 @@ public class IndividualsGenerator implements TypesGenerator {
         TypeSpec.Builder individualsTypeBuilder = TypeSpec.classBuilder("Individuals")
                         .addModifiers(PUBLIC)
                         .addAnnotation(AnnotationSpec.builder(Individuals.class).build());
-        StreamSupport
-                        .stream(Spliterators.spliteratorUnknownSize(shapes.iteratorAll(), Spliterator.ORDERED), false)
+        shapes.getShapeMap().values().stream().filter(s -> s.getShapeNode().isURI())
                         .distinct()
                         .forEach(shape -> {
                             // find focus nodes in the shapes graph itself

@@ -4,12 +4,10 @@ import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
+import org.apache.jena.util.iterator.ExtendedIterator;
 
 import java.net.URI;
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -182,6 +180,64 @@ public abstract class GraphEntity implements Cloneable {
             throw new IllegalStateException("GraphEntity already has a node");
         }
         this.node = NodeFactory.createBlankNode();
+    }
+
+    /**
+     * If the entity is attached to a graph, this method returns the set of objects
+     * of all triples in which this entity's <code>node</code> is the subject and
+     * </code><code>property</code> is the predicate. If the entity is detached
+     * (i.e., <code>graph == null</code>), the empty set is returned.
+     * 
+     * @param property
+     * @return
+     */
+    public Set<Node> getPropertiesFromGraph(Node property) {
+        if (this.graph == null) {
+            return Collections.emptySet();
+        }
+        ExtendedIterator<Triple> it = this.graph.find(this.node, property, null);
+        Set<Node> properties = new HashSet<>();
+        while (it.hasNext()) {
+            properties.add(it.next().getObject());
+        }
+        return properties;
+    }
+
+    public Set<Node> getPropertiesFromGraph(URI property) {
+        return getPropertiesFromGraph(property.toString());
+    }
+
+    public Set<Node> getPropertiesFromGraph(String propertyUri) {
+        return getPropertiesFromGraph(NodeFactory.createURI(propertyUri));
+    }
+
+    /**
+     * If the entity is attached to a graph, this method returns the object of the
+     * triples in which this entity's <code>node</code> is the subject and
+     * </code><code>property</code> is the predicate. If the entity is detached
+     * (i.e., <code>graph == null</code>), the empty set is returned. If there is
+     * more than one such triple, a {@link NotASingletonPropertyException} is
+     * thrown.
+     *
+     * @param property
+     * @throws NotASingletonPropertyException
+     * @return
+     */
+    public Optional<Node> getPropertyFromGraph(Node property) {
+        Set<Node> properties = getPropertiesFromGraph(property);
+        if (properties.size() > 1) {
+            throw new NotASingletonPropertyException("Expected to find at most 1 " + property
+                            + " property value on graph entity " + toString() + ", but found " + properties.size());
+        }
+        return properties.stream().findFirst();
+    }
+
+    public Optional<Node> getPropertyFromGraph(URI property) {
+        return getPropertyFromGraph(property.toString());
+    }
+
+    public Optional<Node> getPropertyFromGraph(String propertyUri) {
+        return getPropertyFromGraph(NodeFactory.createURI(propertyUri));
     }
 
     public void addEntityTriple(Node predicate, Node object) {
