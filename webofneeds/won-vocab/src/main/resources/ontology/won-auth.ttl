@@ -34,7 +34,7 @@ auth:
 auth:ensureShapesGraphIsAddedToDataGraph1
     rdfs:isDefinedBy auth: ;
     a                sh:NodeShape ;
-    sh:target        auth:anyOperation, auth:opRead ;
+    sh:targetNode    auth:anyOperation, auth:opRead ;
     sh:class         auth:SimpleOperationExpression .
 
 
