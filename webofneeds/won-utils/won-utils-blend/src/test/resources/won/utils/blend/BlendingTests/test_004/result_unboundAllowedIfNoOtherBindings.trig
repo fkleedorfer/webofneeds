@@ -1,0 +1,6030 @@
+@prefix bl:     <https://w3id.org/won/blending#> .
+@prefix ex:     <http://example.org/ns#> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix om2:    <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix var:    <http://example.org/var#> .
+@prefix vara:   <http://example.org/alice/var#> .
+@prefix vf:     <https://w3id.org/valueflows#> .
+@prefix vfsh:   <https://w3id.org/valueflows-shacl/shapes#> .
+@prefix wd:     <http://www.wikidata.org/entity/> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:e369853d-f766-3a44-a1ed-0ff613f563bd> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  var:value ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:provider , ex:Alice ;
+            vf:receiver                 ex:Alice ;
+            vf:resourceClassifiedAs     var:resourceClass ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:6c8349cc-7260-3e62-a3b1-396831a8398f> {
+    <urn:6c8349cc-7260-3e62-a3b1-396831a8398f>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:67c6a1e7-ce56-33d6-ba74-8ab6d9af3fd7> ;
+            bl:blendingConfigGraph  <urn:d9d4f495-e875-32e0-b5a1-a4a6e1b9770f> ;
+            bl:dataGraph            <urn:f457c545-a9de-388f-98ec-ee47145a72c0> ;
+            bl:shapesGraph          <urn:642e92ef-b794-3173-8881-b53e1e1b18b6> .
+}
+
+<urn:735b90b4-5681-35ed-ac3f-678819b6e058> {
+    var:provider  bl:boundTo  vara:provider .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  bl:unbound .
+
+    var:receiver  bl:boundTo  bl:unbound .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  om2:one .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:35f4a8d4-65e6-31ed-805f-3d8ab658c551> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:1679091c-5a88-3faf-afb5-e6087eb1b2dc> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:c0c7c76d-30bd-3dca-afc9-6f40275bdc0a> {
+    <urn:c0c7c76d-30bd-3dca-afc9-6f40275bdc0a>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:9a115815-4dfa-32ca-9dbd-0694a4e9bdc8> ;
+            bl:blendingConfigGraph  <urn:2838023a-778d-3aec-9c21-2708f721b788> ;
+            bl:dataGraph            <urn:a684ecee-e76f-3522-b732-86a895bc8436> ;
+            bl:shapesGraph          <urn:d82c8d16-19ad-3176-9665-453cfb2e55f0> .
+}
+
+<urn:17e62166-fc85-36df-a4d1-bc0e1742c08b> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:9a115815-4dfa-32ca-9dbd-0694a4e9bdc8> {
+    var:provider  bl:boundTo  vara:provider .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  wd:Q260521 .
+
+    var:receiver  bl:boundTo  bl:unbound .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  om2:one .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:c4ca4238-a0b9-3382-8dcc-509a6f75849b> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:72b32a1f-754b-31c0-9b36-95e0cb6cde7f> {
+    var:provider  bl:boundTo  vara:provider .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  bl:unbound .
+
+    var:receiver  bl:boundTo  bl:unbound .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:44f683a8-4163-3352-bafe-57c2e008bc8c> {
+    var:provider  bl:boundTo  bl:unbound .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  wd:Q260521 .
+
+    var:receiver  bl:boundTo  ex:Alice .
+
+    var:value  bl:boundTo  "1"^^xsd:int .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:d9d4f495-e875-32e0-b5a1-a4a6e1b9770f> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:c51ce410-c124-310e-8db5-e4b97fc2af39> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:32bb90e8-976a-3b52-98d5-da10fe66f21d> {
+    var:provider  bl:boundTo  bl:unbound .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  bl:unbound .
+
+    var:receiver  bl:boundTo  ex:Alice .
+
+    var:value  bl:boundTo  "1"^^xsd:int .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:d82c8d16-19ad-3176-9665-453cfb2e55f0> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:8e296a06-7a37-3633-b0de-d05f5a3bf3ec> {
+    <urn:8e296a06-7a37-3633-b0de-d05f5a3bf3ec>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:02e74f10-e032-3ad8-a8d1-38f2b4fdd6f0> ;
+            bl:blendingConfigGraph  <urn:4e732ced-3463-306d-a0ca-9a15b6153677> ;
+            bl:dataGraph            <urn:6ea9ab1b-aa0e-3b9e-9909-4440c317e21b> ;
+            bl:shapesGraph          <urn:33e75ff0-9dd6-31bb-a69f-351039152189> .
+}
+
+<urn:d645920e-395f-3dad-bbbb-ed0eca3fe2e0> {
+    <urn:d645920e-395f-3dad-bbbb-ed0eca3fe2e0>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:a1d0c6e8-3f02-3327-9846-1063f4ac58a6> ;
+            bl:blendingConfigGraph  <urn:3416a75f-4cea-3109-907c-acd8e2f2aefc> ;
+            bl:dataGraph            <urn:f7177163-c833-3ff4-b38f-c8d2872f1ec6> ;
+            bl:shapesGraph          <urn:17e62166-fc85-36df-a4d1-bc0e1742c08b> .
+}
+
+<urn:b6d767d2-f8ed-3d21-a44b-0e5886680cb9> {
+    var:provider  bl:boundTo  vara:provider .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  wd:Q260521 .
+
+    var:receiver  bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  "0"^^xsd:int .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:33e75ff0-9dd6-31bb-a69f-351039152189> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:a684ecee-e76f-3522-b732-86a895bc8436> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  var:value ;
+            om2:hasUnit            om2:one .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:receiver ;
+            vf:receiver                 ex:Alice , var:receiver ;
+            vf:resourceClassifiedAs     wd:Q260521 ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:d09bf415-44a3-365a-86c9-077ebb5e35c3> {
+    <urn:d09bf415-44a3-365a-86c9-077ebb5e35c3>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:28dd2c79-55ce-3264-9624-0b2ff0100bde> ;
+            bl:blendingConfigGraph  <urn:fbd7939d-6749-37cd-b469-2d34de8633c4> ;
+            bl:dataGraph            <urn:d1fe173d-08e9-3939-badf-34b1d77e88d7> ;
+            bl:shapesGraph          <urn:35f4a8d4-65e6-31ed-805f-3d8ab658c551> .
+}
+
+<urn:a5771bce-93e2-30c3-af7c-d9dfd0e5deaa> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:642e92ef-b794-3173-8881-b53e1e1b18b6> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:1f0e3dad-9990-3345-b743-9f8ffabdffc4> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:receiver ;
+            vf:receiver                 ex:Alice , var:receiver ;
+            vf:resourceClassifiedAs     var:resourceClass ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:182be0c5-cdcd-3072-bb18-64cdee4d3d6e> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:66f041e1-6a60-328b-85a7-e228a89c3799> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:e2c420d9-28d4-3f8c-a0ff-2ec19b371514> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:c9f0f895-fb98-3b91-99f5-1fd0297e236d> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:d1fe173d-08e9-3939-badf-34b1d77e88d7> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  var:value ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:receiver ;
+            vf:receiver                 ex:Alice , var:receiver ;
+            vf:resourceClassifiedAs     wd:Q260521 ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:28dd2c79-55ce-3264-9624-0b2ff0100bde> {
+    var:provider  bl:boundTo  vara:provider .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  wd:Q260521 .
+
+    var:receiver  bl:boundTo  bl:unbound .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:2838023a-778d-3aec-9c21-2708f721b788> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:e4da3b7f-bbce-3345-9777-2b0674a318d5> {
+    <urn:e4da3b7f-bbce-3345-9777-2b0674a318d5>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:8f14e45f-ceea-367a-9a36-dedd4bea2543> ;
+            bl:blendingConfigGraph  <urn:1679091c-5a88-3faf-afb5-e6087eb1b2dc> ;
+            bl:dataGraph            <urn:45c48cce-2e2d-3fbd-aa1a-fc51c7c6ad26> ;
+            bl:shapesGraph          <urn:c9f0f895-fb98-3b91-99f5-1fd0297e236d> .
+}
+
+<urn:6364d3f0-f495-36ab-9dcf-8d3b5c6e0b01> {
+    var:provider  bl:boundTo  bl:unbound .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  bl:unbound .
+
+    var:receiver  bl:boundTo  ex:Alice .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:6512bd43-d9ca-36e0-ac99-0b0a82652dca> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:98f13708-2101-34c4-b568-7be6106a3b84> {
+    <urn:98f13708-2101-34c4-b568-7be6106a3b84>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:b6d767d2-f8ed-3d21-a44b-0e5886680cb9> ;
+            bl:blendingConfigGraph  <urn:3c59dc04-8e88-3024-bbe8-079a5c74d079> ;
+            bl:dataGraph            <urn:1ff1de77-4005-38da-93f4-2943881c655f> ;
+            bl:shapesGraph          <urn:37693cfc-7480-39e4-9d87-b8c7d8b9aacd> .
+}
+
+<urn:d3d94468-02a4-3259-b55d-38e6d163e820> {
+    <urn:d3d94468-02a4-3259-b55d-38e6d163e820>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:c20ad4d7-6fe9-3759-aa27-a0c99bff6710> ;
+            bl:blendingConfigGraph  <urn:6512bd43-d9ca-36e0-ac99-0b0a82652dca> ;
+            bl:dataGraph            <urn:aab32389-22bc-325a-af60-6eb525ffdc56> ;
+            bl:shapesGraph          <urn:c51ce410-c124-310e-8db5-e4b97fc2af39> .
+}
+
+<urn:b53b3a3d-6ab9-3ce0-a682-29151c9bde11> {
+    <urn:b53b3a3d-6ab9-3ce0-a682-29151c9bde11>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:72b32a1f-754b-31c0-9b36-95e0cb6cde7f> ;
+            bl:blendingConfigGraph  <urn:9f61408e-3afb-333e-90cd-f1b20de6f466> ;
+            bl:dataGraph            <urn:093f65e0-80a2-35f8-876b-1c5722a46aa2> ;
+            bl:shapesGraph          <urn:66f041e1-6a60-328b-85a7-e228a89c3799> .
+}
+
+<urn:eccbc87e-4b5c-32fe-a830-8fd9f2a7baf3> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:fc490ca4-5c00-3124-9bbe-3554a4fdf6fb> {
+    <urn:fc490ca4-5c00-3124-9bbe-3554a4fdf6fb>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:735b90b4-5681-35ed-ac3f-678819b6e058> ;
+            bl:blendingConfigGraph  <urn:3295c76a-cbf4-3aae-933c-36b1b5fc2cb1> ;
+            bl:dataGraph            <urn:14bfa6bb-1487-3e45-bba0-28a21ed38046> ;
+            bl:shapesGraph          <urn:a3f390d8-8e4c-31f2-b47b-fa2f1b5f87db> .
+}
+
+<urn:c16a5320-fa47-3530-9958-3c34fd356ef5> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:3416a75f-4cea-3109-907c-acd8e2f2aefc> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:7f39f831-7fbd-3198-8ef4-c628eba02591> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:c74d97b0-1eae-357e-84aa-9d5bade97baf> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:aab32389-22bc-325a-af60-6eb525ffdc56> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:receiver ;
+            vf:receiver                 ex:Alice , var:receiver ;
+            vf:resourceClassifiedAs     var:resourceClass ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:fbd7939d-6749-37cd-b469-2d34de8633c4> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:3c59dc04-8e88-3024-bbe8-079a5c74d079> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:a5bfc9e0-7964-38dd-9eb9-5fc584cd965d> {
+    var:provider  bl:boundTo  bl:unbound .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  wd:Q260521 .
+
+    var:receiver  bl:boundTo  ex:Alice .
+
+    var:value  bl:boundTo  "0"^^xsd:int .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:4e732ced-3463-306d-a0ca-9a15b6153677> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:03afdbd6-6e79-39b1-a5f8-597834fa83a4> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:70efdf2e-c9b0-3607-9795-c442636b55fb> {
+    var:provider  bl:boundTo  vara:provider .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  bl:unbound .
+
+    var:receiver  bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  "1"^^xsd:int .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:093f65e0-80a2-35f8-876b-1c5722a46aa2> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  var:value ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:receiver ;
+            vf:receiver                 ex:Alice , var:receiver ;
+            vf:resourceClassifiedAs     var:resourceClass ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:34173cb3-8f07-389d-9beb-c2ac9128303f> {
+    <urn:34173cb3-8f07-389d-9beb-c2ac9128303f>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:6364d3f0-f495-36ab-9dcf-8d3b5c6e0b01> ;
+            bl:blendingConfigGraph  <urn:c16a5320-fa47-3530-9958-3c34fd356ef5> ;
+            bl:dataGraph            <urn:e369853d-f766-3a44-a1ed-0ff613f563bd> ;
+            bl:shapesGraph          <urn:182be0c5-cdcd-3072-bb18-64cdee4d3d6e> .
+}
+
+<urn:1c383cd3-0b7c-398a-b502-93adfecb7b18> {
+    <urn:1c383cd3-0b7c-398a-b502-93adfecb7b18>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:a5bfc9e0-7964-38dd-9eb9-5fc584cd965d> ;
+            bl:blendingConfigGraph  <urn:19ca14e7-ea63-38a4-ae0e-b13d585e4c22> ;
+            bl:dataGraph            <urn:d67d8ab4-f4c1-3bf2-aaa3-53e27879133c> ;
+            bl:shapesGraph          <urn:a5771bce-93e2-30c3-af7c-d9dfd0e5deaa> .
+}
+
+<urn:1ff1de77-4005-38da-93f4-2943881c655f> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:receiver ;
+            vf:receiver                 ex:Alice , var:receiver ;
+            vf:resourceClassifiedAs     wd:Q260521 ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:45c48cce-2e2d-3fbd-aa1a-fc51c7c6ad26> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  var:value ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:provider , ex:Alice ;
+            vf:receiver                 ex:Alice ;
+            vf:resourceClassifiedAs     wd:Q260521 ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:c81e728d-9d4c-3f63-af06-7f89cc14862c> {
+    var:provider  bl:boundTo  bl:unbound .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  bl:unbound .
+
+    var:receiver  bl:boundTo  ex:Alice .
+
+    var:value  bl:boundTo  "0"^^xsd:int .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:9bf31c7f-f062-336a-96d3-c8bd1f8f2ff3> {
+    <urn:9bf31c7f-f062-336a-96d3-c8bd1f8f2ff3>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:70efdf2e-c9b0-3607-9795-c442636b55fb> ;
+            bl:blendingConfigGraph  <urn:c74d97b0-1eae-357e-84aa-9d5bade97baf> ;
+            bl:dataGraph            <urn:1f0e3dad-9990-3345-b743-9f8ffabdffc4> ;
+            bl:shapesGraph          <urn:6f4922f4-5568-361a-8cdf-4ad2299f6d23> .
+}
+
+<urn:7cbbc409-ec99-3f19-878c-75bd1e06f215> {
+    <urn:7cbbc409-ec99-3f19-878c-75bd1e06f215>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:32bb90e8-976a-3b52-98d5-da10fe66f21d> ;
+            bl:blendingConfigGraph  <urn:e2c420d9-28d4-3f8c-a0ff-2ec19b371514> ;
+            bl:dataGraph            <urn:ad61ab14-3223-3fbc-a4c7-d2583be69251> ;
+            bl:shapesGraph          <urn:d2ddea18-f006-35ce-8623-e36bd4e3c7c5> .
+}
+
+<urn:3295c76a-cbf4-3aae-933c-36b1b5fc2cb1> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:67c6a1e7-ce56-33d6-ba74-8ab6d9af3fd7> {
+    var:provider  bl:boundTo  bl:unbound .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  wd:Q260521 .
+
+    var:receiver  bl:boundTo  ex:Alice .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  om2:one .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:ea5d2f1c-4608-332e-87d3-aa3d998e5135> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:provider , ex:Alice ;
+            vf:receiver                 ex:Alice ;
+            vf:resourceClassifiedAs     wd:Q260521 ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:f457c545-a9de-388f-98ec-ee47145a72c0> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  var:value ;
+            om2:hasUnit            om2:one .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:provider , ex:Alice ;
+            vf:receiver                 ex:Alice ;
+            vf:resourceClassifiedAs     wd:Q260521 ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:072b030b-a126-32f4-b237-4f342be9ed44> {
+    <urn:072b030b-a126-32f4-b237-4f342be9ed44>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:44f683a8-4163-3352-bafe-57c2e008bc8c> ;
+            bl:blendingConfigGraph  <urn:7f39f831-7fbd-3198-8ef4-c628eba02591> ;
+            bl:dataGraph            <urn:ea5d2f1c-4608-332e-87d3-aa3d998e5135> ;
+            bl:shapesGraph          <urn:03afdbd6-6e79-39b1-a5f8-597834fa83a4> .
+}
+
+<urn:8f14e45f-ceea-367a-9a36-dedd4bea2543> {
+    var:provider  bl:boundTo  bl:unbound .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  wd:Q260521 .
+
+    var:receiver  bl:boundTo  ex:Alice .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:a1d0c6e8-3f02-3327-9846-1063f4ac58a6> {
+    var:provider  bl:boundTo  vara:provider .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  wd:Q260521 .
+
+    var:receiver  bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  "1"^^xsd:int .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:f7177163-c833-3ff4-b38f-c8d2872f1ec6> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:receiver ;
+            vf:receiver                 ex:Alice , var:receiver ;
+            vf:resourceClassifiedAs     wd:Q260521 ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:6f4922f4-5568-361a-8cdf-4ad2299f6d23> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:02e74f10-e032-3ad8-a8d1-38f2b4fdd6f0> {
+    var:provider  bl:boundTo  bl:unbound .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  bl:unbound .
+
+    var:receiver  bl:boundTo  ex:Alice .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  om2:one .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:9f61408e-3afb-333e-90cd-f1b20de6f466> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:14bfa6bb-1487-3e45-bba0-28a21ed38046> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  var:value ;
+            om2:hasUnit            om2:one .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:receiver ;
+            vf:receiver                 ex:Alice , var:receiver ;
+            vf:resourceClassifiedAs     var:resourceClass ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:19ca14e7-ea63-38a4-ae0e-b13d585e4c22> {
+    vf:Intent  rdf:type  bl:Unblendable .
+
+    vf:transfer  rdf:type  bl:Unblendable .
+
+    var:provider  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "provider" .
+
+    vara:transferLocation
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location of transfer" .
+
+    var:location  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:LocationCandidateShape ;
+            bl:name            "location" .
+
+    var:value  rdf:type        bl:Variable ;
+            bl:candidateShape  vfsh:QuantityValueCandidateShape ;
+            bl:name            "value" .
+
+    var:toResource  rdf:type   bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "toResource" .
+
+    var:resourceClass
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:ResourceClassCandidateShape ;
+            bl:name            "resourceClass" .
+
+    var:receiver  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "receiver" .
+
+    var:unit  rdf:type         bl:Variable ;
+            bl:candidateShape  vfsh:QuantityUnitCandidateShape ;
+            bl:name            "unit" .
+
+    vara:provider  rdf:type    bl:Variable ;
+            bl:candidateShape  vfsh:AgentCandidateShape ;
+            bl:name            "resource provider" .
+
+    vara:providersResource
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "provider's resource" .
+
+    var:transferIntent
+            rdf:type           bl:Variable ;
+            bl:candidateShape  vfsh:IntentCandidateShape ;
+            bl:name            "transfer intent" .
+
+    var:resource  rdf:type     bl:Variable ;
+            bl:candidateShape  vfsh:EconomicResourceCandidateShape ;
+            bl:name            "resource" .
+}
+
+<urn:6ea9ab1b-aa0e-3b9e-9909-4440c317e21b> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  var:value ;
+            om2:hasUnit            om2:one .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:provider , ex:Alice ;
+            vf:receiver                 ex:Alice ;
+            vf:resourceClassifiedAs     var:resourceClass ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:c20ad4d7-6fe9-3759-aa27-a0c99bff6710> {
+    var:provider  bl:boundTo  vara:provider .
+
+    vara:transferLocation
+            bl:boundTo  bl:unbound .
+
+    var:location  bl:boundTo  vara:transferLocation .
+
+    vara:provider  bl:boundTo  var:receiver .
+
+    var:toResource  bl:boundTo  ex:alicesLawnmower1 .
+
+    var:resourceClass
+            bl:boundTo  bl:unbound .
+
+    var:receiver  bl:boundTo  bl:unbound .
+
+    var:value  bl:boundTo  "0"^^xsd:int .
+
+    vara:providersResource
+            bl:boundTo  bl:unbound .
+
+    var:unit  bl:boundTo  bl:unbound .
+
+    var:transferIntent
+            bl:boundTo  ex:transferIntentAlice .
+
+    var:resource  bl:boundTo  vara:providersResource .
+}
+
+<urn:d2ddea18-f006-35ce-8623-e36bd4e3c7c5> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:37693cfc-7480-39e4-9d87-b8c7d8b9aacd> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:a87ff679-a2f3-371d-9181-a67b7542122c> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:provider , ex:Alice ;
+            vf:receiver                 ex:Alice ;
+            vf:resourceClassifiedAs     var:resourceClass ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:a3f390d8-8e4c-31f2-b47b-fa2f1b5f87db> {
+    _:b4    rdf:first  vf:custodian ;
+            rdf:rest   _:b5 .
+
+    ex:resourceIsInCustodyOfProviderShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b6 ;
+            sh:targetNode  var:resource .
+
+    _:b7    rdf:first  _:b8 ;
+            rdf:rest   () .
+
+    _:b9    rdf:first  bl:boundTo ;
+            rdf:rest   _:b10 .
+
+    _:b11   rdf:first  bl:boundTo ;
+            rdf:rest   _:b12 .
+
+    _:b13   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b14 .
+
+    _:b15   sh:inversePath  bl:boundTo .
+
+    ex:resourceShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b16 ;
+            sh:targetNode  var:resource .
+
+    _:b17   sh:hasValue  var:resource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b18 .
+
+    _:b19   sh:inversePath  rdf:type .
+
+    _:b20   sh:inversePath  bl:boundTo .
+
+    _:b12   rdf:first  _:b21 ;
+            rdf:rest   _:b22 .
+
+    _:b23   sh:inversePath  bl:boundTo .
+
+    _:b24   sh:inversePath  bl:boundTo .
+
+    _:b22   rdf:first  _:b25 ;
+            rdf:rest   () .
+
+    _:b26   sh:hasValue  var:location ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b27 .
+
+    ex:toResourceIsInCustodyOfReceiverShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b28 ;
+            sh:targetNode  var:toResource .
+
+    _:b29   rdf:first  _:b30 ;
+            rdf:rest   () .
+
+    ex:receiverShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b31 ;
+            sh:targetNode  var:receiver .
+
+    ex:resourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b32 ;
+            sh:targetNode  var:resource .
+
+    ex:locationShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b33 ;
+            sh:targetNode  var:location .
+
+    _:b27   rdf:first  bl:boundTo ;
+            rdf:rest   _:b34 .
+
+    _:b35   sh:inversePath  bl:boundTo .
+
+    ex:toResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b36 ;
+            sh:targetNode  var:toResource .
+
+    _:b37   rdf:first  _:b38 ;
+            rdf:rest   _:b39 .
+
+    _:b31   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b21   sh:inversePath  vf:custodian .
+
+    _:b18   rdf:first  bl:boundTo ;
+            rdf:rest   _:b37 .
+
+    _:b40   sh:maxCount  1 ;
+            sh:path      bl:boundTo .
+
+    _:b41   sh:hasValue  var:toResource ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b11 .
+
+    bl:onlyOneBoundValueShape
+            rdf:type        sh:NodeShape ;
+            sh:property     _:b40 ;
+            sh:targetClass  bl:Variable .
+
+    _:b42   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b7 .
+
+    _:b39   rdf:first  _:b35 ;
+            rdf:rest   () .
+
+    ex:receiverIsCustodianOfToResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b41 ;
+            sh:targetNode  var:receiver .
+
+    _:b43   sh:maxCount  0 ;
+            sh:path      rdf:type .
+
+    _:b33   sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo ;
+            sh:property  _:b44 , _:b43 .
+
+    _:b45   rdf:first  _:b20 ;
+            rdf:rest   () .
+
+    _:b46   rdf:first  bl:boundTo ;
+            rdf:rest   _:b47 .
+
+    _:b47   rdf:first  vf:custodian ;
+            rdf:rest   _:b48 .
+
+    _:b49   sh:class  foaf:Agent ;
+            sh:path   bl:boundTo .
+
+    _:b50   sh:class     om2:Unit ;
+            sh:nodeKind  sh:IRI ;
+            sh:path      bl:boundTo .
+
+    _:b44   sh:maxCount  0 ;
+            sh:path      _:b19 .
+
+    _:b16   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b25   sh:inversePath  bl:boundTo .
+
+    ex:providerIsCustodianOfResourceShape
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b17 ;
+            sh:targetNode  var:provider .
+
+    _:b34   rdf:first  vf:currentLocation ;
+            rdf:rest   _:b29 .
+
+    _:b10   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b51 .
+
+    ex:valueShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b52 ;
+            sh:targetNode  var:value .
+
+    _:b53   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b54 .
+
+    _:b38   sh:inversePath  vf:custodian .
+
+    _:b36   sh:class  vf:EconomicResource ;
+            sh:path   bl:boundTo .
+
+    _:b14   rdf:first  bl:boundTo ;
+            rdf:rest   _:b42 .
+
+    _:b51   rdf:first  _:b15 ;
+            rdf:rest   () .
+
+    _:b8    sh:inversePath  bl:boundTo .
+
+    _:b6    sh:hasValue  var:provider ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b46 .
+
+    _:b52   sh:nodeKind  sh:Literal ;
+            sh:path      bl:boundTo .
+
+    ex:resourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b13 ;
+            sh:targetNode  var:resource .
+
+    ex:unitShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b50 ;
+            sh:targetNode  var:unit .
+
+    _:b28   sh:hasValue  var:receiver ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b55 .
+
+    _:b32   sh:hasValue  var:resourceClass ;
+            sh:maxCount  1 ;
+            sh:minCount  1 ;
+            sh:path      _:b9 .
+
+    _:b30   sh:inversePath  bl:boundTo .
+
+    _:b55   rdf:first  bl:boundTo ;
+            rdf:rest   _:b4 .
+
+    _:b56   rdf:first  vf:classifiedAs ;
+            rdf:rest   _:b45 .
+
+    ex:toResourceInLocation
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b26 ;
+            sh:targetNode  var:toResource .
+
+    ex:toResourceClassifiedAsMustMatch
+            rdf:type       sh:NodeShape ;
+            sh:property    _:b53 ;
+            sh:targetNode  var:toResource .
+
+    ex:providerShape  rdf:type  sh:NodeShape ;
+            sh:property    _:b49 ;
+            sh:targetNode  var:provider .
+
+    _:b54   rdf:first  bl:boundTo ;
+            rdf:rest   _:b56 .
+
+    _:b48   rdf:first  _:b24 ;
+            rdf:rest   () .
+
+    _:b5    rdf:first  _:b23 ;
+            rdf:rest   () .
+}
+
+<urn:cfcd2084-95d5-35ef-a6e7-dff9f98764da> {
+    <urn:cfcd2084-95d5-35ef-a6e7-dff9f98764da>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:c81e728d-9d4c-3f63-af06-7f89cc14862c> ;
+            bl:blendingConfigGraph  <urn:c4ca4238-a0b9-3382-8dcc-509a6f75849b> ;
+            bl:dataGraph            <urn:a87ff679-a2f3-371d-9181-a67b7542122c> ;
+            bl:shapesGraph          <urn:eccbc87e-4b5c-32fe-a830-8fd9f2a7baf3> .
+}
+
+<urn:d67d8ab4-f4c1-3bf2-aaa3-53e27879133c> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:provider , ex:Alice ;
+            vf:receiver                 ex:Alice ;
+            vf:resourceClassifiedAs     wd:Q260521 ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}
+
+<urn:ad61ab14-3223-3fbc-a4c7-d2583be69251> {
+    _:b0    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b1    om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    ex:alicesLawnmower1
+            rdf:type               vf:EconomicResource ;
+            vf:accountingQuantity  _:b0 ;
+            vf:classifiedAs        wd:Q260521 ;
+            vf:currentLocation     wd:Q676832 ;
+            vf:custodian           ex:Alice ;
+            vf:onhandQuantity      _:b2 ;
+            vf:primaryAccountable  ex:Alice .
+
+    ex:Alice  rdf:type  foaf:Agent .
+
+    _:b2    om2:hasNumericalValue  "0"^^xsd:int ;
+            om2:hasUnit            om2:one .
+
+    _:b3    rdf:type               bl:Unblendable ;
+            om2:hasNumericalValue  "1"^^xsd:int ;
+            om2:hasUnit            var:unit .
+
+    ex:transferIntentAlice
+            rdf:type                    vf:Intent ;
+            vf:action                   vf:transfer ;
+            vf:atLocation               vara:transferLocation ;
+            vf:provider                 var:provider , ex:Alice ;
+            vf:receiver                 ex:Alice ;
+            vf:resourceClassifiedAs     var:resourceClass ;
+            vf:resourceInventoriedAs    vara:providersResource ;
+            vf:resourceQuantity         _:b3 , _:b1 ;
+            vf:toResourceInventoriedAs  ex:alicesLawnmower1 .
+}

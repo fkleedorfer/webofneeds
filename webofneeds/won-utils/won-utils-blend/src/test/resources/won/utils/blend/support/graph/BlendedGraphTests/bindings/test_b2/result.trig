@@ -1,0 +1,45 @@
+@prefix bl:     <https://w3id.org/won/blending#> .
+@prefix ex:     <http://example.org/ns#> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix om2:    <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix var:    <http://example.org/var#> .
+@prefix vara:   <http://example.org/alice/var#> .
+@prefix vf:     <https://w3id.org/valueflows#> .
+@prefix vfsh:   <https://w3id.org/valueflows-shacl/shapes#> .
+@prefix wd:     <http://www.wikidata.org/entity/> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+var:transferIntent  bl:boundTo  ex:transferIntentAlice .
+
+ex:transferIntentAlice
+        rdf:type                    vf:Intent ;
+        vf:action                   vf:transfer ;
+        vf:atLocation               var:location , vara:transferLocation ;
+        vf:provider                 var:provider , vara:provider ;
+        vf:receiver                 var:receiver , ex:Alice ;
+        vf:resourceInventoriedAs    var:resource , vara:providersResource ;
+        vf:resourceQuantity         [ om2:hasNumericalValue  var:value ;
+                                      om2:hasUnit            var:unit
+                                    ] ;
+        vf:resourceQuantity         [ om2:hasNumericalValue  "1"^^xsd:int ;
+                                      om2:hasUnit            om2:one
+                                    ] ;
+        vf:toResourceInventoriedAs  var:toResource , ex:alicesLawnmower1 .
+
+ex:alicesLawnmower1  rdf:type  vf:EconomicResource ;
+        vf:accountingQuantity  [ om2:hasNumericalValue  "0"^^xsd:int ;
+                                 om2:hasUnit            om2:one
+                               ] ;
+        vf:classifiedAs        wd:Q260521 ;
+        vf:currentLocation     wd:Q676832 ;
+        vf:custodian           ex:Alice ;
+        vf:onhandQuantity      [ om2:hasNumericalValue  "0"^^xsd:int ;
+                                 om2:hasUnit            om2:one
+                               ] ;
+        vf:primaryAccountable  ex:Alice .
+
+ex:Alice  rdf:type  foaf:Agent .

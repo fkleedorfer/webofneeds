@@ -1,0 +1,70 @@
+@prefix ex: <http://example.org/ns#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix vf:    <https://w3id.org/valueflows#> .
+@prefix om2: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@prefix bl: <https://w3id.org/won/blending#> .
+@prefix vara: <http://example.org/alice/var#> .
+
+ex:test-main {
+    ex:PatternTransferAtLocation a bl:Template ;
+    bl:dataGraph ex:test-data ;
+    bl:blendingConfigGraph ex:test-config ;
+}
+
+ex:test-data {
+
+    ex:Alice
+        a foaf:Agent .
+
+    ex:alicesLawnmower1
+            a vf:EconomicResource;
+            vf:primaryAccountable ex:Alice ;
+            vf:custodian ex:Alice ;
+            vf:classifiedAs wd:Q260521 ;
+            vf:currentLocation wd:Q676832 ;
+            vf:onhandQuantity [
+                om2:hasUnit om2:one ;
+                om2:hasNumericalValue "0"^^xsd:int ;
+            ] ;
+            vf:accountingQuantity [
+                om2:hasUnit om2:one ;
+                om2:hasNumericalValue "0"^^xsd:int ;
+            ]
+            .
+
+     ex:transferIntentAlice
+        a vf:Intent ;
+        vf:action vf:transfer ;
+        vf:receiver ex:Alice ;
+        vf:provider vara:provider ;
+        vf:toResourceInventoriedAs ex:alicesLawnmower1 ;
+        vf:resourceInventoriedAs vara:providersResource ;
+        vf:resourceQuantity [
+            om2:hasNumericalValue "1"^^xsd:int ;
+            om2:hasUnit om2:one ;
+        ] ;
+        vf:atLocation vara:transferLocation .
+
+}
+
+ex:test-config {
+    vf:transfer a bl:Unblendable .
+    vf:Intent a bl:Unblendable .
+
+     vara:transferLocation a bl:Variable ;
+        bl:name "location of transfer" .
+
+     vara:providersResource a bl:Variable ;
+        bl:name "provider's resource" .
+
+     vara:provider a bl:Variable ;
+        bl:name "resource provider" .
+
+}

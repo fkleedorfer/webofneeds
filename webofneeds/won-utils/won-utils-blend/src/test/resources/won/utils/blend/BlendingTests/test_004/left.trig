@@ -1,0 +1,248 @@
+@prefix ex: <http://example.org/ns#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix vf:    <https://w3id.org/valueflows#> .
+@prefix om2: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@prefix bl: <https://w3id.org/won/blending#> .
+@prefix var: <http://example.org/var#> .
+@prefix vfsh: <https://w3id.org/valueflows-shacl/shapes#> .
+
+ex:PatternTransferAtLocation-main {
+    ex:PatternTransferAtLocation a bl:Template ;
+    bl:dataGraph ex:PatternTransferAtLocation-data ;
+    bl:blendingConfigGraph ex:PatternTransferAtLocation-config;
+    bl:shapesGraph ex:PatternTransferAtLocation-shapes .
+}
+
+ex:PatternTransferAtLocation-data {
+
+    var:transferIntent
+        a vf:Intent ;
+        vf:action vf:transfer ;
+        vf:provider var:provider ;
+        vf:receiver var:receiver ;
+        vf:resourceClassifiedAs var:resourceClass ;
+        vf:resourceInventoriedAs var:resource ;
+        vf:toResourceInventoriedAs var:toResource ;
+        vf:atLocation var:location ;
+        vf:resourceQuantity [
+            om2:hasUnit var:unit ;
+            om2:hasNumericalValue var:value ;
+            a bl:Unblendable
+        ]
+    .
+}
+
+ex:PatternTransferAtLocation-config {
+
+    vf:transfer a bl:Unblendable .
+    vf:Intent a bl:Unblendable .
+
+    var:transferIntent
+        a bl:Variable ;
+        bl:name "transfer intent" ;
+        bl:candidateShape vfsh:IntentCandidateShape .
+
+    var:provider
+            a bl:Variable ;
+            bl:name "provider" ;
+            bl:candidateShape vfsh:AgentCandidateShape .
+
+        var:receiver
+             a bl:Variable ;
+            bl:name "receiver" ;
+            bl:candidateShape vfsh:AgentCandidateShape .
+
+        var:resource
+            a bl:Variable ;
+            bl:name "resource" ;
+            bl:candidateShape vfsh:EconomicResourceCandidateShape .
+
+        var:resourceClass
+            a bl:Variable ;
+            bl:name "resourceClass" ;
+            bl:candidateShape vfsh:ResourceClassCandidateShape .
+
+        var:toResource
+            a bl:Variable ;
+            bl:name "toResource" ;
+            bl:candidateShape vfsh:EconomicResourceCandidateShape .
+
+        var:location
+            a bl:Variable ;
+            bl:name "location" ;
+            bl:candidateShape vfsh:LocationCandidateShape .
+
+        var:unit
+            a bl:Variable ;
+            bl:name "unit" ;
+            bl:candidateShape vfsh:QuantityUnitCandidateShape .
+
+        var:value
+            a bl:Variable ;
+            bl:name "value" ;
+            bl:candidateShape vfsh:QuantityValueCandidateShape .
+}
+
+ex:PatternTransferAtLocation-shapes {
+
+    ex:providerShape a sh:NodeShape ;
+        sh:targetNode var:provider ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:class foaf:Agent ;
+        ] .
+
+    ex:receiverShape a sh:NodeShape ;
+        sh:targetNode var:receiver ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:class foaf:Agent ;
+        ] .
+
+    ex:resourceShape a sh:NodeShape ;
+        sh:targetNode var:resource ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:class vf:EconomicResource ;
+        ] .
+
+    ex:toResourceShape a sh:NodeShape ;
+        sh:targetNode var:toResource ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:class vf:EconomicResource ;
+        ] .
+
+    ex:locationShape a sh:NodeShape ; # locations aren't particularly well restrained yet - needs work
+        sh:targetNode var:location ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:nodeKind sh:IRI ;
+            sh:property [
+                sh:path rdf:type ;
+                sh:maxCount 0 ;
+            ] ;
+            sh:property [
+                sh:path [ sh:inversePath rdf:type ] ;
+                sh:maxCount 0 ;
+            ]
+        ] .
+
+    ex:unitShape a sh:NodeShape ;
+        sh:targetNode var:unit ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:nodeKind sh:IRI ;
+            sh:class om2:Unit ;
+        ] .
+
+    ex:valueShape a sh:NodeShape ;
+        sh:targetNode var:value ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:nodeKind sh:Literal ;
+        ] .
+
+
+
+     # resource must be in provider's custody
+    ex:resourceIsInCustodyOfProviderShape a sh:NodeShape  ;
+        sh:targetNode var:resource ;
+        sh:property [
+            sh:path ( bl:boundTo vf:custodian [ sh:inversePath bl:boundTo ] ) ;
+            sh:hasValue var:provider ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+        ] .
+
+    # resource must be in provider's custody
+    ex:providerIsCustodianOfResourceShape a sh:NodeShape  ;
+        sh:targetNode var:provider ;
+        sh:property [
+            sh:path ( bl:boundTo [ sh:inversePath vf:custodian ] [ sh:inversePath bl:boundTo ] ) ;
+            sh:hasValue var:resource ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+        ] .
+
+
+   # toResource must be in receiver's custody
+   ex:toResourceIsInCustodyOfReceiverShape a sh:NodeShape  ;
+       sh:targetNode var:toResource ;
+       sh:property [
+           sh:path ( bl:boundTo vf:custodian [ sh:inversePath bl:boundTo ] ) ;
+           sh:hasValue var:receiver ;
+           sh:minCount 1 ;
+           sh:maxCount 1 ;
+       ] .
+
+   # toResource must be in receiver's custody
+   ex:receiverIsCustodianOfToResourceShape a sh:NodeShape  ;
+       sh:targetNode var:receiver ;
+       sh:property [
+           sh:path ( bl:boundTo [sh:inversePath vf:custodian ] [ sh:inversePath bl:boundTo ] ) ;
+           sh:hasValue var:toResource ;
+           sh:minCount 1 ;
+           sh:maxCount 1 ;
+       ] .
+
+
+   # resource must be in location
+   ex:resourceInLocation a sh:NodeShape ;
+    sh:targetNode var:resource ;
+    sh:property [
+        sh:path (bl:boundTo vf:currentLocation [ sh:inversePath bl:boundTo ] ) ;
+        sh:hasValue var:location ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+   # toResource must be in location
+      ex:toResourceInLocation a sh:NodeShape ;
+       sh:targetNode var:toResource ;
+       sh:property [
+           sh:path (bl:boundTo vf:currentLocation [ sh:inversePath bl:boundTo ] ) ;
+           sh:hasValue var:location ;
+           sh:minCount 1 ;
+           sh:maxCount 1 ;
+       ] .
+
+   # resource must be classified as resourceClassifiedAs
+   ex:resourceClassifiedAsMustMatch
+    a sh:NodeShape ;
+    sh:targetNode var:resource ;
+    sh:property [
+        sh:path ( bl:boundTo vf:classifiedAs [ sh:inversePath bl:boundTo ] ) ;
+        sh:hasValue var:resourceClass ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+   # toresource must be classified as resourceClassifiedAs
+       ex:toResourceClassifiedAsMustMatch
+        a sh:NodeShape ;
+        sh:targetNode var:toResource ;
+        sh:property [
+            sh:path ( bl:boundTo vf:classifiedAs [ sh:inversePath bl:boundTo ] ) ;
+            sh:hasValue var:resourceClass ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+        ] .
+
+   bl:onlyOneBoundValueShape a sh:NodeShape ;
+        sh:targetClass bl:Variable ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:maxCount 1 ;
+        ] .
+
+}
+
+

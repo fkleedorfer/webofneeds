@@ -1,0 +1,49 @@
+@prefix ex: <http://example.org/ns#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix vf:    <https://w3id.org/valueflows#> .
+@prefix om2: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@prefix bl: <https://w3id.org/won/blending#> .
+@prefix var: <http://example.org/var#> .
+@prefix vfsh: <https://w3id.org/valueflows-shacl/shapes#> .
+
+ex:template2-main {
+    ex:template2 a bl:Template ;
+    bl:dataGraph ex:template2-data ;
+    bl:blendingConfigGraph ex:template2-config ;
+    bl:shapesGraph ex:template2-shapes .
+}
+
+ex:template2-data {
+
+    ex:p1 a ex:Person ;
+        ex:firstName "Albert" ;
+        ex:lastName var:lastName
+    .
+}
+
+ex:template2-config {
+    var:lastName
+        a bl:Variable ;
+        bl:name "lastName"
+    .
+}
+
+ex:template2-shapes {
+    ex:lastNameShape a sh:NodeShape ;
+        sh:targetNode var:lastName ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:datatype xsd:string ;
+        ]
+    .
+
+}
+
+

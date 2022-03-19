@@ -1,0 +1,87 @@
+@prefix bl:     <https://w3id.org/won/blending#> .
+@prefix ex:     <http://example.org/ns#> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix om2:    <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix sh:     <http://www.w3.org/ns/shacl#> .
+@prefix var:    <http://example.org/var#> .
+@prefix vf:     <https://w3id.org/valueflows#> .
+@prefix vfsh:   <https://w3id.org/valueflows-shacl/shapes#> .
+@prefix wd:     <http://www.wikidata.org/entity/> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+<urn:a87ff679-a2f3-371d-9181-a67b7542122c> {
+    ex:p1   rdf:type      ex:Person ;
+            ex:firstName  "Albert" ;
+            ex:lastName   "Einstein" .
+}
+
+<urn:eccbc87e-4b5c-32fe-a830-8fd9f2a7baf3> {
+    ex:firstNameVariableShape
+            rdf:type       sh:NodeShape ;
+            sh:property    [ sh:datatype  xsd:string ;
+                             sh:path      bl:boundTo
+                           ] ;
+            sh:targetNode  var:firstName .
+
+    ex:PersonCandidateShape
+            rdf:type        sh:NodeShape ;
+            sh:targetClass  ex:Person .
+
+    ex:einsteinShape  rdf:type  sh:NodeShape ;
+            sh:property    [ sh:class     ex:Person ;
+                             sh:nodeKind  sh:IRI ;
+                             sh:path      bl:boundTo
+                           ] ;
+            sh:targetNode  var:einstein1 .
+
+    ex:lastNameShape  rdf:type  sh:NodeShape ;
+            sh:property    [ sh:datatype  xsd:string ;
+                             sh:path      bl:boundTo
+                           ] ;
+            sh:targetNode  var:lastName .
+
+    ex:PersonShape  rdf:type  sh:NodeShape ;
+            sh:property     [ sh:datatype  xsd:string ;
+                              sh:maxCount  1 ;
+                              sh:minCount  1 ;
+                              sh:path      ex:lastName
+                            ] ;
+            sh:property     [ sh:datatype  xsd:string ;
+                              sh:maxCount  1 ;
+                              sh:minCount  1 ;
+                              sh:path      ex:firstName
+                            ] ;
+            sh:targetClass  ex:Person .
+}
+
+<urn:c4ca4238-a0b9-3382-8dcc-509a6f75849b> {
+    var:firstName  rdf:type  bl:Variable ;
+            bl:name   "firstName" .
+
+    var:lastName  rdf:type  bl:Variable ;
+            bl:name   "lastName" .
+
+    var:einstein1  rdf:type    bl:Variable ;
+            bl:candidateShape  ex:PersonCandidateShape ;
+            bl:name            "einstein" .
+}
+
+<urn:c81e728d-9d4c-3f63-af06-7f89cc14862c> {
+    var:firstName  bl:boundTo  "Albert" .
+
+    var:lastName  bl:boundTo  "Einstein" .
+
+    var:einstein1  bl:boundTo  ex:p1 .
+}
+
+<urn:cfcd2084-95d5-35ef-a6e7-dff9f98764da> {
+    <urn:cfcd2084-95d5-35ef-a6e7-dff9f98764da>
+            rdf:type                bl:Template ;
+            bl:bindingsGraph        <urn:c81e728d-9d4c-3f63-af06-7f89cc14862c> ;
+            bl:blendingConfigGraph  <urn:c4ca4238-a0b9-3382-8dcc-509a6f75849b> ;
+            bl:dataGraph            <urn:a87ff679-a2f3-371d-9181-a67b7542122c> ;
+            bl:shapesGraph          <urn:eccbc87e-4b5c-32fe-a830-8fd9f2a7baf3> .
+}

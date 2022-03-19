@@ -1,0 +1,66 @@
+@prefix ex: <http://example.org/ns#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix vf:    <https://w3id.org/valueflows#> .
+@prefix om2: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix wd: <http://www.wikidata.org/entity/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@prefix bl: <https://w3id.org/won/blending#> .
+@prefix var: <http://example.org/var#> .
+@prefix vfsh: <https://w3id.org/valueflows-shacl/shapes#> .
+
+ex:PatternTransferAtLocation-main {
+    ex:template1 a bl:Template ;
+    bl:dataGraph ex:template1-data ;
+    bl:blendingConfigGraph ex:template1-config ;
+    bl:shapesGraph ex:template1-shapes .
+}
+
+ex:template1-data {
+
+    ex:p1 a ex:Person;
+        ex:firstName var:firstName ;
+        ex:lastName "Einstein"
+    .
+
+}
+
+ex:template1-config {
+
+    ex:p1 a bl:Unblendable .
+
+    var:firstName
+        a bl:Variable ;
+        bl:name "firstName" .
+}
+
+ex:template1-shapes {
+    ex:firstNameVariableShape a sh:NodeShape ;
+        sh:targetNode var:firstName ;
+        sh:property [
+            sh:path bl:boundTo ;
+            sh:datatype xsd:string ;
+        ]
+    .
+
+    ex:PersonShape a sh:NodeShape ;
+        sh:targetClass ex:Person ;
+        sh:property [
+            sh:path ex:firstName ;
+            sh:datatype xsd:string ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+        ] ;
+        sh:property [
+            sh:path ex:lastName ;
+            sh:datatype xsd:string ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+        ] ;
+}
+
+

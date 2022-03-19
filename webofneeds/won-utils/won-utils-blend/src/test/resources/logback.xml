@@ -24,8 +24,8 @@
         </encoder>
     </appender>
 
-    <logger name="won.utils.blend" level="DEBUG" />
-    <logger name="org.apache.jena.shacl" level="DEBUG" />
+    <logger name="won.utils.blend" level="INFO" />
+    <logger name="org.apache.jena.shacl" level="INFO" />
 
     <!-- available log-levels: DEBUG, INFO, WARN, ERROR -->
     <root level="ERROR">
