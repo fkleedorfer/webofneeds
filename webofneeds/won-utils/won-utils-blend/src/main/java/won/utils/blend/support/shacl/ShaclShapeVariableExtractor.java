@@ -33,8 +33,6 @@ public class ShaclShapeVariableExtractor {
         return Collections.unmodifiableMap(shapesToVariablesMap);
     }
 
-
-
     private void generateShapeVariableMaps() {
         for (Node variableNode : variables) {
             Set<Node> shapesForVariable = new HashSet<>();
@@ -45,8 +43,8 @@ public class ShaclShapeVariableExtractor {
                     shapesForVariable.add(shapeNode);
                     shapesToVariablesMap.compute(shapeNode, (key, vars) -> {
                         if (vars == null) {
-                           vars = new HashSet<>();
-                           vars.add(variableNode);
+                            vars = new HashSet<>();
+                            vars.add(variableNode);
                         } else {
                             vars.add(variableNode);
                         }
@@ -62,7 +60,4 @@ public class ShaclShapeVariableExtractor {
         return G.contains(shapeGraph, null, null, variableNode) ||
                         G.contains(shapeGraph, variableNode, null, null);
     }
-
-
-
 }

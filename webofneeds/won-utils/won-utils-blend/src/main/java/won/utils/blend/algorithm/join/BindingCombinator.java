@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class BindingCombinator {
-
     public static Stream<VariableBindings> allCombinationsAsStream(
                     Function<Node, Set<Node>> optionsForVariableProvider,
                     Set<Node> variables,
@@ -94,5 +93,4 @@ public class BindingCombinator {
             }
         }, false);
     }
-
 }

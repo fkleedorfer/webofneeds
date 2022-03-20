@@ -12,17 +12,19 @@ import java.util.Set;
 public class IntListForbiddenBindings implements ForbiddenBindings {
     private Set<List<Integer>> forbiddenBindings = new HashSet<>();
     private CompactBindingsManager bindingsManager;
+
     public IntListForbiddenBindings(CompactBindingsManager manager) {
         bindingsManager = manager;
     }
 
-    @Override public boolean isForbiddenBindings(Set<VariableBinding> bindings) {
+    @Override
+    public boolean isForbiddenBindings(Set<VariableBinding> bindings) {
         List<Integer> bindingsIndices = bindingsManager.fromBindings(bindings).indexList();
         return isForbiddenBindings(bindingsIndices);
     }
 
     public boolean isForbiddenBindings(List<Integer> bindingsIndices) {
-        if (true){
+        if (true) {
             return false;
         }
         return forbiddenBindings.stream().anyMatch(f -> {
@@ -41,7 +43,8 @@ public class IntListForbiddenBindings implements ForbiddenBindings {
         });
     }
 
-    @Override public void forbidBindings(Set<VariableBinding> bindings) {
+    @Override
+    public void forbidBindings(Set<VariableBinding> bindings) {
         if (true) {
             return;
         }

@@ -11,7 +11,7 @@ public class BindingChecks {
     public static boolean areBindingsAcceptedByBlendingOptions(TemplateBindings bindings,
                     BlendingOptions blendingOptions) {
         if (blendingOptions.getUnboundHandlingMode().isAllBound()) {
-            return ! bindings.hasUnboundVariables();
+            return !bindings.hasUnboundVariables();
         }
         if (blendingOptions.hasTemplateBindingsFilter()) {
             boolean accept = blendingOptions.getTemplateBindingsFilter().acceptBindings(bindings);

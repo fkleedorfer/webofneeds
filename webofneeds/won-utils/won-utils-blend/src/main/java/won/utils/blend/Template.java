@@ -1,13 +1,12 @@
 package won.utils.blend;
 
-import org.apache.jena.datatypes.xsd.XSDDatatype;
-import org.apache.jena.graph.*;
+import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.Triple;
 import org.apache.jena.riot.other.G;
-import org.apache.jena.shacl.vocabulary.SHACL;
 import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.vocabulary.RDF;
 import won.utils.blend.support.bindings.ImmutableVariableBindings;
-import won.utils.blend.support.bindings.TemplateBindings;
 import won.utils.blend.support.bindings.VariableBinding;
 import won.utils.blend.support.bindings.VariableBindings;
 import won.utils.blend.support.graph.TemplateGraphs;
@@ -15,11 +14,13 @@ import won.utils.blend.support.shacl.ShaclShapeVariableExtractor;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Template {
     private final TemplateGraphs template;
     private final Set<Node> variables;
     private final Set<Node> constants;
+    private final Set<Node> blankNodes;
     private final VariableBindings fixedBindings;
     private final Map<Node, Graph> shapeGraphs;
     private final Map<Node, Set<Node>> variablesToShapesMap;
@@ -27,7 +28,8 @@ public class Template {
 
     public Template(TemplateGraphs templateGraphs) {
         this.template = templateGraphs;
-        this.variables = Collections.unmodifiableSet(findVariables(templateGraphs));
+        this.blankNodes = Collections.unmodifiableSet(findBlankNodes(templateGraphs));
+        this.variables = Collections.unmodifiableSet(findVariables(templateGraphs, blankNodes));
         this.constants = Collections.unmodifiableSet(findConstants(templateGraphs, this.variables));
         this.fixedBindings = new VariableBindings(this.variables, findFixedBindings(templateGraphs, this.variables));
         ShaclShapeVariableExtractor extractor = new ShaclShapeVariableExtractor(templateGraphs.getShapesGraph(),
@@ -49,12 +51,20 @@ public class Template {
         return variables;
     }
 
+    public Set<Node> getBlankNodes() {
+        return blankNodes;
+    }
+
     public Map<Node, Graph> getShapeGraphs() {
         return shapeGraphs;
     }
 
     public boolean isVariable(Node nodeToCheck) {
         return getVariables().contains(nodeToCheck);
+    }
+
+    public boolean isBlankNode(Node nodeToCheck) {
+        return getBlankNodes().contains(nodeToCheck);
     }
 
     public boolean isConstant(Node nodeToCheck) {
@@ -69,12 +79,20 @@ public class Template {
         return new ImmutableVariableBindings(this.fixedBindings);
     }
 
+    private Set<Node> findBlankNodes(TemplateGraphs templateGraphs) {
+        return templateGraphs.getDataGraph().stream()
+                        .flatMap(t -> Stream.of(t.getSubject(), t.getObject()))
+                        .filter(Node::isBlank)
+                        .collect(Collectors.toSet());
+    }
 
-    private static Set<Node> findVariables(TemplateGraphs templateGraphs) {
+    private static Set<Node> findVariables(TemplateGraphs templateGraphs, Set<Node> blankNodes) {
         if (!templateGraphs.hasBlendingConfig()) {
             return Collections.emptySet();
         }
-        return findByType(templateGraphs.getBlendingConfigGraph(), BLEND.Variable);
+        Set<Node> variables = findByType(templateGraphs.getBlendingConfigGraph(), BLEND.Variable);
+        variables.addAll(blankNodes);
+        return variables;
     }
 
     private static Set<VariableBinding> findFixedBindings(TemplateGraphs templateGraphs,
@@ -120,7 +138,4 @@ public class Template {
         }
         return nodes;
     }
-
-
-
 }

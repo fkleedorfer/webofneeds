@@ -19,17 +19,19 @@ public class CompactVariableBindings {
         this.compactBindingsManager = compactBindingsManager;
     }
 
-    public Set<VariableBinding> getBindingsAsSet(){
+    public Set<VariableBinding> getBindingsAsSet() {
         return compactBindingsManager.toBindings(bindings);
     }
-    public VariableBindings getVariableBindings(){
+
+    public VariableBindings getVariableBindings() {
         return new VariableBindings(compactBindingsManager.getVariables(), getBindingsAsSet());
     }
-    public List<Integer> indexList(){
+
+    public List<Integer> indexList() {
         return Arrays.stream(bindings).boxed().collect(Collectors.toList());
     }
 
-    public int[] copyIndexArray(){
+    public int[] copyIndexArray() {
         int[] copy = new int[bindings.length];
         System.arraycopy(bindings, 0, copy, 0, bindings.length);
         return copy;
@@ -55,13 +57,16 @@ public class CompactVariableBindings {
         }
     }
 
-    public boolean isAllUnbound(){
+    public boolean isAllUnbound() {
         return compactBindingsManager.isAllUnbound(bindings);
     }
+
     public boolean equals(CompactVariableBindings other) {
-        if (other == null) return false;
-        if (other == this) return true;
-        if (other.compactBindingsManager == this.compactBindingsManager ) {
+        if (other == null)
+            return false;
+        if (other == this)
+            return true;
+        if (other.compactBindingsManager == this.compactBindingsManager) {
             return Arrays.equals(this.bindings, other.bindings);
         }
         return getVariableBindings().equals(other.getVariableBindings());
@@ -73,14 +78,17 @@ public class CompactVariableBindings {
 
     public CompactVariableBindings mergeWith(CompactVariableBindings other) {
         if (this.compactBindingsManager == other.compactBindingsManager) {
-            return new CompactVariableBindings(ArrayUtils.combineArrays(this.bindings, other.bindings), compactBindingsManager);
+            return new CompactVariableBindings(ArrayUtils.combineArrays(this.bindings, other.bindings),
+                            compactBindingsManager);
         } else {
-            return compactBindingsManager.fromBindings(getVariableBindings().mergeWith(other.getVariableBindings()).getBindingsAsSet());
+            return compactBindingsManager.fromBindings(
+                            getVariableBindings().mergeWith(other.getVariableBindings()).getBindingsAsSet());
         }
     }
+
     public int size() {
         int count = 0;
-        for (int i = 0; i < bindings.length ; i++ ) {
+        for (int i = 0; i < bindings.length; i++) {
             if (bindings[i] > 0) {
                 count++;
             }
@@ -88,8 +96,8 @@ public class CompactVariableBindings {
         return count;
     }
 
-
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -99,18 +107,20 @@ public class CompactVariableBindings {
                         that.bindings);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = Objects.hash(compactBindingsManager);
         result = 31 * result + Arrays.hashCode(bindings);
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return getVariableBindings().toString();
     }
 
     public boolean isAnyVariableBound(CompactVariables encounteredVariables) {
-        if (encounteredVariables.hasManager(this.compactBindingsManager)){
+        if (encounteredVariables.hasManager(this.compactBindingsManager)) {
             this.compactBindingsManager.isAnyVariableBound(this.bindings, encounteredVariables.variables);
         }
         return this.compactBindingsManager.isAnyVariableBound(this.bindings, encounteredVariables.getVariables());

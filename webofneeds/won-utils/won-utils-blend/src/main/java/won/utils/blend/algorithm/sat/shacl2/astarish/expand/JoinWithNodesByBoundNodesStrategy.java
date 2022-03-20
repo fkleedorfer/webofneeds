@@ -13,19 +13,20 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JoinWithNodesByBoundNodesStrategy implements ExpansionStrategy {
-    @Override public Set<SearchNode> findSuccessors(BlendingInstance instance, AlgorithmState state, SearchNode node) {
+    @Override
+    public Set<SearchNode> findSuccessors(BlendingInstance instance, AlgorithmState state, SearchNode node) {
         List<SearchNode> preliminaryResults = new ArrayList<>();
         preliminaryResults.add(node);
-        for (Node boundNode : node.encounteredVariables.getVariables()){
+        for (Node boundNode : node.encounteredVariables.getVariables()) {
             List<SearchNode> nextCandidates = state.searchNodesByBoundNode.get(boundNode);
             List<SearchNode> candidatesUsedUp = new ArrayList<>();
-            if (nextCandidates == null){
+            if (nextCandidates == null) {
                 continue;
             }
             List<SearchNode> freshlyJoined = new ArrayList<>();
-            for (SearchNode preliminaryResult: preliminaryResults) {
+            for (SearchNode preliminaryResult : preliminaryResults) {
                 boolean noJoinAtAll = true;
-                for (SearchNode currentCandidate: nextCandidates) {
+                for (SearchNode currentCandidate : nextCandidates) {
                     Optional<SearchNode> currentJoin = preliminaryResult.outerJoin(currentCandidate);
                     if (currentJoin.isPresent()) {
                         noJoinAtAll = false;

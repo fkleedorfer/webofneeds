@@ -43,8 +43,8 @@ public class TemplateBindings {
         this.leftTemplate = leftTemplate;
         this.rightTemplate = rightTemplate;
         Stream.concat(
-                                        leftTemplate.getFixedBindings().getBindingsAsSet().stream(),
-                                        rightTemplate.getFixedBindings().getBindingsAsSet().stream())
+                        leftTemplate.getFixedBindings().getBindingsAsSet().stream(),
+                        rightTemplate.getFixedBindings().getBindingsAsSet().stream())
                         .forEach(this::addBinding);
         Set<Node> tmpSet = new HashSet<>();
         tmpSet.addAll(leftTemplate.getVariables());
@@ -55,13 +55,15 @@ public class TemplateBindings {
         tmpSet.addAll(rightTemplate.getConstants());
         this.allConstants = Collections.unmodifiableSet(tmpSet);
         this.variableBindings = new VariableBindings(initialBindings);
-        if (!initialBindings.getVariables().equals(this.allVariables)){
-            throw new IllegalArgumentException("Cannot use bindings with a different set of variables from that of the template: " + variableBindings.getVariables());
+        if (!initialBindings.getVariables().equals(this.allVariables)) {
+            throw new IllegalArgumentException(
+                            "Cannot use bindings with a different set of variables from that of the template: "
+                                            + variableBindings.getVariables());
         }
     }
 
     public void addBinding(VariableBinding variableBinding) {
-        if (variableBindings.addBindingIfPossible(variableBinding.getVariable(), variableBinding.getBoundNode())){
+        if (variableBindings.addBindingIfPossible(variableBinding.getVariable(), variableBinding.getBoundNode())) {
             throw new IllegalArgumentException(
                             String.format("Cannot add binding %s", variableBinding.toString()));
         }
@@ -70,7 +72,6 @@ public class TemplateBindings {
     public boolean hasBindingForVariable(Node variable) {
         return variableBindings.isBoundVariable(variable);
     }
-
 
     public boolean hasConstantBindingForVariableAllowTransitive(Node variable) {
         Optional<Node> boundNode = variableBindings.dereferenceIfVariable(variable);
@@ -81,9 +82,8 @@ public class TemplateBindings {
     }
 
     public Optional<Node> getBoundNodeForVariableAllowTransitive(Node variable) {
-        return  variableBindings.dereferenceIfVariable(variable);
+        return variableBindings.dereferenceIfVariable(variable);
     }
-
 
     public boolean isVariable(Node variable) {
         return allVariables.contains(variable);

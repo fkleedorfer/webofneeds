@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 
@@ -14,6 +15,8 @@ public class VariableBindings {
     private static final int MAX_REFERENCE_CHAIN_LENGTH = 2;
     private Map<Node, Node> bindings;
     private Set<Node> variables;
+    private Set<Node> blankNodeVariables;
+    private Set<Node> nonBlankVariables;
 
     public VariableBindings(VariableBindings toCopy) {
         this(toCopy.variables, toCopy.bindings);
@@ -21,11 +24,17 @@ public class VariableBindings {
 
     public VariableBindings(Set<Node> variables) {
         this.bindings = new HashMap<>();
-        this.variables = new HashSet<>(variables);
+        this.variables = Collections.unmodifiableSet(new HashSet<>(variables));
+        this.blankNodeVariables = this.variables.stream().filter(Node::isBlank).collect(Collectors.toUnmodifiableSet());
+        this.nonBlankVariables = this.variables.stream().filter(not(Node::isBlank))
+                        .collect(Collectors.toUnmodifiableSet());
     }
 
     public VariableBindings(Set<Node> variables, Set<VariableBinding> fromBindings) {
         this.variables = new HashSet<>(variables);
+        this.blankNodeVariables = this.variables.stream().filter(Node::isBlank).collect(Collectors.toUnmodifiableSet());
+        this.nonBlankVariables = this.variables.stream().filter(not(Node::isBlank))
+                        .collect(Collectors.toUnmodifiableSet());
         setAll(fromBindings);
         if (isInvariantViolated()) {
             throw new IllegalArgumentException("invariant violated by bindings " + bindings);
@@ -40,7 +49,7 @@ public class VariableBindings {
                                                         VariableBinding::getBoundNode));
         if (!variables.containsAll(bindings.keySet())) {
             throw new IllegalArgumentException(
-                            "One or more variables are unknown among in specified bindings: " + bindings.keySet()
+                            "One or more variables are unknown in specified bindings: " + bindings.keySet()
                                             .stream().filter(v -> !variables.contains(v)).map(Object::toString)
                                             .collect(joining(" ,")));
         }
@@ -58,6 +67,9 @@ public class VariableBindings {
 
     public VariableBindings(Set<Node> variables, Map<Node, Node> bindings) {
         this.variables = new HashSet<>(variables);
+        this.blankNodeVariables = this.variables.stream().filter(Node::isBlank).collect(Collectors.toUnmodifiableSet());
+        this.nonBlankVariables = this.variables.stream().filter(not(Node::isBlank))
+                        .collect(Collectors.toUnmodifiableSet());
         this.bindings = new HashMap<>(bindings);
         if (isInvariantViolated()) {
             throw new IllegalArgumentException("invariant violated by bindings " + bindings);
@@ -65,7 +77,8 @@ public class VariableBindings {
     }
 
     /**
-     * Returns the bindings as a Set of {@link VariableBinding}, including bindings to bl:unbound.
+     * Returns the bindings as a Set of {@link VariableBinding}, including bindings
+     * to bl:unbound.
      *
      * @return
      */
@@ -84,8 +97,8 @@ public class VariableBindings {
     }
 
     /**
-     * Adds the new binding if it is possible (if the node is a yet undecided variable and adding the binding
-     * does not violate the invariant.
+     * Adds the new binding if it is possible (if the node is a yet undecided
+     * variable and adding the binding does not violate the invariant.
      *
      * @param node
      * @param newlyBoundNode
@@ -113,9 +126,27 @@ public class VariableBindings {
      */
     private boolean isInvariantViolated() {
         return
-                        !variables.containsAll(bindings.keySet()) ||
-                                        bindings.entrySet().stream().anyMatch(e -> e.getKey().equals(e.getValue())) ||
-                                        !bindings.keySet().stream().allMatch(this::isValidReferenceChainLength);
+        // all keys in bindings map must be in variables set
+        !variables.containsAll(bindings.keySet())
+                        // no variable may be bound to itself
+                        || bindings.entrySet().stream().anyMatch(e -> e.getKey().equals(e.getValue()))
+                        // no reference chains longer than 2
+                        || !bindings.keySet().stream().allMatch(this::isValidReferenceChainLength)
+                        // no blank node variables bound to non-blank variables (except blank ->
+                        // bl:unbound)
+                        || bindings.entrySet().stream()
+                                        .anyMatch(e -> e.getKey().isBlank() != e.getValue().isBlank()
+                                                        && !e.getValue().equals(BLEND.unbound))
+                        // blank node vars cannot be bound to explicitly unbound blank node vars.
+                        // the same configuration is ok for non-blank vars because it reduces
+                        // the degrees of freedom. for blank nodes, though, unbound means the blanks
+                        // are rendered as-is so this configuration raises the degrees of freedom
+                        // e.g.: b1 -> b2 -> blank; b2 -> b1 -> blank; b1 -> blank, b2 -> blank
+                        // is three equivalent solutions instead of one
+                        || bindings.entrySet().stream()
+                                        .anyMatch(e -> e.getKey().isBlank()
+                                                        && e.getValue().isBlank()
+                                                        && dereferenceIfVariable(e.getKey()).isEmpty());
     }
 
     public int size() {
@@ -132,18 +163,41 @@ public class VariableBindings {
     }
 
     /**
+     * Returns the number of non-blank node variables bound to anything but
+     * bl:unbound.
+     *
+     * @return
+     */
+    public int sizeNonBlankExcludingExplicitlyUnbound() {
+        return (int) bindings.entrySet().stream()
+                        .filter(e -> !(e.getKey().isBlank() || e.getValue().equals(BLEND.unbound))).count();
+    }
+
+    /**
      * Returns all variables that are bound to anything but bl:unbound.
      *
      * @return
      */
     public Set<Node> getBoundVariables() {
-        return bindings.entrySet().stream().filter(e -> !e.getValue().equals(BLEND.unbound)).map(Map.Entry::getKey)
-                        .collect(
-                                        Collectors.toSet());
+        return bindings.entrySet().stream()
+                        .filter(e -> !e.getValue().equals(BLEND.unbound))
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toSet());
+    }
+
+    public Set<Node> getBoundNonBlankVariables() {
+        return bindings.entrySet().stream()
+                        .filter(e -> !(e.getKey().isBlank() || e.getValue().equals(BLEND.unbound)))
+                        .map(Map.Entry::getKey)
+                        .collect(Collectors.toSet());
     }
 
     public boolean isVariable(Node variable) {
         return variables.contains(variable);
+    }
+
+    public boolean isNonBlankVariable(Node variable) {
+        return nonBlankVariables.contains(variable);
     }
 
     /**
@@ -161,8 +215,9 @@ public class VariableBindings {
     }
 
     /**
-     * Returns an Optional of the {@link Node} the specified <code>variable</code> is bound to. If the specified
-     * <code>variable</code> is not a variable or not bound, or bound to <code>bl:unbound</code>, the optional is empty.
+     * Returns an Optional of the {@link Node} the specified <code>variable</code>
+     * is bound to. If the specified <code>variable</code> is not a variable or not
+     * bound, or bound to <code>bl:unbound</code>, the optional is empty.
      *
      * @param variable
      */
@@ -230,7 +285,8 @@ public class VariableBindings {
                         .collect(Collectors.toList());
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -239,7 +295,8 @@ public class VariableBindings {
         return bindings.equals(that.bindings) && variables.equals(that.variables);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(bindings, variables);
     }
 
@@ -280,7 +337,8 @@ public class VariableBindings {
         return new VariableBindings(variables, mergedBindings);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return bindings.entrySet().stream().map(e -> e.getKey() + "->" + e.getValue())
                         .collect(Collectors.joining(", "));
     }
@@ -298,7 +356,8 @@ public class VariableBindings {
     }
 
     /**
-     * Returns true if there are no more variables left to bind (but some may be bound to bl:unbound).
+     * Returns true if there are no more variables or blank nodes left to bind (but
+     * some may be bound to bl:unbound).
      *
      * @return
      */
@@ -307,7 +366,8 @@ public class VariableBindings {
     }
 
     /**
-     * Returns true iff all variables are bound to anything but bl:unbound.
+     * Returns true iff all variables (non-blank) are bound to anything but
+     * bl:unbound.
      *
      * @return
      */
@@ -317,6 +377,15 @@ public class VariableBindings {
                         .map(e -> e.getKey())
                         .collect(Collectors.toSet())
                         .containsAll(this.variables);
+    }
+
+    public boolean isAllNonBlankVariablesBound() {
+        return bindings.entrySet().stream()
+                        .filter(e -> !e.getValue().equals(BLEND.unbound))
+                        .filter(e -> !e.getValue().isBlank())
+                        .map(e -> e.getKey())
+                        .collect(Collectors.toSet())
+                        .containsAll(this.nonBlankVariables);
     }
 
     /**
@@ -334,12 +403,30 @@ public class VariableBindings {
     }
 
     /**
-     * Returns true if the variable is not bound and not bound to bl:unbound.
+     * Returns true if the variable is not bound or bound to bl:unbound.
      *
      * @param variable
      * @return
      */
     public boolean isBoundVariable(Node variable) {
+        Node boundNode = bindings.get(variable);
+        if (boundNode == null) {
+            return false;
+        }
+        return !BLEND.unbound.equals(boundNode);
+    }
+
+    /**
+     * Returns true if the variable is not a blank node and not bound or bound to
+     * bl:unbound.
+     *
+     * @param variable
+     * @return
+     */
+    public boolean isBoundNonBlankVariable(Node variable) {
+        if (variable.isBlank()) {
+            return false;
+        }
         Node boundNode = bindings.get(variable);
         if (boundNode == null) {
             return false;
@@ -370,6 +457,20 @@ public class VariableBindings {
                         .collect(Collectors.toSet());
     }
 
+    public Set<Node> getUnboundNonBlankVariables() {
+        return nonBlankVariables.stream()
+                        .filter(v -> bindings.getOrDefault(v, BLEND.unbound).equals(BLEND.unbound))
+                        .collect(Collectors.toSet());
+    }
+
+    public Set<Node> getExplicitlyUnboundNonBlankVariables() {
+        return bindings.entrySet().stream()
+                        .filter(e -> e.getValue().equals(BLEND.unbound))
+                        .map(Map.Entry::getKey)
+                        .filter(not(Node::isBlank))
+                        .collect(Collectors.toSet());
+    }
+
     /**
      * Returns the node the variable is bound to, unless it is bl:unbound.
      *
@@ -394,6 +495,13 @@ public class VariableBindings {
                         .stream()
                         .filter(e -> !isVariable(e.getValue()) && !BLEND.unbound.equals(e.getValue()))
                         .map(Map.Entry::getKey)
+                        .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public Set<Node> getVariablesBoundToNode(Node node) {
+        return variables.stream()
+                        .filter(var -> dereferenceIfVariable(var).map(boundNode -> node.equals(boundNode))
+                                        .orElse(false))
                         .collect(Collectors.toUnmodifiableSet());
     }
 }

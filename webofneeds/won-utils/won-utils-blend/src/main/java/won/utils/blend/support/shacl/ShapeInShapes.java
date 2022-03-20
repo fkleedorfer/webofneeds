@@ -20,7 +20,7 @@ public class ShapeInShapes {
         return shapes;
     }
 
-    public Shape getShape(){
+    public Shape getShape() {
         return shapes.getShape(shapeNode);
     }
 

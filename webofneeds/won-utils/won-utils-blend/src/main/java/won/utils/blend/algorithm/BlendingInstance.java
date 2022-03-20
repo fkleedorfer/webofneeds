@@ -56,31 +56,33 @@ public class BlendingInstance {
         return candidateShapes;
     }
 
-    private static Map<Node, Set<ShapeInShapes>> collectCandidateShapes(Template template, Map<Node, Graph> backgroundShapeGraphs, Map<Node, ShapeInShapes> parsedCandidateShapes){
+    private static Map<Node, Set<ShapeInShapes>> collectCandidateShapes(Template template,
+                    Map<Node, Graph> backgroundShapeGraphs, Map<Node, ShapeInShapes> parsedCandidateShapes) {
         Map<Node, Set<ShapeInShapes>> variablesToCandidateShapes = new HashMap<>();
-        for (Node variable: template.getVariables()) {
+        for (Node variable : template.getVariables()) {
             Set<ShapeInShapes> candidateShapes = new HashSet<>();
-            Set<Node> candidateShapeNodes = G.allSP(template.getTemplateGraphs().getBlendingConfigGraph(), variable, BLEND.candidateShape);
-            for (Node shapeNode: candidateShapeNodes) {
+            Set<Node> candidateShapeNodes = G.allSP(template.getTemplateGraphs().getBlendingConfigGraph(), variable,
+                            BLEND.candidateShape);
+            for (Node shapeNode : candidateShapeNodes) {
                 ShapeInShapes candidateShape = parsedCandidateShapes.get(shapeNode);
                 if (candidateShape == null) {
                     Graph shapeGraph = template.getShapeGraphs().get(shapeNode);
                     if (shapeGraph == null) {
                         shapeGraph = backgroundShapeGraphs.get(shapeNode);
                     }
-                    if (shapeGraph == null){
+                    if (shapeGraph == null) {
                         throw new IllegalArgumentException("Shape not found: " + shapeNode);
                     }
                     shapeGraph.delete(shapeNode, SHACL.deactivated,
                                     NodeFactory.createLiteralByValue(true, XSDDatatype.XSDboolean));
                     Shapes shapes = Shapes.parse(shapeGraph);
                     candidateShape = new ShapeInShapes(shapes, shapeNode);
-                    if (candidateShape == null){
+                    if (candidateShape == null) {
                         throw new IllegalStateException("No shape found after parsing: " + shapeNode);
                     }
                     parsedCandidateShapes.put(shapeNode, candidateShape);
                 }
-                if (candidateShape.getShape().deactivated()){
+                if (candidateShape.getShape().deactivated()) {
                     throw new IllegalStateException("Shape must not be deactivated: " + candidateShape);
                 }
                 candidateShapes.add(candidateShape);

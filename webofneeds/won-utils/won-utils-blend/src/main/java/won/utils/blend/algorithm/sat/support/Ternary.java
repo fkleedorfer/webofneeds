@@ -6,7 +6,6 @@ public enum Ternary {
         return this == TRUE;
     }
 
-
     public boolean isFalse() {
         return this == FALSE;
     }
@@ -19,7 +18,7 @@ public enum Ternary {
         return isTrue() || isUnknown();
     }
 
-    public boolean isFalseOrUnknown(){
+    public boolean isFalseOrUnknown() {
         return isFalse() || isUnknown();
     }
 

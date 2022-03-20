@@ -68,14 +68,13 @@ public class Blender {
     public Stream<TemplateGraphs> blendToTemplateGraphs(
                     Template leftTemplate, Template rightTemplate, BlendingOptions blendingOptions) {
         // one way of doing it - probably not the right one...
-        //leftTemplate = blendingOperations.replaceBlankNodesWithVariables(leftTemplate);
-        //rightTemplate = blendingOperations.replaceBlankNodesWithVariables(rightTemplate);
+        // leftTemplate =
+        // blendingOperations.replaceBlankNodesWithVariables(leftTemplate);
+        // rightTemplate =
+        // blendingOperations.replaceBlankNodesWithVariables(rightTemplate);
         RDFDataMgr.write(System.err, new TemplateIO().toDatasetGraph(Set.of(leftTemplate)), Lang.TRIG);
         RDFDataMgr.write(System.err, new TemplateIO().toDatasetGraph(Set.of(rightTemplate)), Lang.TRIG);
-
         return blendingAlgorithm.blend(new BlendingInstance(blendingOperations, blendingBackground, leftTemplate,
                         rightTemplate, blendingOptions));
     }
-
-
 }

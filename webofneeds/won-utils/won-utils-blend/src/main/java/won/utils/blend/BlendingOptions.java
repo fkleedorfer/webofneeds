@@ -21,7 +21,8 @@ public class BlendingOptions {
         this.variableBindingFilter = null;
     }
 
-    public BlendingOptions(UnboundHandlingMode unboundHandlingMode, boolean omitBindingSubsets, boolean inferDependentVariableBindings,
+    public BlendingOptions(UnboundHandlingMode unboundHandlingMode, boolean omitBindingSubsets,
+                    boolean inferDependentVariableBindings,
                     TemplateBindingsFilter templateBindingsFilter,
                     VariableBindingFilter variableBindingFilter) {
         this.unboundHandlingMode = unboundHandlingMode;

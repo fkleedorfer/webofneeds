@@ -16,12 +16,12 @@ public class CompactVariables {
         this.compactBindingsManager = compactBindingsManager;
     }
 
-    public Set<Node> getVariables(){
+    public Set<Node> getVariables() {
         return this.compactBindingsManager.getVariables(variables);
     }
 
     public CompactVariables mergeWith(CompactVariables other) {
-        if (this.compactBindingsManager == other.compactBindingsManager){
+        if (this.compactBindingsManager == other.compactBindingsManager) {
             int[] merged = ArrayUtils.mergeArrays(this.variables, other.variables);
             return new CompactVariables(merged, compactBindingsManager);
         } else {
@@ -35,7 +35,8 @@ public class CompactVariables {
         return this.compactBindingsManager.equals(manager);
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -44,7 +45,8 @@ public class CompactVariables {
         return Arrays.equals(variables, that.variables) && compactBindingsManager.equals(that.compactBindingsManager);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = Objects.hash(compactBindingsManager);
         result = 31 * result + Arrays.hashCode(variables);
         return result;
@@ -54,7 +56,8 @@ public class CompactVariables {
         return variables.length;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return getVariables().toString();
     }
 

@@ -32,24 +32,29 @@ public class BlendingOperations {
         Graph blendingConfig = copyMergeGraphs(left.getBlendingConfigGraph(), right.getBlendingConfigGraph());
         Graph fixedBindings = copyMergeGraphs(left.getBindingsGraph(), right.getBindingsGraph());
         for (VariableBinding binding : bindings.getBindings().getBindingsAsSet()) {
+            if (binding.getVariable().isBlank() || binding.getBoundNode().isBlank()) {
+                continue;
+            }
             fixedBindings.add(new Triple(binding.getVariable(), BLEND.boundTo, binding.getBoundNode()));
         }
         Graph shapes = copyMergeGraphs(left.getShapesGraph(), right.getShapesGraph());
         return templateIO.fromGraphs(data, blendingConfig, fixedBindings, shapes);
     }
 
-    public Template replaceBlankNodesWithVariables(Template template){
+    public Template replaceBlankNodesWithVariables(Template template) {
         Graph targetDataGraph = GraphFactory.createGraphMem();
-        targetDataGraph.getPrefixMapping().setNsPrefixes(template.getTemplateGraphs().getDataGraph().getPrefixMapping());
+        targetDataGraph.getPrefixMapping()
+                        .setNsPrefixes(template.getTemplateGraphs().getDataGraph().getPrefixMapping());
         Graph targetConfigGraph = GraphFactory.createGraphMem();
-        targetConfigGraph.getPrefixMapping().setNsPrefixes(template.getTemplateGraphs().getBlendingConfigGraph().getPrefixMapping());
+        targetConfigGraph.getPrefixMapping()
+                        .setNsPrefixes(template.getTemplateGraphs().getBlendingConfigGraph().getPrefixMapping());
         Map<Node, Node> blankNodeToVariable = new HashMap<>();
         int varInd = 0;
         Set<Triple> newConfigTriples = new HashSet<>();
         Set<Triple> newDataTriples = new HashSet<>();
         Graph dataGraph = template.getTemplateGraphs().getDataGraph();
         ExtendedIterator<Triple> it = dataGraph.find();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             Triple t = it.next();
             Node obj = t.getObject();
             Node subj = t.getSubject();
@@ -65,7 +70,7 @@ public class BlendingOperations {
                     targetConfigGraph.add(new Triple(newSubject, RDF.type.asNode(), BLEND.BlankNodeVariable));
                 }
             }
-            if (obj.isBlank()){
+            if (obj.isBlank()) {
                 newObject = blankNodeToVariable.get(obj);
                 if (newObject == null) {
                     newObject = templateIO.createURNUUID();
@@ -82,7 +87,8 @@ public class BlendingOperations {
             }
         }
         template.getTemplateGraphs().getBlendingConfigGraph().stream().forEach(targetConfigGraph::add);
-        return new Template(template.getTemplateGraphs().replaceDataGraph(targetDataGraph).replaceBlendingConfigGraph(targetConfigGraph));
+        return new Template(template.getTemplateGraphs().replaceDataGraph(targetDataGraph)
+                        .replaceBlendingConfigGraph(targetConfigGraph));
     }
 
     private Graph copyMergeGraphs(Graph left, Graph right) {
@@ -142,5 +148,4 @@ public class BlendingOperations {
         }
         return node;
     }
-
 }

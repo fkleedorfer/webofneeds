@@ -51,9 +51,15 @@ public class BindingResultStatsAccumulator {
         return result
                         .stream()
                         .map(blendingResult -> new TemplateStats(blendingResult.getTemplateGraphs().getTemplateNode(),
-                                        new BindingStats(blendingResult.getFixedBindings().getUnboundVariables().size(),
-                                                        blendingResult.getFixedBindings().getVariablesBoundToConstants().size(),
-                                                        blendingResult.getFixedBindings().getVariablesBoundToVariables().size())))
+                                        new BindingStats(
+                                                        blendingResult.getFixedBindings().getUnboundNonBlankVariables()
+                                                                        .size(),
+                                                        (int) blendingResult.getFixedBindings()
+                                                                        .getVariablesBoundToConstants().stream()
+                                                                        .filter(Node::isBlank).count(),
+                                                        (int) blendingResult.getFixedBindings()
+                                                                        .getVariablesBoundToVariables().stream()
+                                                                        .filter(Node::isBlank).count())))
                         .collect(Collectors
                                         .groupingBy(s -> s.bindingStats,
                                                         Collectors.mapping(TemplateStats::getTemplateNode,

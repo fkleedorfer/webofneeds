@@ -6,7 +6,8 @@ import won.utils.blend.algorithm.support.bindings.CompactBindingsManager;
 import java.util.stream.Collectors;
 
 public class DefaultSearchNodeFormatter implements SearchNodeFormatter {
-    @Override public String format(SearchNode searchNode, CompactBindingsManager bindingsManager) {
+    @Override
+    public String format(SearchNode searchNode, CompactBindingsManager bindingsManager) {
         StringBuilder sb = new StringBuilder();
         sb
                         .append("valid: ").append(searchNode.valid)

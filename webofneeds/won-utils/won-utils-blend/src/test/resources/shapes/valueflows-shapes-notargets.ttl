@@ -333,6 +333,10 @@ ex:resourceDiffersFromToResourceShape
 
 :QuantityNodeShape
     a           sh:NodeShape ;
+    sh:property [ sh:path [ sh:inversePath [ sh:alternativePath  ( vf:onhandQuantity vf:accountingQuantity vf:resourceQuantity vf:effortQuantity ) ] ] ;
+                  sh:maxCount 1;
+                  sh:minCount 1;
+                ] ;
     sh:property [ sh:path     om2:hasUnit ;
                   sh:class om2:Unit ;
                   sh:minCount 1 ;

@@ -19,7 +19,8 @@ public class SearchNode implements Comparable<SearchNode> {
     public final Ternary valid;
     public final Ternary globallyValid;
 
-    public SearchNode(Set<Shape> shapes, Set<Node> focusNodes, CompactVariableBindings bindings, CompactVariables encounteredVariables,
+    public SearchNode(Set<Shape> shapes, Set<Node> focusNodes, CompactVariableBindings bindings,
+                    CompactVariables encounteredVariables,
                     Ternary valid, Ternary globallyValid) {
         this.shapes = shapes;
         this.focusNodes = focusNodes;
@@ -41,13 +42,14 @@ public class SearchNode implements Comparable<SearchNode> {
             if (bindings == null) {
                 bindings = bindingValidationResults[i].bindings;
             } else if (!bindings.equals(bindingValidationResults[i].bindings)) {
-                throw new IllegalArgumentException("Cannot make SearchNode of multiple BindingValidationResults with different bindings");
+                throw new IllegalArgumentException(
+                                "Cannot make SearchNode of multiple BindingValidationResults with different bindings");
             }
             if (valid == null) {
                 valid = bindingValidationResults[i].valid;
             }
             Ternary currentValid = bindingValidationResults[i].valid;
-            if (!bindingValidationResults[i].encounteredVariables.isEmpty()){
+            if (!bindingValidationResults[i].encounteredVariables.isEmpty()) {
                 currentValid = Ternary.UNKNOWN;
             }
             valid = valid.and(currentValid);
@@ -59,7 +61,7 @@ public class SearchNode implements Comparable<SearchNode> {
             shapes.add(bindingValidationResults[i].shape);
             encounteredVariables.addAll(bindingValidationResults[i].encounteredVariables);
         }
-        if (valid.isFalse()){
+        if (valid.isFalse()) {
             return Optional.empty();
         }
         return Optional.of(new SearchNode(
@@ -75,23 +77,23 @@ public class SearchNode implements Comparable<SearchNode> {
         return new SearchNode(shapes, focusNodes, bindings, encounteredVariables, valid, Ternary.of(globallyValid));
     }
 
-    public Optional<SearchNode> merge (SearchNode other) {
-        if (!bindings.equals(other.bindings)){
+    public Optional<SearchNode> merge(SearchNode other) {
+        if (!bindings.equals(other.bindings)) {
             return Optional.empty();
         }
         return Optional.ofNullable(combine(other));
     }
 
-    public Optional<SearchNode> join (SearchNode other) {
-        if (!bindings.overlapsWith(other.bindings)){
+    public Optional<SearchNode> join(SearchNode other) {
+        if (!bindings.overlapsWith(other.bindings)) {
             return Optional.empty();
         }
         SearchNode sn = combine(other);
         return Optional.ofNullable(sn);
     }
 
-    public Optional<SearchNode> outerJoin(SearchNode other){
-        if (bindings.conflictsWith(other.bindings) ){
+    public Optional<SearchNode> outerJoin(SearchNode other) {
+        if (bindings.conflictsWith(other.bindings)) {
             return Optional.empty();
         }
         SearchNode sn = combine(other);
@@ -104,7 +106,8 @@ public class SearchNode implements Comparable<SearchNode> {
         Set<Node> mergedFocusNodes = new HashSet<>(focusNodes);
         mergedFocusNodes.addAll(other.focusNodes);
         CompactVariableBindings mergedBindings = bindings.mergeWith(other.bindings);
-        CompactVariables mergedEncounteredVariables = encounteredVariables.mergeWith(other.encounteredVariables).removeIfBound(mergedBindings);
+        CompactVariables mergedEncounteredVariables = encounteredVariables.mergeWith(other.encounteredVariables)
+                        .removeIfBound(mergedBindings);
         Ternary mergedValid = Ternary.UNKNOWN;
         Ternary mergedGloballyValid = Ternary.UNKNOWN;
         return new SearchNode(mergedShapes,
@@ -120,7 +123,8 @@ public class SearchNode implements Comparable<SearchNode> {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        return shapes.equals(o.shapes) && bindings.equals(o.bindings) && encounteredVariables.equals(o.encounteredVariables);
+        return shapes.equals(o.shapes) && bindings.equals(o.bindings)
+                        && encounteredVariables.equals(o.encounteredVariables);
     }
 
     @Override
@@ -130,11 +134,13 @@ public class SearchNode implements Comparable<SearchNode> {
         if (o == null || getClass() != o.getClass())
             return false;
         SearchNode that = (SearchNode) o;
-        return shapes.equals(that.shapes) && bindings.equals(that.bindings) && encounteredVariables.equals(that.encounteredVariables)
+        return shapes.equals(that.shapes) && bindings.equals(that.bindings)
+                        && encounteredVariables.equals(that.encounteredVariables)
                         && valid == that.valid && globallyValid == that.globallyValid;
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         int result = Objects.hash(shapes, valid, globallyValid);
         result = 31 * result + bindings.hashCode();
         result = 31 * result + encounteredVariables.hashCode();
@@ -146,7 +152,7 @@ public class SearchNode implements Comparable<SearchNode> {
         if (this.equals(o)) {
             return 0;
         }
-         int   cmp = 0;
+        int cmp = 0;
         if (cmp == 0) {
             cmp = this.globallyValid.compareTo(o.globallyValid);
         }
@@ -165,8 +171,8 @@ public class SearchNode implements Comparable<SearchNode> {
         return cmp;
     }
 
-
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "SearchNode{" +
                         "bindings=" + bindings.toString() +
                         ", encounteredVariables=" + encounteredVariables.toString() +

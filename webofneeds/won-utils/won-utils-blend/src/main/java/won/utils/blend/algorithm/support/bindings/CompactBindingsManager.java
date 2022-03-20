@@ -25,8 +25,8 @@ public class CompactBindingsManager {
         Set<VariableBinding> newAdmissibleBindings = new HashSet<>(admissibleBindingsSortedByVariable);
         newAdmissibleBindings.removeAll(toRemove);
         Set<Node> newVariables = newAdmissibleBindings.stream().map(b -> b.getVariable()).collect(Collectors.toSet());
-        for(Node oldVariable: variables) {
-            if (!newVariables.contains(oldVariable)){
+        for (Node oldVariable : variables) {
+            if (!newVariables.contains(oldVariable)) {
                 newAdmissibleBindings.add(new VariableBinding(oldVariable, BLEND.unbound));
             }
         }
@@ -321,22 +321,23 @@ public class CompactBindingsManager {
      * @return
      */
     public int getIndexOfVariable(Node variableNode) {
-        for (int i = 0; i< variables.length; i++) {
-            if (variables[i].equals(variableNode)){
+        for (int i = 0; i < variables.length; i++) {
+            if (variables[i].equals(variableNode)) {
                 return i;
             }
         }
-        throw new IllegalArgumentException(String.format("Specified variable %s not in variables %s", variableNode, Arrays.toString(variables)));
+        throw new IllegalArgumentException(String.format("Specified variable %s not in variables %s", variableNode,
+                        Arrays.toString(variables)));
     }
 
-    public CompactVariables getCompactVariables(Collection<Node> variableNodes){
+    public CompactVariables getCompactVariables(Collection<Node> variableNodes) {
         return new CompactVariables(getIndicesOfVariables(variableNodes), this);
     }
 
     private int[] getIndicesOfVariables(Collection<Node> variableNodes) {
         int[] indices = new int[variableNodes.size()];
         int i = 0;
-        for (Node variableNode: variableNodes) {
+        for (Node variableNode : variableNodes) {
             indices[i++] = getIndexOfVariable(variableNode);
         }
         return indices;
@@ -358,7 +359,7 @@ public class CompactBindingsManager {
         return bindings[varIndex] > 0;
     }
 
-    public Set<Node> getVariables(){
+    public Set<Node> getVariables() {
         return Arrays.stream(variables).collect(Collectors.toSet());
     }
 
@@ -372,6 +373,7 @@ public class CompactBindingsManager {
 
     /**
      * Returns true iff the bindings overlap but are not the same.
+     * 
      * @param leftBindings
      * @param rightBindings
      * @return
@@ -385,11 +387,11 @@ public class CompactBindingsManager {
         for (int i = 0; i < leftBindings.length; i++) {
             int left = leftBindings[i];
             int right = rightBindings[i];
-            if (left != right){
+            if (left != right) {
                 if (left == 0 || right == 0) {
                     valuesDistinct = true;
                 } else {
-                    return false; //conflict - neither left nor right are 0 but different
+                    return false; // conflict - neither left nor right are 0 but different
                 }
             } else if (left != 0) {
                 valuesShared = true;
@@ -412,9 +414,8 @@ public class CompactBindingsManager {
         return false;
     }
 
-
     public boolean isAllUnbound(int[] bindings) {
-        for (int i = 0; i < bindings.length; i++ ){
+        for (int i = 0; i < bindings.length; i++) {
             if (bindings[i] > 0) {
                 return false;
             }
@@ -424,7 +425,7 @@ public class CompactBindingsManager {
 
     public boolean isAnyVariableBound(int[] bindings, int[] variables) {
         for (int i = 0; i < variables.length; i++) {
-            if (bindings[variables[i]] > 0 ){
+            if (bindings[variables[i]] > 0) {
                 return true;
             }
         }
@@ -471,8 +472,9 @@ public class CompactBindingsManager {
     }
 
     public boolean isAdmissibleVariableBindings(CompactVariableBindings bindings) {
-        return this.admissibleBindingsSortedByVariable.containsAll(bindings.getBindingsAsSet().stream().filter(b -> !b.getBoundNode().equals(BLEND.unbound)).collect(
-                        Collectors.toSet()));
+        return this.admissibleBindingsSortedByVariable.containsAll(bindings.getBindingsAsSet().stream()
+                        .filter(b -> !b.getBoundNode().equals(BLEND.unbound)).collect(
+                                        Collectors.toSet()));
     }
 
     public boolean isAdmissibleVariables(CompactVariables variables) {
@@ -480,21 +482,22 @@ public class CompactBindingsManager {
         return Arrays.stream(this.variables).collect(Collectors.toSet()).containsAll(vars);
     }
 
-    public CompactVariableBindings withThisManager(CompactVariableBindings bindings){
-        if (bindings.hasManager(this)){
+    public CompactVariableBindings withThisManager(CompactVariableBindings bindings) {
+        if (bindings.hasManager(this)) {
             return bindings;
         }
         return fromBindings(bindings.getBindingsAsSet());
     }
 
-    public CompactVariables withThisManager(CompactVariables variables){
-        if (variables.hasManager(this)){
+    public CompactVariables withThisManager(CompactVariables variables) {
+        if (variables.hasManager(this)) {
             return variables;
         }
         return getCompactVariables(variables.getVariables());
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -503,7 +506,8 @@ public class CompactBindingsManager {
         return admissibleBindingsSortedByVariable.equals(that.admissibleBindingsSortedByVariable);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(admissibleBindingsSortedByVariable);
     }
 

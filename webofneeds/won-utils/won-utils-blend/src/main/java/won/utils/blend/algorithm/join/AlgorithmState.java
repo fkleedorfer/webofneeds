@@ -36,7 +36,8 @@ public class AlgorithmState {
     public final Set<Node> boundVariablesInResult = new HashSet<>();
     public final Set<Node> unboundVariablesInResult = new HashSet<>();
 
-    public AlgorithmState(BlendingInstance instance, Shapes shapes, Set<VariableBinding> allBindings, VariableBindings initialBindings,
+    public AlgorithmState(BlendingInstance instance, Shapes shapes, Set<VariableBinding> allBindings,
+                    VariableBindings initialBindings,
                     Verbosity verbosity) {
         this.blendingInstance = instance;
         this.shapes = shapes;
@@ -48,15 +49,12 @@ public class AlgorithmState {
         this.bindingOptionsProvider = new CachingBindingOptionsProvider(new InstanceBindingOptionProvider(instance));
     }
 
-
-
     public static enum Verbosity {
         ERROR, INFO, DEBUG, TRACE, FINER_TRACE;
     }
 
     public class Log {
-
-        public <R> R logIndented(Supplier<R> supplier){
+        public <R> R logIndented(Supplier<R> supplier) {
             debugWriter.incIndent();
             try {
                 return supplier.get();
@@ -78,39 +76,39 @@ public class AlgorithmState {
             return verbosity.compareTo(AlgorithmState.this.verbosity) <= 0;
         }
 
-        private void log(Verbosity messageVerbosity, Supplier<String> messageSupplier){
+        private void log(Verbosity messageVerbosity, Supplier<String> messageSupplier) {
             if (messageVerbosity.compareTo(verbosity) <= 0) {
                 debugWriter.println(messageSupplier.get());
             }
         }
 
-        private void logFmt(Verbosity messageVerbosity, String format, Object... arguments){
+        private void logFmt(Verbosity messageVerbosity, String format, Object... arguments) {
             if (messageVerbosity.compareTo(verbosity) <= 0) {
                 debugWriter.println(String.format(format, arguments));
             }
         }
 
-        public void debug(Supplier<String> messageSupplier){
+        public void debug(Supplier<String> messageSupplier) {
             log(Verbosity.DEBUG, messageSupplier);
         }
 
-        public void debugFmt(String format, Object... arguments){
+        public void debugFmt(String format, Object... arguments) {
             logFmt(Verbosity.DEBUG, format, arguments);
         }
 
-        public void trace(Supplier<String> messageSupplier){
+        public void trace(Supplier<String> messageSupplier) {
             log(Verbosity.TRACE, messageSupplier);
         }
 
-        public void traceFmt(String format, Object... arguments){
+        public void traceFmt(String format, Object... arguments) {
             logFmt(Verbosity.TRACE, format, arguments);
         }
 
-        public void finerTrace(Supplier<String> messageSupplier){
+        public void finerTrace(Supplier<String> messageSupplier) {
             log(Verbosity.FINER_TRACE, messageSupplier);
         }
 
-        public void finerTraceFmt(String format, Object... arguments){
+        public void finerTraceFmt(String format, Object... arguments) {
             logFmt(Verbosity.FINER_TRACE, format, arguments);
         }
 
@@ -118,7 +116,7 @@ public class AlgorithmState {
             log(Verbosity.INFO, messageSupplier);
         }
 
-        public void infoFmt(String format, Object... arguments){
+        public void infoFmt(String format, Object... arguments) {
             logFmt(Verbosity.INFO, format, arguments);
         }
 
@@ -126,22 +124,26 @@ public class AlgorithmState {
             log(Verbosity.ERROR, messageSupplier);
         }
 
-        public void errorFmt(String format, Object... arguments){
+        public void errorFmt(String format, Object... arguments) {
             logFmt(Verbosity.ERROR, format, arguments);
         }
 
         public boolean isDebugEnabled() {
             return meetsVerbosity(Verbosity.DEBUG);
         }
+
         public boolean isInfoEnabled() {
             return meetsVerbosity(Verbosity.INFO);
         }
+
         public boolean isTraceEnabled() {
             return meetsVerbosity(Verbosity.TRACE);
         }
+
         public boolean isFinerTraceEnabled() {
             return meetsVerbosity(Verbosity.FINER_TRACE);
         }
+
         public boolean isErrorEnabled() {
             return meetsVerbosity(Verbosity.ERROR);
         }

@@ -88,11 +88,10 @@ public class AStarishBlendingAlgorithm implements BlendingAlgorithm {
             }
             state.debugWriter.decIndent();
         }
-        Set<VariableBindings> resultingBindings =
-                        state.results
-                                        .stream()
-                                        .map(r -> r.bindings.getVariableBindings())
-                                        .collect(Collectors.toSet());
+        Set<VariableBindings> resultingBindings = state.results
+                        .stream()
+                        .map(r -> r.bindings.getVariableBindings())
+                        .collect(Collectors.toSet());
         return generateResults(instance, resultingBindings);
     }
 
@@ -123,7 +122,7 @@ public class AStarishBlendingAlgorithm implements BlendingAlgorithm {
     }
 
     private void saveIntermediateResult(AlgorithmState state, SearchNode node) {
-        for (Node boundNode : node.bindings.getVariableBindings().getDecidedVariables()){
+        for (Node boundNode : node.bindings.getVariableBindings().getDecidedVariables()) {
             state.searchNodesByBoundNode.compute(boundNode, (n, list) -> {
                 if (list == null) {
                     list = new ArrayList<>();
@@ -133,7 +132,6 @@ public class AStarishBlendingAlgorithm implements BlendingAlgorithm {
             });
         }
     }
-
 
     private void acceptResult(AlgorithmState state, SearchNode node) {
         state.log.info(() -> "Result accepted ");

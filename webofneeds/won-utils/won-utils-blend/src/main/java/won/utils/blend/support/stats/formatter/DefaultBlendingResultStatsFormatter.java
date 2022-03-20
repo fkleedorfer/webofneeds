@@ -1,5 +1,6 @@
 package won.utils.blend.support.stats.formatter;
 
+import org.apache.jena.graph.Node;
 import won.utils.blend.support.bindings.VariableBinding;
 import won.utils.blend.support.bindings.VariableBindings;
 import won.utils.blend.support.stats.BlendingResultStats;
@@ -8,6 +9,7 @@ import won.utils.blend.support.stats.comparator.GroupedTemplateStatsComparator;
 import java.util.Comparator;
 import java.util.Set;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
 
 public class DefaultBlendingResultStatsFormatter
@@ -58,24 +60,37 @@ public class DefaultBlendingResultStatsFormatter
                                                                                             ", ")))));
             stringBuilder.append("\nAll resulting bindings:\n")
                             .append("==============\n");
-            blendingResultStats
-                            .allBindings
+            blendingResultStats.allBindings
                             .stream()
                             .sorted(Comparator
-                                            .comparing((VariableBindings x) -> x.getUnboundVariables().size())
-                                            .thenComparing((VariableBindings x) -> x.getVariablesBoundToVariables().size())
-                                            .thenComparing((VariableBindings x) -> x.getVariablesBoundToConstants().size()))
+                                            .comparing((VariableBindings x) -> x.getUnboundNonBlankVariables().size())
+                                            .thenComparing((VariableBindings x) -> x.getVariablesBoundToVariables()
+                                                            .stream().filter(not(
+                                                                            Node::isBlank))
+                                                            .count())
+                                            .thenComparing((VariableBindings x) -> x.getVariablesBoundToConstants()
+                                                            .stream().filter(not(
+                                                                            Node::isBlank))
+                                                            .count()))
                             .forEach(tb -> {
                                 stringBuilder
                                                 .append("    ")
                                                 .append(tb.size())
-                                                .append(String.format(" variable bindings ( %d const, %d var, %d unbound )\n", tb.getVariablesBoundToConstants().size(), tb.getVariablesBoundToVariables().size(), tb.getUnboundVariables().size()));
-                                tb.getBindingsAsSet().stream().map(vb -> String.format("%-50s -> %s\n", vb.getVariable(), vb.getBoundNode()))
+                                                .append(String.format(
+                                                                " variable bindings ( %d const, %d var, %d unbound )\n",
+                                                                tb.getVariablesBoundToConstants().stream().filter(not(
+                                                                                Node::isBlank)).count(),
+                                                                tb.getVariablesBoundToVariables().stream().filter(not(
+                                                                                Node::isBlank)).count(),
+                                                                tb.getUnboundNonBlankVariables().size()));
+                                tb.getBindingsAsSet().stream()
+                                                .map(vb -> String.format("%-50s -> %s\n", vb.getVariable(),
+                                                                vb.getBoundNode()))
                                                 .sorted()
                                                 .forEach(stringBuilder::append);
                             });
             stringBuilder.append("--------------\n");
-            }
+        }
         return stringBuilder.toString();
     }
 

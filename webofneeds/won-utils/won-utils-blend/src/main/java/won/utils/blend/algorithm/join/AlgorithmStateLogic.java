@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toSet;
 
 public abstract class AlgorithmStateLogic {
-
     /**
-     * Returns all shapes for which the required variables are bound in the specified bindings.
+     * Returns all shapes for which the required variables are bound in the
+     * specified bindings.
      *
      * @param state
      * @param bindings
@@ -21,10 +21,11 @@ public abstract class AlgorithmStateLogic {
     public static Set<Shape> getApplicableShapes(AlgorithmState state, VariableBindings bindings) {
         Set<Node> varsToFindShapesFor = new HashSet<>();
         varsToFindShapesFor.addAll(bindings.getBoundVariables());
-        // leaving this line here to remind my future self that we actually do NOT want to
-        // add shapes to validate bound nodes that are variables - they are wildcards that should not be validated.
+        // leaving this line here to remind my future self that we actually do NOT want
+        // to
+        // add shapes to validate bound nodes that are variables - they are wildcards
+        // that should not be validated.
         // varsToFindShapesFor.addAll(bindings.getBoundNodes());
-
         Set<Shape> ret = state.requiredVariablesByShapes.entrySet()
                         .stream()
                         .filter(e -> e.getValue().stream().anyMatch(vars -> varsToFindShapesFor.containsAll(vars)))
@@ -40,11 +41,7 @@ public abstract class AlgorithmStateLogic {
 
     public static boolean addToOpenNodes(AlgorithmState state, SearchNode searchNode) {
         if (searchNode.invalid) {
-            if (state.log.isFinerTraceEnabled()){
-                SearchNodeLogic.recalculateDependentValues(searchNode, state);
-                state.log.finerTrace(() -> "skipping invalid node:");
-                state.log.logIndented(() -> state.log.finerTrace(() -> SearchNodeFormatter.format(state, searchNode)));
-            }
+            state.log.debugFmt("Skipping invalid node. Violated shape: %s", searchNode.invalidShape);
             return false;
         }
         SearchNodeLogic.recalculateDependentValues(searchNode, state);
@@ -56,6 +53,15 @@ public abstract class AlgorithmStateLogic {
             }
             return false;
         }
+        if (state.blendingInstance.blendingOptions.getUnboundHandlingMode().isUnboundAllowedIfNoOtherBinding()) {
+            if (state.results.stream().anyMatch(n -> isAllVariablesBoundOrSubsetUnboundInNode(
+                            searchNode.bindings.getUnboundNonBlankVariables(), n))) {
+                state.log.debug(() -> "skipping node because the unboundHandlingMode only allows an unbound variable "
+                                + "in the result if there is no result in which that variable is bound, "
+                                + "and this node violates the condition");
+                return false;
+            }
+        }
         int sizeBeforeAdd = state.openNodes.size();
         state.openNodes.add(searchNode);
         if (state.openNodes.size() > sizeBeforeAdd) {
@@ -66,7 +72,7 @@ public abstract class AlgorithmStateLogic {
             SearchNodeFormatter formatter = new SearchNodeFormatter(state);
             state.log.debug(() -> "node already in open set, ignoring");
             state.log.logIndented(() -> state.log.debug(() -> formatter.format(searchNode)));
-            if (state.log.isDebugEnabled()){
+            if (state.log.isDebugEnabled()) {
                 state.log.debug(() -> "identical node(s) in open set:");
                 state.openNodes
                                 .stream()
@@ -90,7 +96,7 @@ public abstract class AlgorithmStateLogic {
         toRemove.forEach(node -> removeSearchNode(state, node));
     }
 
-    public static Set retainUnexplored(AlgorithmState state, Set<Node> variables){
+    public static Set retainUnexplored(AlgorithmState state, Set<Node> variables) {
         return variables.stream().filter(var -> isUnexploredVariable(state, var)).collect(toSet());
     }
 
@@ -102,11 +108,11 @@ public abstract class AlgorithmStateLogic {
         return candidates.stream().anyMatch(c -> isUnexploredVariable(state, c));
     }
 
-    public static int countUnexploredVariables(AlgorithmState state, Collection<Node> candidates){
+    public static int countUnexploredVariables(AlgorithmState state, Collection<Node> candidates) {
         return (int) candidates.stream().filter(c -> isUnexploredVariable(state, c)).count();
     }
 
-    public static Set retainExplored(AlgorithmState state, Set<Node> variables){
+    public static Set retainExplored(AlgorithmState state, Set<Node> variables) {
         return variables.stream().filter(var -> isExploredVariable(state, var)).collect(toSet());
     }
 
@@ -118,7 +124,7 @@ public abstract class AlgorithmStateLogic {
         return candidates.stream().anyMatch(c -> isExploredVariable(state, c));
     }
 
-    public static int countExploredVariables(AlgorithmState state, Collection<Node> candidates){
+    public static int countExploredVariables(AlgorithmState state, Collection<Node> candidates) {
         return (int) candidates.stream().filter(c -> isExploredVariable(state, c)).count();
     }
 
@@ -126,31 +132,44 @@ public abstract class AlgorithmStateLogic {
         return state.boundVariablesInResult.stream().anyMatch(varInResult -> unbound.contains(varInResult));
     }
 
-    public static boolean isAllUnboundVariablesBoundInResult(AlgorithmState state, Set<Node> unbound) {
-        return state.results.stream().anyMatch(n -> isAllVariablesBoundInNode(unbound, n));
+    public static boolean isAllUnboundVariablesBoundOrSubsetUnboundInResult(AlgorithmState state, Set<Node> unbound) {
+        return state.results.stream().anyMatch(n -> isAllVariablesBoundOrSubsetUnboundInNode(unbound, n));
     }
 
-    private static boolean isAllVariablesBoundInNode(Set<Node> unbound, SearchNode n) {
-        if (unbound.isEmpty()){
+    private static boolean isAllVariablesBoundOrSubsetUnboundInNode(Set<Node> unbound, SearchNode n) {
+        if (unbound.isEmpty()) {
             return false;
         }
-        return n.bindings.getBoundVariables().containsAll(unbound);
+        Set<Node> boundInNode = n.bindings.getBoundNonBlankVariables();
+        if (boundInNode.containsAll(unbound)) {
+            return true;
+        }
+        Set<Node> unboundInNode = n.bindings.getUnboundNonBlankVariables();
+        if (unboundInNode.size() < unbound.size() && unbound.containsAll(unboundInNode)) {
+            return true;
+        }
+        return false;
     }
 
     public static void addResult(AlgorithmState state,
                     SearchNode currentNode) {
-        //state.boundVariablesInResult.addAll(currentNode.bindings.getBoundVariables());
-        //state.unboundVariablesInResult.addAll(currentNode.bindings.getUnboundVariables());
+        // state.boundVariablesInResult.addAll(currentNode.bindings.getBoundVariables());
+        // state.unboundVariablesInResult.addAll(currentNode.bindings.getUnboundVariables());
         state.results.add(currentNode);
         if (state.blendingInstance.blendingOptions.getUnboundHandlingMode().isUnboundAllowedIfNoOtherBinding()) {
-            state.results.removeIf(n -> isAllVariablesBoundInNode(n.bindings.getUnboundVariables(), currentNode));
-            state.openNodes.removeIf(n -> isAllVariablesBoundInNode(n.bindings.getExplicitlyUnboundVariables(), currentNode));
+            state.results.removeIf(n -> isAllVariablesBoundOrSubsetUnboundInNode(
+                            n.bindings.getUnboundNonBlankVariables(), currentNode));
+            state.openNodes.removeIf(n -> isAllVariablesBoundOrSubsetUnboundInNode(
+                            n.bindings.getExplicitlyUnboundNonBlankVariables(), currentNode));
         }
-        //if (state.unboundVariablesInResult.stream().anyMatch(var -> state.boundVariablesInResult.contains(var))){
-        //    state.results.removeIf(n -> n.bindings.getUnboundVariables().stream().anyMatch( unbound -> state.boundVariablesInResult.contains(unbound)));
-        //}
-        //state.unboundVariablesInResult.clear();
-        //state.results.forEach(n -> state.unboundVariablesInResult.addAll(n.bindings.getUnboundVariables()));
-
+        // if (state.unboundVariablesInResult.stream().anyMatch(var ->
+        // state.boundVariablesInResult.contains(var))){
+        // state.results.removeIf(n ->
+        // n.bindings.getUnboundVariables().stream().anyMatch( unbound ->
+        // state.boundVariablesInResult.contains(unbound)));
+        // }
+        // state.unboundVariablesInResult.clear();
+        // state.results.forEach(n ->
+        // state.unboundVariablesInResult.addAll(n.bindings.getUnboundVariables()));
     }
 }

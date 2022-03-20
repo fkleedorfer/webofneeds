@@ -9,16 +9,15 @@ import org.apache.jena.util.iterator.ExtendedIterator;
 import org.apache.jena.util.iterator.NiceIterator;
 import org.apache.jena.vocabulary.RDF;
 import won.utils.blend.BLEND;
+import won.utils.blend.support.bindings.ImmutableVariableBindings;
 import won.utils.blend.support.bindings.VariableBinding;
 import won.utils.blend.support.bindings.VariableBindings;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static won.utils.blend.algorithm.sat.shacl.BindingUtils.*;
-
 public class BlendedGraphs extends Union {
-    private Map<Node, Node> bindings;
+    private VariableBindings bindings;
     private final Graph bindingsGraph;
     private final boolean addBindingMetadata;
 
@@ -35,21 +34,26 @@ public class BlendedGraphs extends Union {
 
     public BlendedGraphs(Graph L, Graph R, VariableBindings bindings, boolean addBindingMetadata) {
         super(L, R);
-        this.bindings = new HashMap<>();
-        for (VariableBinding binding : bindings.getBindingsAsSet()) {
-            this.bindings.put(binding.getVariable(), binding.getBoundNode());
-        }
+        this.bindings = new ImmutableVariableBindings(new VariableBindings(bindings));
         this.addBindingMetadata = addBindingMetadata;
         if (this.addBindingMetadata) {
             this.bindingsGraph = GraphFactory.createGraphMem();
-            for (Node variable : this.bindings.keySet()) {
-                Node boundTo = this.bindings.get(variable);
-                if (boundTo.equals(BLEND.unbound)) {
+            for (Node variable : bindings.getVariables()) {
+                Optional<Node> boundTo = this.bindings.dereferenceIfVariable(variable);
+                if (variable.isBlank()) {
                     continue;
                 }
-                bindingsGraph.add(variable, BLEND.boundTo, boundTo);
+                bindingsGraph.add(variable, RDF.type.asNode(), BLEND.Variable);
+                if (boundTo.isPresent()) {
+                    if (boundTo.get().equals(BLEND.unbound)) {
+                        continue;
+                    }
+                    if (boundTo.get().isBlank()) {
+                        continue;
+                    }
+                    bindingsGraph.add(variable, BLEND.boundTo, boundTo.get());
+                }
             }
-            bindings.getVariables().forEach(var -> bindingsGraph.add(var, RDF.type.asNode(), BLEND.Variable));
         } else {
             this.bindingsGraph = null;
         }
@@ -115,9 +119,9 @@ public class BlendedGraphs extends Union {
 
     private Triple blendTriple(Triple t) {
         Triple blended = new Triple(
-                        dereferenceIfVariable(t.getSubject(), bindings),
-                        dereferenceIfVariable(t.getPredicate(), bindings),
-                        dereferenceIfVariable(t.getObject(), bindings));
+                        bindings.dereferenceIfVariable(t.getSubject()).orElse(t.getSubject()),
+                        bindings.dereferenceIfVariable(t.getPredicate()).orElse(t.getPredicate()),
+                        bindings.dereferenceIfVariable(t.getObject()).orElse(t.getObject()));
         return blended;
     }
 
@@ -140,12 +144,11 @@ public class BlendedGraphs extends Union {
         if (node == Node.ANY) {
             return Set.of(node);
         }
-        if (isBoundVariable(node, bindings)){
+        if (bindings.dereferenceIfVariable(node).isPresent()) {
             return Collections.emptySet();
         }
-        Set<Node> nodes = getVariablesBoundToNode(node, bindings);
+        Set<Node> nodes = new HashSet<>(bindings.getVariablesBoundToNode(node));
         nodes.add(node);
         return nodes;
     }
-
 }

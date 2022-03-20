@@ -13,7 +13,8 @@ public class CachingBindingOptionsProvider extends DelegatingBindingOptionsProvi
         super(delegate);
     }
 
-    @Override public Set<Node> apply(Node node) {
+    @Override
+    public Set<Node> apply(Node node) {
         Set<Node> values = cache.get(node);
         if (values == null) {
             values = getDelegate().apply(node);

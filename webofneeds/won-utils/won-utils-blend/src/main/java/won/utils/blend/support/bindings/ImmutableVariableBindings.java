@@ -24,15 +24,18 @@ public class ImmutableVariableBindings extends VariableBindings {
         super(variables, bindings);
     }
 
-    @Override public void setAll(Set<VariableBinding> fromBindings) {
+    @Override
+    public void setAll(Set<VariableBinding> fromBindings) {
         throw new UnsupportedOperationException("Cannot modify: this VariableBindings object is immutable");
     }
 
-    @Override public void setAll(VariableBindings bindings) {
+    @Override
+    public void setAll(VariableBindings bindings) {
         throw new UnsupportedOperationException("Cannot modify: this VariableBindings object is immutable");
     }
 
-    @Override public boolean addBindingIfPossible(Node node, Node newlyBoundNode) {
+    @Override
+    public boolean addBindingIfPossible(Node node, Node newlyBoundNode) {
         throw new UnsupportedOperationException("Cannot modify: this VariableBindings object is immutable");
     }
 }

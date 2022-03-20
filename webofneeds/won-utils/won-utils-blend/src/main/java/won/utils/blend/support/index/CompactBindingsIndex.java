@@ -156,42 +156,47 @@ public class CompactBindingsIndex {
         return sb.toString();
     }
 
-    public long memorySize(){
-        if (root == null){
+    public long memorySize() {
+        if (root == null) {
             return 0;
         }
         final AtomicLong size = new AtomicLong(0);
         IndexNodeVisitor visitor = new IndexNodeVisitor() {
-            @Override public void visit(TerminatorNode node) {
+            @Override
+            public void visit(TerminatorNode node) {
                 size.addAndGet(InstrumentationAgent.getObjectSize(node));
             }
 
-            @Override public void visit(LeafNode node) {
+            @Override
+            public void visit(LeafNode node) {
                 size.addAndGet(InstrumentationAgent.getObjectSize(node));
             }
 
-            @Override public void visit(InnerNode node) {
+            @Override
+            public void visit(InnerNode node) {
                 size.addAndGet(InstrumentationAgent.getObjectSize(node));
-                for(Tuple<Integer, IndexNode> child: node.children){
-                    if (child.getRight() != null){
+                for (Tuple<Integer, IndexNode> child : node.children) {
+                    if (child.getRight() != null) {
                         child.getRight().visit(this);
                     }
                 }
             }
 
-            @Override public void visit(InnerNodeWithCommonArraySequence node) {
+            @Override
+            public void visit(InnerNodeWithCommonArraySequence node) {
                 size.addAndGet(InstrumentationAgent.getObjectSize(node));
-                for(Tuple<Integer, IndexNode> child: node.children){
-                    if (child.getRight() != null){
+                for (Tuple<Integer, IndexNode> child : node.children) {
+                    if (child.getRight() != null) {
                         child.getRight().visit(this);
                     }
                 }
             }
 
-            @Override public void visit(InnerNodeWithCommonZeroSequence node) {
+            @Override
+            public void visit(InnerNodeWithCommonZeroSequence node) {
                 size.addAndGet(InstrumentationAgent.getObjectSize(node));
-                for(Tuple<Integer, IndexNode> child: node.children){
-                    if (child.getRight() != null){
+                for (Tuple<Integer, IndexNode> child : node.children) {
+                    if (child.getRight() != null) {
                         child.getRight().visit(this);
                     }
                 }
@@ -460,32 +465,37 @@ public class CompactBindingsIndex {
     private class ChildrenMap implements Children {
         private Map<Integer, IndexNode> children;
 
-        public ChildrenMap(int numberOfOptions){
+        public ChildrenMap(int numberOfOptions) {
             this.children = new HashMap<>(Math.max(numberOfOptions / 5, 3));
         }
 
-        @Override public IndexNode getChildAtIndex(int index) {
+        @Override
+        public IndexNode getChildAtIndex(int index) {
             return children.get(index);
         }
 
-        @Override public void setChildAtIndex(int index, IndexNode child) {
+        @Override
+        public void setChildAtIndex(int index, IndexNode child) {
             children.put(index, child);
         }
 
-        @Override public void replaceWith(Children toCopy) {
+        @Override
+        public void replaceWith(Children toCopy) {
             children.clear();
-            for(Tuple<Integer, IndexNode> entry: toCopy) {
+            for (Tuple<Integer, IndexNode> entry : toCopy) {
                 if (entry.getRight() != null) {
                     children.put(entry.getLeft(), entry.getRight());
                 }
             }
         }
 
-        @Override public Iterator<Tuple<Integer, IndexNode>> iterator() {
+        @Override
+        public Iterator<Tuple<Integer, IndexNode>> iterator() {
             return children.entrySet().stream().map(e -> new Tuple<>(e.getKey(), e.getValue())).iterator();
         }
 
-        @Override public int size() {
+        @Override
+        public int size() {
             return children.size();
         }
     }
@@ -514,13 +524,13 @@ public class CompactBindingsIndex {
         public InnerNode(int variableIndex) {
             super(variableIndex);
             int numberOfOptions = getNumberOfOptions();
-            //this.children = new ChildrenArray(numberOfOptions + 1);
+            // this.children = new ChildrenArray(numberOfOptions + 1);
             this.children = new ChildrenMap(numberOfOptions + 1);
         }
 
         public InnerNode(int variableIndex, int numberOfChildren) {
             super(variableIndex);
-            //this.children = new ChildrenArray(numberOfChildren);
+            // this.children = new ChildrenArray(numberOfChildren);
             this.children = new ChildrenMap(numberOfChildren);
         }
 

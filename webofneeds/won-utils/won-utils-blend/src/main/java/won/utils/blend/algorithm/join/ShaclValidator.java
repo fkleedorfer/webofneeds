@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 
@@ -76,7 +77,7 @@ public abstract class ShaclValidator {
                 }
             }
             if (focusNodes.isEmpty()) {
-                return Set.of(validateShapeWithoutFocusNode(instance,state, shape, bindings));
+                return Set.of(validateShapeWithoutFocusNode(instance, state, shape, bindings));
             }
             return results;
         });
@@ -103,7 +104,6 @@ public abstract class ShaclValidator {
                     Node focusNode,
                     VariableBindings bindings,
                     VariableAwareGraph data) {
-
         return state.log.logIndented(() -> {
             ShaclErrorHandler errorHandler = new ShaclErrorHandler();
             ValidationContext shaclValidationContext = ValidationContext.create(state.shapes, data, errorHandler);
@@ -111,7 +111,7 @@ public abstract class ShaclValidator {
             data.reset();
             VLib.validateShape(shaclValidationContext, data, shape, focusNode);
             Set<Node> encounteredVariables = data.getEncounteredVariables();
-            if (bindings.getVariables().contains(focusNode)){
+            if (bindings.getVariables().contains(focusNode)) {
                 encounteredVariables.add(focusNode);
             }
             BlendingInstanceLogic instanceLogic = new BlendingInstanceLogic(instance);
@@ -120,18 +120,25 @@ public abstract class ShaclValidator {
                             .stream()
                             .flatMap(s -> instanceLogic.getVariablesUsedInShape(s).stream())
                             .forEach(encounteredVariables::add);
-            boolean encounteredAVariableBoundToAVariableOrUnbound = encounteredVariables.stream().anyMatch(e -> {
-                Optional<Node> dereferenced = bindings.dereferenceIfVariable(e);
-                if (dereferenced.isEmpty()){
-                    return true;
-                }
-                return bindings.isVariable(dereferenced.get());
-            });
+            boolean encounteredAVariableBoundToAVariableOrUnbound = encounteredVariables.stream()
+                            .anyMatch(e -> {
+                                if (e.isBlank()) {
+                                    // for a blank node var, we want to ignore errors as long as the var is
+                                    // undecided
+                                    return !bindings.isAlreadyDecidedVariable(e);
+                                }
+                                Optional<Node> dereferenced = bindings.dereferenceIfVariable(e);
+                                if (dereferenced.isEmpty()) {
+                                    return true;
+                                }
+                                return bindings.isNonBlankVariable(dereferenced.get());
+                            });
             encounteredVariables.removeAll(bindings.getDecidedVariables());
             encounteredVariables.removeAll(bindings.getBoundNodes());
             if (encounteredVariables.isEmpty()) {
                 if (encounteredAVariableBoundToAVariableOrUnbound) {
-                    state.log.finerTrace(() -> "focus node may or may not be invalid, but we bound a variable to another, so we cannot fail the node because of this");
+                    state.log.finerTrace(
+                                    () -> "focus node may or may not be invalid, but we bound a variable to another, so we cannot fail the node because of this");
                     return new BindingValidationResult(shape, focusNode, bindings, encounteredVariables, Ternary.TRUE);
                 }
                 if (shaclValidationContext.hasViolation()) {
@@ -142,13 +149,12 @@ public abstract class ShaclValidator {
                     return new BindingValidationResult(shape, focusNode, bindings, encounteredVariables, Ternary.TRUE);
                 }
             }
-            state.log.finerTrace(() ->
-                            "encountered new variables: " + encounteredVariables.stream().map(Object::toString)
+            state.log.finerTrace(
+                            () -> "encountered new variables: " + encounteredVariables.stream().map(Object::toString)
                                             .collect(joining(", ")));
             return new BindingValidationResult(shape, focusNode, bindings, encounteredVariables, Ternary.UNKNOWN);
         });
     }
-
 
     private static Set<Node> findNamedShapesForErrorsInReport(ValidationReport validationReport, Shapes shapes) {
         Set<Node> namedShapes = new HashSet<>();
@@ -173,14 +179,13 @@ public abstract class ShaclValidator {
                 return Set.of(sourceShape.getShapeNode());
             }
         }
-        Set<Node> incomingFrom =
-                        G
-                                        .find(shapes.getGraph(), Node.ANY, Node.ANY, source)
-                                        .filterKeep(t -> t
-                                                        .getPredicate()
-                                                        .toString()
-                                                        .startsWith(SHACL.getURI()))
-                                        .mapWith(t -> t.getSubject()).toSet();
+        Set<Node> incomingFrom = G
+                        .find(shapes.getGraph(), Node.ANY, Node.ANY, source)
+                        .filterKeep(t -> t
+                                        .getPredicate()
+                                        .toString()
+                                        .startsWith(SHACL.getURI()))
+                        .mapWith(t -> t.getSubject()).toSet();
         return incomingFrom
                         .stream()
                         .flatMap(in -> findNamedShapeForShape(in, shapes, depth + 1).stream())

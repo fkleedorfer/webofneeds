@@ -12,7 +12,8 @@ public class DelegatingBindingOptionsProvider implements BindingOptionsProvider 
         this.delegate = delegate;
     }
 
-    @Override public Set<Node> apply(Node node) {
+    @Override
+    public Set<Node> apply(Node node) {
         return delegate.apply(node);
     }
 

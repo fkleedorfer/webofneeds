@@ -12,7 +12,8 @@ public class VerbosityAwareSearchNodeFormatter implements SearchNodeFormatter {
         this.state = state;
     }
 
-    @Override public String format(SearchNode searchNode, CompactBindingsManager bindingsManager) {
+    @Override
+    public String format(SearchNode searchNode, CompactBindingsManager bindingsManager) {
         StringBuilder sb = new StringBuilder();
         sb
                         .append("valid/globally valid : ")
@@ -28,20 +29,19 @@ public class VerbosityAwareSearchNodeFormatter implements SearchNodeFormatter {
                                             .collect(Collectors.joining(", ")));
         }
         sb.append("\nbindings    :")
-                        .append(searchNode
-                                        .bindings
+                        .append(searchNode.bindings
                                         .getBindingsAsSet()
                                         .stream()
                                         .map(b -> b.getVariable() + " -> " + b.getBoundNode())
                                         .sorted()
-                                        .collect(Collectors.joining("\n\t\t\t\t", " ","")))
+                                        .collect(Collectors.joining("\n\t\t\t\t", " ", "")))
                         .append("\nencountered :")
                         .append(searchNode.encounteredVariables
                                         .getVariables()
                                         .stream()
                                         .map(Object::toString)
                                         .sorted()
-                                        .collect(Collectors.joining("\n\t\t\t\t", " ","")));
+                                        .collect(Collectors.joining("\n\t\t\t\t", " ", "")));
         return sb.toString();
     }
 }

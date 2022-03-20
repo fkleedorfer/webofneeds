@@ -23,7 +23,7 @@ ex:PatternTransferAtLocation-main {
 ex:PatternTransferAtLocation-data {
 
     ex:transferAtLocation
-        a vf:Intent, bl:Unblendable;
+        a vf:Intent;
         vf:action vf:transfer ;
         vf:provider var:provider ;
         vf:receiver var:receiver ;
@@ -34,7 +34,6 @@ ex:PatternTransferAtLocation-data {
         vf:resourceQuantity [
             om2:hasUnit var:unit ;
             om2:hasNumericalValue var:value ;
-            a bl:Unblendable
         ]
     .
 }
@@ -42,6 +41,7 @@ ex:PatternTransferAtLocation-data {
 ex:PatternTransferAtLocation-config {
 
     vf:transfer a bl:Unblendable .
+
     vf:Intent a bl:Unblendable .
 
     var:provider

@@ -33,19 +33,23 @@ public class ExploreAllOptionsStrategy implements ExpansionStrategy {
         return generateSuccessorNodesForAllBindingCombinations(instance, state, node);
     }
 
-    private static void removeOptionsOfSingleVariableFailingValidation(AlgorithmState state, Set<BindingValidationResult> validationResults) {
+    private static void removeOptionsOfSingleVariableFailingValidation(AlgorithmState state,
+                    Set<BindingValidationResult> validationResults) {
         Set<VariableBinding> optionsToRemove = validationResults
                         .stream()
-                        .filter(vr -> vr.valid.isFalse() && vr.encounteredVariables.isEmpty() && vr.bindings.sizeExcludingExplicitlyUnbound() == 1)
+                        .filter(vr -> vr.valid.isFalse() && vr.encounteredVariables.isEmpty()
+                                        && vr.bindings.sizeExcludingExplicitlyUnbound() == 1)
                         .flatMap(vr -> vr.bindings.getBindingsAsSet().stream())
                         .collect(Collectors.toSet());
         if (!optionsToRemove.isEmpty()) {
-            state.log.trace(() -> "Removing " + optionsToRemove.size() + " options that cannot possibly lead to an acceptable result");
+            state.log.trace(() -> "Removing " + optionsToRemove.size()
+                            + " options that cannot possibly lead to an acceptable result");
             state.bindingsManager = state.bindingsManager.removeOptions(optionsToRemove);
         }
     }
 
-    public static Set<SearchNode> generateSuccessorNodesForAllBindingCombinations(BlendingInstance instance, AlgorithmState state,
+    public static Set<SearchNode> generateSuccessorNodesForAllBindingCombinations(BlendingInstance instance,
+                    AlgorithmState state,
                     SearchNode node) {
         BindingCombinator bindingCombinator = new BindingCombinator(instance, state);
         Set<Node> variables = node.encounteredVariables.getVariables();
@@ -55,7 +59,7 @@ public class ExploreAllOptionsStrategy implements ExpansionStrategy {
         state.log.info(() -> "generating all bindings combinations for newly encountered variables: " + variables);
         return bindingCombinator
                         .allCombinations(variables, bindings,
-                                            vb -> generateSearchNodeForBindings(node.shapes, vb, instance, state))
+                                        vb -> generateSearchNodeForBindings(node.shapes, vb, instance, state))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .collect(toSet());
@@ -68,12 +72,14 @@ public class ExploreAllOptionsStrategy implements ExpansionStrategy {
         Set<Shape> impliedShapes = ShaclValidator.getShapesTargetedOnBindings(state, data, bindings);
         Set<Shape> shapesToCheck = new HashSet<>(shapes);
         shapesToCheck.addAll(impliedShapes);
-        state.log.trace(() -> "validating with shapes: " + shapesToCheck.stream().map(s -> s.getShapeNode().toString()).collect(Collectors.joining(", ")));
+        state.log.trace(() -> "validating with shapes: " + shapesToCheck.stream().map(s -> s.getShapeNode().toString())
+                        .collect(Collectors.joining(", ")));
         Set<BindingValidationResult> result = new HashSet<>();
-        for(Shape shape: shapesToCheck) {
-            Set<BindingValidationResult> resultsForShape = ShaclValidator.validateShapeOnData(instance, shape, bindings, state, data);
+        for (Shape shape : shapesToCheck) {
+            Set<BindingValidationResult> resultsForShape = ShaclValidator.validateShapeOnData(instance, shape, bindings,
+                            state, data);
             result.addAll(resultsForShape);
-            if (resultsForShape.stream().anyMatch(r -> r.valid.isFalse() && r.encounteredVariables.isEmpty())){
+            if (resultsForShape.stream().anyMatch(r -> r.valid.isFalse() && r.encounteredVariables.isEmpty())) {
                 removeOptionsOfSingleVariableFailingValidation(state, result);
                 state.debugWriter.decIndent();
                 return SearchNode.of(state.bindingsManager, result.toArray(new BindingValidationResult[result.size()]));
@@ -83,5 +89,4 @@ public class ExploreAllOptionsStrategy implements ExpansionStrategy {
         state.debugWriter.decIndent();
         return SearchNode.of(state.bindingsManager, result.toArray(new BindingValidationResult[result.size()]));
     }
-
 }

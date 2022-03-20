@@ -28,17 +28,18 @@ public class TemplateGraphs {
         this.bindingsNamedGraph = bindings;
     }
 
-    public TemplateGraphs replaceDataGraph(Graph newGraph){
+    public TemplateGraphs replaceDataGraph(Graph newGraph) {
         NamedGraph ng = null;
         if (this.dataNamedGraph == null) {
             ng = new NamedGraph(NodeFactory.createURI("urn:uuid:" + UUID.randomUUID().toString()), newGraph);
         } else {
             ng = new NamedGraph(this.dataNamedGraph.node, newGraph);
         }
-        return new TemplateGraphs(mainTemplateNamedGraph, ng, blendingConfigNamedGraph, bindingsNamedGraph, shapesNamedGraph);
+        return new TemplateGraphs(mainTemplateNamedGraph, ng, blendingConfigNamedGraph, bindingsNamedGraph,
+                        shapesNamedGraph);
     }
 
-    public TemplateGraphs replaceBlendingConfigGraph(Graph newGraph){
+    public TemplateGraphs replaceBlendingConfigGraph(Graph newGraph) {
         NamedGraph ng = null;
         if (this.blendingConfigNamedGraph == null) {
             ng = new NamedGraph(NodeFactory.createURI("urn:uuid:" + UUID.randomUUID().toString()), newGraph);
@@ -47,7 +48,6 @@ public class TemplateGraphs {
         }
         return new TemplateGraphs(mainTemplateNamedGraph, dataNamedGraph, ng, bindingsNamedGraph, shapesNamedGraph);
     }
-
 
     public Node getTemplateNode() {
         return mainTemplateNamedGraph.node;

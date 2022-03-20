@@ -35,14 +35,14 @@ public class AlgorithmState {
     }
 
     public class Log {
-        public void trace(Supplier<String> messageSupplier){
+        public void trace(Supplier<String> messageSupplier) {
             if (verbosity.isMaximum()) {
                 debugWriter.println(messageSupplier.get());
             }
         }
 
         public void info(Supplier<String> messageSupplier) {
-            if (verbosity.isMediumOrHigher()){
+            if (verbosity.isMediumOrHigher()) {
                 debugWriter.println(messageSupplier.get());
             }
         }

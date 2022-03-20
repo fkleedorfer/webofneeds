@@ -7,9 +7,11 @@ import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
+import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.apache.jena.sparql.core.DatasetGraphFactory;
 import org.apache.jena.sparql.graph.GraphFactory;
+import org.apache.jena.sparql.graph.PrefixMappingAdapter;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +41,8 @@ public abstract class Utils {
 
     public static List<File> getSortedUnittests(String testParentFolder) {
         File unitTestTopDir = findFolder(testParentFolder);
+        if (unitTestTopDir == null)
+            return List.of();
         File[] unitTestDirs = unitTestTopDir
                         .listFiles((FileFilter) new RegexFileFilter(NUMBERED_TEST_DIRECTORY_PATTERN));
         Pattern sortpattern = Pattern.compile(NUMBERED_TEST_DIRECTORY_PATTERN);
@@ -56,6 +60,9 @@ public abstract class Utils {
 
     public static File findFolder(String testParentFolder) {
         URL folder = MethodHandles.lookup().lookupClass().getClassLoader().getResource(testParentFolder);
+        if (folder == null) {
+            return null;
+        }
         File unitTestTopDir = new File(folder.getPath());
         return unitTestTopDir;
     }
@@ -64,7 +71,7 @@ public abstract class Utils {
                     throws FileNotFoundException {
         File outputFile = new File(outfile);
         outputFile.getParentFile().mkdirs();
-        RDFDataMgr.write(new FileOutputStream(outputFile), DatasetFactory.wrap(resultAsDataset), RDFFormat.TRIG_PRETTY);
+        RDFDataMgr.write(new FileOutputStream(outputFile), resultAsDataset, RDFFormat.TRIG_PRETTY);
         logger.info("wrote test result to " + outputFile.getAbsolutePath());
     }
 
@@ -72,15 +79,15 @@ public abstract class Utils {
         return RESULT_OUTPUT_DIR + callingTestClass.getSimpleName() + "/actualResult_" + testIdentifier + ".trig";
     }
 
-    public static DatasetGraph readDatasetGraphFromFile(File inputLeftFile) throws FileNotFoundException {
-        DatasetGraph left = DatasetGraphFactory.create();
-        RDFDataMgr.read(left, new FileInputStream(inputLeftFile), Lang.TRIG);
-        return left;
+    public static DatasetGraph readDatasetGraphFromFile(File file) throws FileNotFoundException {
+        DatasetGraph graph = DatasetGraphFactory.create();
+        RDFDataMgr.read(graph, new FileInputStream(file), Lang.TRIG);
+        return graph;
     }
 
-    public static File getFileWithSuffixIfExists(File file, String suffix)  {
+    public static File getFileWithSuffixIfExists(File file, String suffix) {
         File withSuffix = new File(file.getParentFile(), file.getName().replaceFirst("\\.", suffix + "."));
-        if (withSuffix.exists() && withSuffix.canRead()){
+        if (withSuffix.exists() && withSuffix.canRead()) {
             return withSuffix;
         }
         return file;
@@ -110,12 +117,14 @@ public abstract class Utils {
 
     public static void assertDatasetsEqual(DatasetGraph expectedResult, DatasetGraph actualResult,
                     String testIdentifier) {
+        PrefixMapping prefixMapping = expectedResult.getDefaultGraph().getPrefixMapping();
         actualResult.getDefaultGraph().getPrefixMapping()
-                        .setNsPrefixes(expectedResult.getDefaultGraph().getPrefixMapping());
+                        .setNsPrefixes(prefixMapping);
         Iterator<Node> graphNodes = actualResult.listGraphNodes();
         while (graphNodes.hasNext()) {
             Node graphNode = graphNodes.next();
             Graph expectedGraph = expectedResult.getGraph(graphNode);
+            expectedGraph.getPrefixMapping().setNsPrefixes(prefixMapping);
             if (expectedGraph == null) {
                 Assertions.fail(String.format("Unexpected graph %s found in actual result"));
             }

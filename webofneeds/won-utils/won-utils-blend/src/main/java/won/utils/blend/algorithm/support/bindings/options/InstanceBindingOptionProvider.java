@@ -16,7 +16,8 @@ public class InstanceBindingOptionProvider implements BindingOptionsProvider {
         this.blendingInstanceLogic = new BlendingInstanceLogic(blendingInstance);
     }
 
-    @Override public Set<Node> apply(Node node) {
+    @Override
+    public Set<Node> apply(Node node) {
         return blendingInstanceLogic.getBindingOptions(node);
     }
 }

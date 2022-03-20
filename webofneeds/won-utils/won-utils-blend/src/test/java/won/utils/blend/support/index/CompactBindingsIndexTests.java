@@ -384,7 +384,6 @@ public class CompactBindingsIndexTests {
             System.out.println(index.treeToString());
             throw e;
         }
-
     }
 
     private List<Integer> makeIntegerList(int[] elem) {
@@ -495,7 +494,7 @@ public class CompactBindingsIndexTests {
             index.put(elem);
         }
         sw.stop();
-        //System.out.println("size: " + index.memorySize() + " bytes");
+        // System.out.println("size: " + index.memorySize() + " bytes");
         System.out.println("index size: " + GraphLayout.parseInstance(index).totalSize() + " bytes");
         System.out.println("time taken: " + sw.getLastTaskTimeMillis() + " ms");
         sw = new StopWatch();
@@ -514,7 +513,8 @@ public class CompactBindingsIndexTests {
             index2.add(elem);
         }
         sw.stop();
-        //System.out.println("size: " + index2.stream().mapToLong(x -> InstrumentationAgent.getObjectSize(x)).sum() + " bytes");
+        // System.out.println("size: " + index2.stream().mapToLong(x ->
+        // InstrumentationAgent.getObjectSize(x)).sum() + " bytes");
         System.out.println("int list size: " + GraphLayout.parseInstance(index2).totalSize() + " bytes");
         System.out.println("time taken: " + sw.getLastTaskTimeMillis() + " ms");
         sw = new StopWatch();
@@ -533,7 +533,8 @@ public class CompactBindingsIndexTests {
             index3.add(elem);
         }
         sw.stop();
-        //System.out.println("size: " + index2.stream().mapToLong(x -> InstrumentationAgent.getObjectSize(x)).sum() + " bytes");
+        // System.out.println("size: " + index2.stream().mapToLong(x ->
+        // InstrumentationAgent.getObjectSize(x)).sum() + " bytes");
         System.out.println("byte list size: " + GraphLayout.parseInstance(index3).totalSize() + " bytes");
         System.out.println("time taken: " + sw.getLastTaskTimeMillis() + " ms");
         sw = new StopWatch();

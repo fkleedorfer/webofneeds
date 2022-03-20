@@ -21,5 +21,4 @@ public class InstrumentationAgent {
         globalInstrumentation = inst;
         System.out.println("Instrumentation agent loaded");
     }
-
 }

@@ -34,7 +34,6 @@ ex:PatternTransferAtLocation-data {
         vf:resourceQuantity [
             om2:hasUnit var:unit ;
             om2:hasNumericalValue var:value ;
-            a bl:Unblendable
         ]
     .
 }

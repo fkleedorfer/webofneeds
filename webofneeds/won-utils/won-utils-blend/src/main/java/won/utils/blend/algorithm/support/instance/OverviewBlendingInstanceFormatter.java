@@ -7,7 +7,8 @@ import won.utils.blend.algorithm.BlendingInstance;
 import won.utils.blend.support.graph.TemplateGraphs;
 
 public class OverviewBlendingInstanceFormatter implements BlendingInstanceFormatter {
-    @Override public String format(BlendingInstance instance) {
+    @Override
+    public String format(BlendingInstance instance) {
         StringBuilder sb = new StringBuilder();
         sb.append("Left Template:\n");
         formatInstanceTemplate(instance.leftTemplate, sb);
@@ -28,8 +29,7 @@ public class OverviewBlendingInstanceFormatter implements BlendingInstanceFormat
                         .append("\t").append("templateBindingsFilter      :")
                         .append(blendingOptions.hasTemplateBindingsFilter()).append("\n")
                         .append("\t").append("variableBindingsFilter      :")
-                        .append(blendingOptions.hasVariableBindingFilter()).append("\n")
-        ;
+                        .append(blendingOptions.hasVariableBindingFilter()).append("\n");
     }
 
     private void formatInstanceTemplate(Template template, StringBuilder sb) {
@@ -37,7 +37,8 @@ public class OverviewBlendingInstanceFormatter implements BlendingInstanceFormat
         sb
                         .append("\t").append("variables      : ").append(template.getVariables()).append("\n")
                         .append("\t").append("constants      : ").append(template.getConstants()).append("\n")
-                        .append("\t").append("data           : ").append(getSizeIfPresent(templateGraphs.getDataGraph()))
+                        .append("\t").append("data           : ")
+                        .append(getSizeIfPresent(templateGraphs.getDataGraph()))
                         .append(" triples").append("\n")
                         .append("\t").append("shapes         : ")
                         .append(getSizeIfPresent(templateGraphs.getShapesGraph())).append(" triples").append("\n")

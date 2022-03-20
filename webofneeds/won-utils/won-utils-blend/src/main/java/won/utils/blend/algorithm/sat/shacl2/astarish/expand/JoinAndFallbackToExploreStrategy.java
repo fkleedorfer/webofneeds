@@ -10,13 +10,15 @@ import java.util.Set;
 public class JoinAndFallbackToExploreStrategy implements ExpansionStrategy {
     private ExpansionStrategy joinNodesStrategy = new JoinWithNodesByBoundNodesStrategy();
     private ExpansionStrategy exploreAllOptionsStrategy = new ExploreAllOptionsStrategy();
-    @Override public Set<SearchNode> findSuccessors(BlendingInstance instance, AlgorithmState state, SearchNode node) {
+
+    @Override
+    public Set<SearchNode> findSuccessors(BlendingInstance instance, AlgorithmState state, SearchNode node) {
         try {
             state.debugWriter.incIndent();
             state.log.trace(() -> "trying to join node with valid fragments on one or more of its encountered variables");
-            Set<SearchNode> expanded = joinNodesStrategy.findSuccessors(instance,state, node);
+            Set<SearchNode> expanded = joinNodesStrategy.findSuccessors(instance, state, node);
             expanded.remove(node);
-            if (!expanded.isEmpty()){
+            if (!expanded.isEmpty()) {
                 state.log.trace(() -> "join successful");
                 printExpanded(state, expanded);
                 return expanded;
@@ -39,7 +41,7 @@ public class JoinAndFallbackToExploreStrategy implements ExpansionStrategy {
     private void printExpanded(AlgorithmState state, Set<SearchNode> expanded) {
         state.log.info(() -> "expansion result:");
         state.debugWriter.incIndent();
-        for(SearchNode node: expanded) {
+        for (SearchNode node : expanded) {
             state.log.info(() -> "expanded node:");
             state.debugWriter.incIndent();
             state.log.info(() -> new VerbosityAwareSearchNodeFormatter(state).format(node, state.bindingsManager));

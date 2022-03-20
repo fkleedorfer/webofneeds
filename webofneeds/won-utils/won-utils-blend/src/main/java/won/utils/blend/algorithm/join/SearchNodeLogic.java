@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class SearchNodeLogic {
-
     public static SearchNode forInitialShapeAndBindings(AlgorithmState state, Shape initialShape,
                     VariableBindings initialBindings, Set<Node> variables) {
         SearchNode newNode = new SearchNode(state, variables);
@@ -20,8 +19,8 @@ public abstract class SearchNodeLogic {
         return newNode;
     }
 
-    public static Optional<SearchNode> join(SearchNode left, SearchNode right){
-        if (left.bindings.conflictsWith(right.bindings) ){
+    public static Optional<SearchNode> join(SearchNode left, SearchNode right) {
+        if (left.bindings.conflictsWith(right.bindings)) {
             return Optional.empty();
         }
         try {
@@ -55,34 +54,35 @@ public abstract class SearchNodeLogic {
 
     private static void mergeUnsatisfied(SearchNode combined, SearchNode other) {
         other.unsatisfiedShapesByRequiredVariable.entrySet().forEach(entry -> {
-            combined.unsatisfiedShapesByRequiredVariable.compute(entry.getKey(), (key, values)->{
-               if (values == null) {
-                   values = new HashSet<>();
-               }
-               values.addAll(entry.getValue());
-               return values;
+            combined.unsatisfiedShapesByRequiredVariable.compute(entry.getKey(), (key, values) -> {
+                if (values == null) {
+                    values = new HashSet<>();
+                }
+                values.addAll(entry.getValue());
+                return values;
             });
         });
     }
 
-    public static void recalculateDependentValues(SearchNode node, AlgorithmState state){
-        node.encounteredVariables.forEach( vars -> vars.removeAll(node.bindings.getDecidedVariables()));
+    public static void recalculateDependentValues(SearchNode node, AlgorithmState state) {
+        node.encounteredVariables.forEach(vars -> vars.removeAll(node.bindings.getDecidedVariables()));
         node.encounteredVariables.removeIf(vars -> vars.isEmpty());
         node.encounteredVariablesFlat.clear();
         node.encounteredVariablesFlat.addAll(getEncounteredVariablesFlat(node));
         node.exploring.removeAll(node.bindings.getDecidedVariables());
         node.exploring.removeAll(node.bindings.getBoundNodes());
-        //node.blendedGraphSize = calculateBlendedGraphSize(state, node);
+        // node.blendedGraphSize = calculateBlendedGraphSize(state, node);
     }
 
     private static int calculateBlendedGraphSize(AlgorithmState state, SearchNode node) {
-        BlendedGraphs blended = new BlendedGraphs(state.blendingInstance.leftTemplate.getTemplateGraphs().getDataGraph(),
+        BlendedGraphs blended = new BlendedGraphs(
+                        state.blendingInstance.leftTemplate.getTemplateGraphs().getDataGraph(),
                         state.blendingInstance.rightTemplate.getTemplateGraphs().getDataGraph(), node.bindings, false);
         return blended.size();
     }
 
     public static int getPriority(SearchNode node) {
-        if (node.bindings.isAllVariablesBound()) {
+        if (node.bindings.isAllNonBlankVariablesBound()) {
             return 0;
         }
         int encounteredExplored = AlgorithmStateLogic.countExploredVariables(node.state, node.encounteredVariablesFlat);
@@ -93,12 +93,13 @@ public abstract class SearchNodeLogic {
             return encounteredUnexplored + numberOfVariables * encounteredExplored;
         } else if (encounteredExplored > 0) {
             return (int) Math.pow((double) numberOfVariables, (double) 2) * encounteredExplored;
-        //} else if (node.blendedGraphSize > 0) {
-        //    return (int) Math.pow((double) numberOfVariables, (double) 3) * node.blendedGraphSize;
-        } else if (node.bindings.sizeExcludingExplicitlyUnbound() > 0){
-            return (int) Math.pow((double) numberOfVariables, (double) 3) * node.bindings.sizeExcludingExplicitlyUnbound();
-        }
-        else if (node.bindings.size() > 0){
+            // } else if (node.blendedGraphSize > 0) {
+            // return (int) Math.pow((double) numberOfVariables, (double) 3) *
+            // node.blendedGraphSize;
+        } else if (node.bindings.sizeNonBlankExcludingExplicitlyUnbound() > 0) {
+            return (int) Math.pow((double) numberOfVariables, (double) 3)
+                            * node.bindings.sizeExcludingExplicitlyUnbound();
+        } else if (node.bindings.size() > 0) {
             return (int) Math.pow((double) numberOfVariables, (double) 4) * node.bindings.size();
         }
         return Integer.MAX_VALUE;
@@ -116,15 +117,14 @@ public abstract class SearchNodeLogic {
 
     public static void removeUnsatisfiedShapeByVariable(SearchNode searchNode, Shape shape, Node variable) {
         searchNode.unsatisfiedShapesByRequiredVariable.compute(variable, (key, values) -> {
-            if (values == null){
+            if (values == null) {
                 return null;
             }
             values.remove(shape);
-            if (values.isEmpty()){
+            if (values.isEmpty()) {
                 return null;
             }
             return values;
         });
     }
-
 }

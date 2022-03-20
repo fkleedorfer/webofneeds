@@ -61,7 +61,8 @@ public class BlendingTests {
     @ParameterizedTest
     @MethodSource
     @Disabled // unrestricted, it just takes too long
-    public void testOkAllowUnbound(File inputLeftFile, File inputRightFile, File expectedOutputFile) throws IOException {
+    public void testOkAllowUnbound(File inputLeftFile, File inputRightFile, File expectedOutputFile)
+                    throws IOException {
         BlendingOptions allowUnboundOptions = new BlendingOptions(
                         UnboundHandlingMode.ALLOW_UNBOUND,
                         true,
@@ -73,21 +74,24 @@ public class BlendingTests {
 
     @ParameterizedTest
     @MethodSource
-    public void testOkUnboundAllowedIfNoOtherBinding(File inputLeftFile, File inputRightFile, File expectedOutputFile) throws IOException {
+    public void testOkUnboundAllowedIfNoOtherBinding(File inputLeftFile, File inputRightFile, File expectedOutputFile)
+                    throws IOException {
         BlendingOptions allowUnboundIfNoOtherBindingsOptions = new BlendingOptions(
                         UnboundHandlingMode.UNBOUND_ALLOWED_IF_NO_OTHER_BINDING,
                         true,
                         true,
                         null,
                         null);
-        testOk(inputLeftFile, inputRightFile, expectedOutputFile, "_unboundAllowedIfNoOtherBindings", allowUnboundIfNoOtherBindingsOptions);
+        testOk(inputLeftFile, inputRightFile, expectedOutputFile, "_unboundAllowedIfNoOtherBindings",
+                        allowUnboundIfNoOtherBindingsOptions);
     }
 
     private void testOk(File inputLeftFile, File inputRightFile, File expectedOutputFile, String testSuffix,
                     BlendingOptions blendingOptions) throws FileNotFoundException {
         DatasetGraph left = readDatasetGraphFromFile(getFileWithSuffixIfExists(inputLeftFile, testSuffix));
         DatasetGraph right = readDatasetGraphFromFile(getFileWithSuffixIfExists(inputRightFile, testSuffix));
-        DatasetGraph expectedResult = readDatasetGraphFromFile(getFileWithSuffixIfExists(expectedOutputFile, testSuffix));
+        DatasetGraph expectedResult = readDatasetGraphFromFile(
+                        getFileWithSuffixIfExists(expectedOutputFile, testSuffix));
         UUIDSource uuidSource = new SequentialUUIDSource();
         TemplateIO templateIO = new TemplateIO(uuidSource);
         Template leftTemplate = templateIO.fromDatasetGraph(left).stream().findFirst().get();
@@ -105,7 +109,7 @@ public class BlendingTests {
         logger.info("blending done");
         DatasetGraph actualResult = templateIO.toDatasetGraph(results);
         String testIdentifier = inputLeftFile.getParentFile().getName();
-        writeTestResultToFile(actualResult, getOutputFileName(getClass(), testIdentifier));
+        writeTestResultToFile(actualResult, getOutputFileName(getClass(), testIdentifier + testSuffix));
         String stats = new DefaultBlendingResultStatsFormatter()
                         .format(BindingResultStatsAccumulator.accumulate(leftTemplate, rightTemplate, results));
         try {
@@ -120,7 +124,6 @@ public class BlendingTests {
     public static Stream<Arguments> testOkUnboundAllowedIfNoOtherBinding() throws IOException {
         return testOkAllBound();
     }
-
 
     public static Stream<Arguments> testOkAllowUnbound() throws IOException {
         return testOkAllBound();
