@@ -56,10 +56,10 @@ public class BindingResultStatsAccumulator {
                                                                         .size(),
                                                         (int) blendingResult.getFixedBindings()
                                                                         .getVariablesBoundToConstants().stream()
-                                                                        .filter(Node::isBlank).count(),
+                                                                        .filter(not(Node::isBlank)).count(),
                                                         (int) blendingResult.getFixedBindings()
                                                                         .getVariablesBoundToVariables().stream()
-                                                                        .filter(Node::isBlank).count())))
+                                                                        .filter(not(Node::isBlank)).count())))
                         .collect(Collectors
                                         .groupingBy(s -> s.bindingStats,
                                                         Collectors.mapping(TemplateStats::getTemplateNode,

@@ -158,7 +158,7 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
         Shapes shapes = instanceLogic.getShapes();
         VariableBindings initialBindings = instanceLogic.getFixedBindings();
         AlgorithmState state = new AlgorithmState(instance, shapes, allBindings, initialBindings,
-                        AlgorithmState.Verbosity.DEBUG);
+                        AlgorithmState.Verbosity.ERROR);
         return state;
     }
 

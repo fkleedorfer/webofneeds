@@ -137,6 +137,13 @@ public abstract class ShaclValidator {
             encounteredVariables.removeAll(bindings.getBoundNodes());
             if (encounteredVariables.isEmpty()) {
                 if (encounteredAVariableBoundToAVariableOrUnbound) {
+                    if (state.log.isDebugEnabled()) {
+                        if (shaclValidationContext.hasViolation()) {
+                            state.log.debugFmt(
+                                            "shape %s is invalid but we ignore this because an encountered var is unbound or bound to a var",
+                                            shape);
+                        }
+                    }
                     state.log.finerTrace(
                                     () -> "focus node may or may not be invalid, but we bound a variable to another, so we cannot fail the node because of this");
                     return new BindingValidationResult(shape, focusNode, bindings, encounteredVariables, Ternary.TRUE);
