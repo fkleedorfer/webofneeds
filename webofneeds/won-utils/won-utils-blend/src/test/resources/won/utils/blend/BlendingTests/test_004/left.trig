@@ -14,7 +14,7 @@
 @prefix vfsh: <https://w3id.org/valueflows-shacl/shapes#> .
 
 ex:PatternTransferAtLocation-main {
-    ex:PatternTransferAtLocation a bl:Template ;
+    ex:PatternTransferAtLocation-main a bl:Template ;
     bl:dataGraph ex:PatternTransferAtLocation-data ;
     bl:blendingConfigGraph ex:PatternTransferAtLocation-config;
     bl:shapesGraph ex:PatternTransferAtLocation-shapes .
@@ -90,66 +90,6 @@ ex:PatternTransferAtLocation-config {
 }
 
 ex:PatternTransferAtLocation-shapes {
-
-    ex:providerShape a sh:NodeShape ;
-        sh:targetNode var:provider ;
-        sh:property [
-            sh:path bl:boundTo ;
-            sh:class foaf:Agent ;
-        ] .
-
-    ex:receiverShape a sh:NodeShape ;
-        sh:targetNode var:receiver ;
-        sh:property [
-            sh:path bl:boundTo ;
-            sh:class foaf:Agent ;
-        ] .
-
-    ex:resourceShape a sh:NodeShape ;
-        sh:targetNode var:resource ;
-        sh:property [
-            sh:path bl:boundTo ;
-            sh:class vf:EconomicResource ;
-        ] .
-
-    ex:toResourceShape a sh:NodeShape ;
-        sh:targetNode var:toResource ;
-        sh:property [
-            sh:path bl:boundTo ;
-            sh:class vf:EconomicResource ;
-        ] .
-
-    ex:locationShape a sh:NodeShape ; # locations aren't particularly well restrained yet - needs work
-        sh:targetNode var:location ;
-        sh:property [
-            sh:path bl:boundTo ;
-            sh:nodeKind sh:IRI ;
-            sh:property [
-                sh:path rdf:type ;
-                sh:maxCount 0 ;
-            ] ;
-            sh:property [
-                sh:path [ sh:inversePath rdf:type ] ;
-                sh:maxCount 0 ;
-            ]
-        ] .
-
-    ex:unitShape a sh:NodeShape ;
-        sh:targetNode var:unit ;
-        sh:property [
-            sh:path bl:boundTo ;
-            sh:nodeKind sh:IRI ;
-            sh:class om2:Unit ;
-        ] .
-
-    ex:valueShape a sh:NodeShape ;
-        sh:targetNode var:value ;
-        sh:property [
-            sh:path bl:boundTo ;
-            sh:nodeKind sh:Literal ;
-        ] .
-
-
 
      # resource must be in provider's custody
     ex:resourceIsInCustodyOfProviderShape a sh:NodeShape  ;

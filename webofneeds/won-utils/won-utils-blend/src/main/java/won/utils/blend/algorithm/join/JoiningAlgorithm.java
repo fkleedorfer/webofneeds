@@ -142,14 +142,14 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
 
     private void logBlendedGraphs(BlendingInstance blendingInstance, AlgorithmState state, SearchNode currentNode) {
         StringWriter serialized = new StringWriter();
-        if (!state.log.isDebugEnabled()) {
+        if (!state.log.isTraceEnabled()) {
             return;
         }
         Graph leftGraph = blendingInstance.leftTemplate.getTemplateGraphs().getDataGraph();
         Graph rightGraph = blendingInstance.rightTemplate.getTemplateGraphs().getDataGraph();
         Graph blended = new BlendedGraphs(leftGraph, rightGraph, currentNode.bindings);
         RDFDataMgr.write(serialized, blended, Lang.TTL);
-        state.log.debugFmt("blended: \n%s", serialized.toString());
+        state.log.traceFmt("blended: \n%s", serialized.toString());
     }
 
     private AlgorithmState initializeAlgorithmState(BlendingInstance instance) {
@@ -158,7 +158,7 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
         Shapes shapes = instanceLogic.getShapes();
         VariableBindings initialBindings = instanceLogic.getFixedBindings();
         AlgorithmState state = new AlgorithmState(instance, shapes, allBindings, initialBindings,
-                        AlgorithmState.Verbosity.ERROR);
+                        instance.blendingOptions.getVerbosity());
         return state;
     }
 

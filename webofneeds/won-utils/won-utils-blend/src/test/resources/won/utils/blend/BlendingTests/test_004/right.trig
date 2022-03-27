@@ -15,7 +15,7 @@
 @prefix vfsh: <https://w3id.org/valueflows-shacl/shapes#> .
 
 ex:test-main {
-    ex:PatternTransferAtLocation a bl:Template ;
+    ex:test-main a bl:Template ;
     bl:dataGraph ex:test-data ;
     bl:blendingConfigGraph ex:test-config ;
 }

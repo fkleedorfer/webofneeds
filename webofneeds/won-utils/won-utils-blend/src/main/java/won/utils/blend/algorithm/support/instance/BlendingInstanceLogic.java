@@ -59,15 +59,15 @@ public class BlendingInstanceLogic {
 
     private Set<Node> getBindingOptionsForVariable(Node variable) {
         Set<Node> options = new HashSet<>();
-        if (!instance.blendingOptions.getUnboundHandlingMode().isAllBound()) {
-            options.add(BLEND.unbound);
-        }
         Set<ShapeInShapes> candidateShapes = getCandidateShapesForVariable(variable);
         if (candidateShapes.isEmpty()) {
             options.addAll(getUnrestrictedBindingOptions(variable));
         } else {
             options.addAll(getBindingOptionsAsCandidateShapesFocusNodes(variable, candidateShapes));
             options.addAll(getCompatibleVariablesByCandidateShapes(variable, candidateShapes));
+        }
+        if (instance.blendingOptions.getUnboundHandlingMode().isUnboundAnOption(!options.isEmpty())) {
+            options.add(BLEND.unbound);
         }
         return options;
     }

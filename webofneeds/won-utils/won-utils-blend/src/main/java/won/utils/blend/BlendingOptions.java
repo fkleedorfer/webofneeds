@@ -1,5 +1,6 @@
 package won.utils.blend;
 
+import won.utils.blend.algorithm.join.AlgorithmState;
 import won.utils.blend.support.bindings.TemplateBindingsFilter;
 import won.utils.blend.support.bindings.VariableBindingFilter;
 
@@ -12,6 +13,7 @@ public class BlendingOptions {
     private boolean inferDependentVariableBindings;
     private TemplateBindingsFilter templateBindingsFilter;
     private VariableBindingFilter variableBindingFilter;
+    private AlgorithmState.Verbosity verbosity = AlgorithmState.Verbosity.ERROR;
 
     public BlendingOptions() {
         this.unboundHandlingMode = UnboundHandlingMode.ALL_BOUND;
@@ -24,12 +26,14 @@ public class BlendingOptions {
     public BlendingOptions(UnboundHandlingMode unboundHandlingMode, boolean omitBindingSubsets,
                     boolean inferDependentVariableBindings,
                     TemplateBindingsFilter templateBindingsFilter,
-                    VariableBindingFilter variableBindingFilter) {
+                    VariableBindingFilter variableBindingFilter,
+                    AlgorithmState.Verbosity verbosity) {
         this.unboundHandlingMode = unboundHandlingMode;
         this.omitBindingSubsets = omitBindingSubsets;
         this.templateBindingsFilter = templateBindingsFilter;
         this.variableBindingFilter = variableBindingFilter;
         this.inferDependentVariableBindings = inferDependentVariableBindings;
+        this.verbosity = verbosity;
     }
 
     public boolean isOmitBindingSubsets() {
@@ -58,5 +62,9 @@ public class BlendingOptions {
 
     public boolean hasTemplateBindingsFilter() {
         return this.templateBindingsFilter != null;
+    }
+
+    public AlgorithmState.Verbosity getVerbosity() {
+        return verbosity;
     }
 }

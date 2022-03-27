@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import won.utils.blend.algorithm.BlendingAlgorithm;
 import won.utils.blend.algorithm.astarish2.AStarish2BlendingAlgorithm;
 import won.utils.blend.algorithm.bruteforce.BruteForceBlendingAlgorithm;
+import won.utils.blend.algorithm.join.AlgorithmState;
 import won.utils.blend.algorithm.join.JoiningAlgorithm;
 import won.utils.blend.algorithm.sat.shacl2.astarish.AStarishBlendingAlgorithm;
 import won.utils.blend.algorithm.support.BlendingBackground;
@@ -54,7 +55,7 @@ public class BlendingTests {
                         true,
                         false,
                         null,
-                        null);
+                        null, AlgorithmState.Verbosity.ERROR);
         testOk(inputLeftFile, inputRightFile, expectedOutputFile, "_allbound", allBoundOptions);
     }
 
@@ -68,7 +69,7 @@ public class BlendingTests {
                         true,
                         false,
                         null,
-                        null);
+                        null, AlgorithmState.Verbosity.ERROR);
         testOk(inputLeftFile, inputRightFile, expectedOutputFile, "_allowUnbound", allowUnboundOptions);
     }
 
@@ -77,11 +78,12 @@ public class BlendingTests {
     public void testOkUnboundAllowedIfNoOtherBinding(File inputLeftFile, File inputRightFile, File expectedOutputFile)
                     throws IOException {
         BlendingOptions allowUnboundIfNoOtherBindingsOptions = new BlendingOptions(
-                        UnboundHandlingMode.UNBOUND_ALLOWED_IF_NO_OTHER_BINDING,
+                        UnboundHandlingMode.UNBOUND_ALLOWED_IF_NO_OTHER_OPTION,
                         true,
                         true,
                         null,
-                        null);
+                        null,
+                        AlgorithmState.Verbosity.DEBUG);
         testOk(inputLeftFile, inputRightFile, expectedOutputFile, "_unboundAllowedIfNoOtherBindings",
                         allowUnboundIfNoOtherBindingsOptions);
     }
@@ -90,7 +92,7 @@ public class BlendingTests {
                     BlendingOptions blendingOptions) throws FileNotFoundException {
         DatasetGraph left = readDatasetGraphFromFile(getFileWithSuffixIfExists(inputLeftFile, testSuffix));
         DatasetGraph right = readDatasetGraphFromFile(getFileWithSuffixIfExists(inputRightFile, testSuffix));
-        DatasetGraph expectedResult = readDatasetGraphFromFile(
+        DatasetGraph expectedResultGraph = readDatasetGraphFromFile(
                         getFileWithSuffixIfExists(expectedOutputFile, testSuffix));
         UUIDSource uuidSource = new SequentialUUIDSource();
         TemplateIO templateIO = new TemplateIO(uuidSource);
@@ -107,14 +109,19 @@ public class BlendingTests {
                                         .blend(leftTemplate, rightTemplate, blendingOptions)
                                         .collect(Collectors.toUnmodifiableSet());
         logger.info("blending done");
-        DatasetGraph actualResult = templateIO.toDatasetGraph(results);
+        DatasetGraph actualResultGraph = templateIO.toDatasetGraph(results);
         String testIdentifier = inputLeftFile.getParentFile().getName();
-        writeTestResultToFile(actualResult, getOutputFileName(getClass(), testIdentifier + testSuffix));
+        writeTestResultToFile(actualResultGraph, getOutputFileName(getClass(), testIdentifier + testSuffix));
         String stats = new DefaultBlendingResultStatsFormatter()
                         .format(BindingResultStatsAccumulator.accumulate(leftTemplate, rightTemplate, results));
+
         try {
-            assertDatasetsEqual(expectedResult, actualResult, testIdentifier);
+            assertDatasetsEqual(expectedResultGraph, actualResultGraph, testIdentifier);
         } catch (AssertionFailedError e) {
+            Set<Template> expectedResult = templateIO.fromDatasetGraph(expectedResultGraph);
+            System.err.println("expected result statistics: ");
+            System.err.println(new DefaultBlendingResultStatsFormatter().format(BindingResultStatsAccumulator.accumulate(leftTemplate,rightTemplate,expectedResult)));
+            System.err.println("actual result statistics: ");
             System.err.println(stats);
             throw e;
         }

@@ -8,100 +8,133 @@
 @prefix om2: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
 @prefix wd: <http://www.wikidata.org/entity/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
 
 @prefix bl: <https://w3id.org/won/blending#> .
 @prefix var: <http://example.org/var#> .
 @prefix vfsh: <https://w3id.org/valueflows-shacl/shapes#> .
 
-ex:PatternTransferAtLocation-main {
-    ex:PatternTransferAtLocation a bl:Template ;
-    bl:dataGraph ex:PatternTransferAtLocation-data ;
-    bl:blendingConfigGraph ex:PatternTransferAtLocation-config;
-    bl:shapesGraph ex:PatternTransferAtLocation-shapes .
+ex:PatternBuySell-main {
+    ex:PatternBuySell-main a bl:Template ;
+    bl:dataGraph ex:PatternBuySell-data ;
+    bl:blendingConfigGraph ex:PatternBuySell-config;
+    bl:shapesGraph ex:PatternBuySell-shapes .
 }
 
-ex:PatternTransferAtLocation-data {
+ex:PatternBuySell-data {
 
-    ex:transferAtLocation
-        a vf:Intent;
+    ex:buySellProposal a bl:SolutionIndividual, vf:Proposal .
+
+    ex:proposedResourceTransfer a bl:SolutionIndividual, vf:ProposedIntent ;
+        vf:publishedIn ex:buySellProposal ;
+        vf:publishes ex:resourceTransfer .
+
+    ex:proposedMoneyTransfer a bl:SolutionIndividual, vf:ProposedIntent ;
+        vf:publishedIn ex:buySellProposal ;
+        vf:publishes ex:moneyTransfer .
+
+    ex:resourceTransfer
+        a vf:Intent, bl:SolutionIndividual ;
         vf:action vf:transfer ;
-        vf:provider var:provider ;
-        vf:receiver var:receiver ;
+        vf:provider var:seller ;
+        vf:receiver var:buyer ;
         vf:resourceClassifiedAs var:resourceClass ;
         vf:resourceInventoriedAs var:resource ;
         vf:toResourceInventoriedAs var:toResource ;
         vf:atLocation var:location ;
         vf:resourceQuantity [
             om2:hasUnit var:unit ;
-            om2:hasNumericalValue var:value ;
+            om2:hasNumericalValue var:amount ;
+        ]
+    .
+    
+    ex:moneyTransfer
+        a vf:Intent, bl:SolutionIndividual ;
+        vf:action vf:transfer ;
+        vf:provider var:buyer ;
+        vf:receiver var:seller ;
+        vf:resourceClassifiedAs wd:Q1368 ;
+        vf:resourceInventoriedAs var:buyersAccount ;
+        vf:toResourceInventoriedAs var:sellersAccount ;
+        vf:atLocation var:location ;
+        vf:resourceQuantity [
+            om2:hasUnit var:currency ;
+            om2:hasNumericalValue var:price ;
         ]
     .
 }
 
-ex:PatternTransferAtLocation-config {
+ex:PatternBuySell-config {
 
     vf:transfer a bl:Unblendable .
-
     vf:Intent a bl:Unblendable .
 
-    var:provider
+    var:resourceTransfer
         a bl:Variable ;
-        bl:name "provider" ;
-        bl:candidateShape vfsh:AgentCandidateShape .
+        bl:name "transfer intent" ;
+        bl:candidateShape vfsh:IntentCandidateShape .
 
-    var:receiver
-         a bl:Variable ;
-        bl:name "receiver" ;
-        bl:candidateShape vfsh:AgentCandidateShape .
+    var:seller
+            a bl:Variable ;
+            bl:candidateShape vfsh:AgentCandidateShape .
 
-    var:resource
-        a bl:Variable ;
-        bl:name "resource" ;
-        bl:candidateShape vfsh:EconomicResourceCandidateShape .
+        var:buyer
+             a bl:Variable ;
+            bl:candidateShape vfsh:AgentCandidateShape .
 
-    var:resourceClass
-        a bl:Variable ;
-        bl:name "resourceClass" ;
-        bl:candidateShape vfsh:ResourceClassCandidateShape .
+        var:resource
+            a bl:Variable ;
+            bl:candidateShape vfsh:EconomicResourceCandidateShape .
 
-    var:toResource
-        a bl:Variable ;
-        bl:name "toResource" ;
-        bl:candidateShape vfsh:EconomicResourceCandidateShape .
+        var:resourceClass
+            a bl:Variable ;
+            bl:candidateShape vfsh:ResourceClassCandidateShape .
 
-    var:location
-        a bl:Variable ;
-        bl:name "location" ;
-        bl:candidateShape vfsh:LocationCandidateShape .
+        var:toResource
+            a bl:Variable ;
+            bl:candidateShape vfsh:EconomicResourceCandidateShape .
 
-    var:unit
-        a bl:Variable ;
-        bl:name "unit" ;
-        bl:candidateShape vfsh:QuantityUnitCandidateShape .
+        var:location
+            a bl:Variable ;
+            bl:candidateShape vfsh:LocationCandidateShape .
 
-    var:value
-        a bl:Variable ;
-        bl:name "value" ;
-        bl:candidateShape vfsh:QuantityValueCandidateShape .
+        var:unit
+            a bl:Variable ;
+            bl:candidateShape vfsh:QuantityUnitCandidateShape .
 
+        var:amount
+            a bl:Variable ;
+            bl:candidateShape vfsh:QuantityValueCandidateShape .
+
+        var:currency
+            a bl:Variable ;
+            bl:candidateShape vfsh:QuantityUnitCandidateShape .
+
+        var:price
+            a bl:Variable ;
+            bl:candidateShape vfsh:QuantityValueCandidateShape .
 }
 
-ex:PatternTransferAtLocation-shapes {
+ex:PatternBuySell-shapes {
 
+    ex:CurrencyShape a sh:NodeShape ;
+        sh:targetNode var:currency ;
+        sh:path ( [ sh:inversePath rdf:first ] [ sh:zeroOrMorePath [ sh:inversePath rdf:rest] ] [sh:inversePath owl:oneOf ] [ sh:inversePath owl:equivalentClass ] ) ;
+        sh:value om2:AmountOfMoneyUnit .
 
      # resource must be in provider's custody
     ex:resourceIsInCustodyOfProviderShape a sh:NodeShape  ;
         sh:targetNode var:resource ;
         sh:property [
             sh:path ( bl:boundTo vf:custodian [ sh:inversePath bl:boundTo ] ) ;
-            sh:hasValue var:provider ;
+            sh:hasValue var:seller ;
             sh:minCount 1 ;
             sh:maxCount 1 ;
         ] .
 
     # resource must be in provider's custody
     ex:providerIsCustodianOfResourceShape a sh:NodeShape  ;
-        sh:targetNode var:provider ;
+        sh:targetNode var:seller ;
         sh:property [
             sh:path ( bl:boundTo [ sh:inversePath vf:custodian ] [ sh:inversePath bl:boundTo ] ) ;
             sh:hasValue var:resource ;
@@ -115,14 +148,14 @@ ex:PatternTransferAtLocation-shapes {
        sh:targetNode var:toResource ;
        sh:property [
            sh:path ( bl:boundTo vf:custodian [ sh:inversePath bl:boundTo ] ) ;
-           sh:hasValue var:receiver ;
+           sh:hasValue var:buyer ;
            sh:minCount 1 ;
            sh:maxCount 1 ;
        ] .
 
    # toResource must be in receiver's custody
    ex:receiverIsCustodianOfToResourceShape a sh:NodeShape  ;
-       sh:targetNode var:receiver ;
+       sh:targetNode var:buyer ;
        sh:property [
            sh:path ( bl:boundTo [sh:inversePath vf:custodian ] [ sh:inversePath bl:boundTo ] ) ;
            sh:hasValue var:toResource ;
@@ -161,6 +194,17 @@ ex:PatternTransferAtLocation-shapes {
         sh:minCount 1 ;
         sh:maxCount 1 ;
     ] .
+
+   # toresource must be classified as resourceClassifiedAs
+       ex:toResourceClassifiedAsMustMatch
+        a sh:NodeShape ;
+        sh:targetNode var:toResource ;
+        sh:property [
+            sh:path ( bl:boundTo vf:classifiedAs [ sh:inversePath bl:boundTo ] ) ;
+            sh:hasValue var:resourceClass ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+        ] .
 
    bl:onlyOneBoundValueShape a sh:NodeShape ;
         sh:targetClass bl:Variable ;
