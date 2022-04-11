@@ -2,7 +2,6 @@ package won.utils.blend;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.sparql.core.DatasetGraph;
-import org.apache.jena.sparql.graph.GraphFactory;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -11,15 +10,10 @@ import org.opentest4j.AssertionFailedError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import won.utils.blend.algorithm.BlendingAlgorithm;
-import won.utils.blend.algorithm.astarish2.AStarish2BlendingAlgorithm;
-import won.utils.blend.algorithm.bruteforce.BruteForceBlendingAlgorithm;
 import won.utils.blend.algorithm.join.AlgorithmState;
 import won.utils.blend.algorithm.join.JoiningAlgorithm;
-import won.utils.blend.algorithm.sat.shacl2.astarish.AStarishBlendingAlgorithm;
 import won.utils.blend.algorithm.support.BlendingBackground;
 import won.utils.blend.algorithm.support.BlendingOperations;
-import won.utils.blend.support.bindings.VariableBinding;
-import won.utils.blend.support.bindings.VariableBindingFilter;
 import won.utils.blend.support.io.TemplateIO;
 import won.utils.blend.support.stats.BindingResultStatsAccumulator;
 import won.utils.blend.support.stats.formatter.DefaultBlendingResultStatsFormatter;
@@ -55,7 +49,7 @@ public class BlendingTests {
                         true,
                         false,
                         null,
-                        null, AlgorithmState.Verbosity.ERROR);
+                        null, AlgorithmState.Verbosity.TRACE);
         testOk(inputLeftFile, inputRightFile, expectedOutputFile, "_allbound", allBoundOptions);
     }
 
@@ -78,12 +72,12 @@ public class BlendingTests {
     public void testOkUnboundAllowedIfNoOtherBinding(File inputLeftFile, File inputRightFile, File expectedOutputFile)
                     throws IOException {
         BlendingOptions allowUnboundIfNoOtherBindingsOptions = new BlendingOptions(
-                        UnboundHandlingMode.UNBOUND_ALLOWED_IF_NO_OTHER_OPTION,
+                        UnboundHandlingMode.UNBOUND_ALLOWED_IF_NO_OTHER_BINDING,
                         true,
                         true,
                         null,
                         null,
-                        AlgorithmState.Verbosity.DEBUG);
+                        AlgorithmState.Verbosity.FINER_TRACE);
         testOk(inputLeftFile, inputRightFile, expectedOutputFile, "_unboundAllowedIfNoOtherBindings",
                         allowUnboundIfNoOtherBindingsOptions);
     }

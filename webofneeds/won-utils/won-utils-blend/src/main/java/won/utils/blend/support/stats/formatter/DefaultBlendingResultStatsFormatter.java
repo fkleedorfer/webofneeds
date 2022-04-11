@@ -1,6 +1,7 @@
 package won.utils.blend.support.stats.formatter;
 
 import org.apache.jena.graph.Node;
+import won.utils.blend.BLEND;
 import won.utils.blend.support.bindings.VariableBinding;
 import won.utils.blend.support.bindings.VariableBindings;
 import won.utils.blend.support.stats.BlendingResultStats;
@@ -85,13 +86,22 @@ public class DefaultBlendingResultStatsFormatter
                                                                 tb.getUnboundNonBlankVariables().size()));
                                 tb.getBindingsAsSet().stream()
                                                 .map(vb -> String.format("%-50s -> %s\n", vb.getVariable(),
-                                                                vb.getBoundNode()))
+                                                                formatBoundNode(vb)))
                                                 .sorted()
                                                 .forEach(stringBuilder::append);
                             });
             stringBuilder.append("--------------\n");
         }
         return stringBuilder.toString();
+    }
+
+    private String formatBoundNode(VariableBinding vb) {
+        Node boundNode = vb.getBoundNode();
+        if (boundNode.equals(BLEND.unbound)){
+            return "[explicitly unbound]";
+        } else {
+            return boundNode.toString();
+        }
     }
 
     private String center(String text, int width) {

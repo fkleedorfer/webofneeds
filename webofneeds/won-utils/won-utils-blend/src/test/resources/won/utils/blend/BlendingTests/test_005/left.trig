@@ -69,11 +69,6 @@ ex:PatternBuySell-config {
     vf:transfer a bl:Unblendable .
     vf:Intent a bl:Unblendable .
 
-    var:resourceTransfer
-        a bl:Variable ;
-        bl:name "transfer intent" ;
-        bl:candidateShape vfsh:IntentCandidateShape .
-
     var:seller
             a bl:Variable ;
             bl:candidateShape vfsh:AgentCandidateShape .
@@ -91,6 +86,14 @@ ex:PatternBuySell-config {
             bl:candidateShape vfsh:ResourceClassCandidateShape .
 
         var:toResource
+            a bl:Variable ;
+            bl:candidateShape vfsh:EconomicResourceCandidateShape .
+
+        var:buyersAccount
+            a bl:Variable ;
+            bl:candidateShape vfsh:EconomicResourceCandidateShape .
+
+        var:sellersAccount
             a bl:Variable ;
             bl:candidateShape vfsh:EconomicResourceCandidateShape .
 
@@ -119,8 +122,12 @@ ex:PatternBuySell-shapes {
 
     ex:CurrencyShape a sh:NodeShape ;
         sh:targetNode var:currency ;
-        sh:path ( [ sh:inversePath rdf:first ] [ sh:zeroOrMorePath [ sh:inversePath rdf:rest] ] [sh:inversePath owl:oneOf ] [ sh:inversePath owl:equivalentClass ] ) ;
-        sh:value om2:AmountOfMoneyUnit .
+        sh:property [
+            sh:path ( [ sh:inversePath rdf:first ] [ sh:zeroOrMorePath [ sh:inversePath rdf:rest] ] [sh:inversePath owl:oneOf ] [ sh:inversePath owl:equivalentClass ] ) ;
+            sh:value om2:AmountOfMoneyUnit ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+        ] .
 
      # resource must be in provider's custody
     ex:resourceIsInCustodyOfProviderShape a sh:NodeShape  ;
@@ -142,6 +149,17 @@ ex:PatternBuySell-shapes {
             sh:maxCount 1 ;
         ] .
 
+   # buyer must differ from seller
+   ex:buyerDiffersFromSellerShape a sh:NodeShape ;
+    sh:targetNode var:seller ;
+        sh:property [
+            sh:path ( bl:boundTo [ sh:inversePath bl:boundTo ] ) ;
+            sh:not [
+                sh:hasValue var:buyer ;
+            ] ;
+            sh:minCount 1 ;
+            sh:maxCount 1 ;
+        ] .
 
    # toResource must be in receiver's custody
    ex:toResourceIsInCustodyOfReceiverShape a sh:NodeShape  ;

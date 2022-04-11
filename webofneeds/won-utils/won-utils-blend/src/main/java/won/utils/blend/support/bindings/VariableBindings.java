@@ -126,24 +126,24 @@ public class VariableBindings {
      */
     private boolean isInvariantViolated() {
         return
-        // all keys in bindings map must be in variables set
-        !variables.containsAll(bindings.keySet())
-                        // no variable may be bound to itself
-                        || bindings.entrySet().stream().anyMatch(e -> e.getKey().equals(e.getValue()))
-                        // no reference chains longer than 2
-                        || !bindings.keySet().stream().allMatch(this::isValidReferenceChainLength)
-                        // no blank node variables bound to non-blank variables (except blank ->
-                        // bl:unbound)
-                        || bindings.entrySet().stream()
+                        // all keys in bindings map must be in variables set
+                        !variables.containsAll(bindings.keySet())
+                                        // no variable may be bound to itself
+                                        || bindings.entrySet().stream().anyMatch(e -> e.getKey().equals(e.getValue()))
+                                        // no reference chains longer than 2
+                                        || !bindings.keySet().stream().allMatch(this::isValidReferenceChainLength)
+                                        // no blank node variables bound to non-blank variables (except blank ->
+                                        // bl:unbound)
+                                        || bindings.entrySet().stream()
                                         .anyMatch(e -> e.getKey().isBlank() != e.getValue().isBlank()
                                                         && !e.getValue().equals(BLEND.unbound))
-                        // blank node vars cannot be bound to explicitly unbound blank node vars.
-                        // the same configuration is ok for non-blank vars because it reduces
-                        // the degrees of freedom. for blank nodes, though, unbound means the blanks
-                        // are rendered as-is so this configuration raises the degrees of freedom
-                        // e.g.: b1 -> b2 -> blank; b2 -> b1 -> blank; b1 -> blank, b2 -> blank
-                        // is three equivalent solutions instead of one
-                        || bindings.entrySet().stream()
+                                        // blank node vars cannot be bound to explicitly unbound blank node vars.
+                                        // the same configuration is ok for non-blank vars because it reduces
+                                        // the degrees of freedom. for blank nodes, though, unbound means the blanks
+                                        // are rendered as-is so this configuration raises the degrees of freedom
+                                        // e.g.: b1 -> b2 -> blank; b2 -> b1 -> blank; b1 -> blank, b2 -> blank
+                                        // is three equivalent solutions instead of one
+                                        || bindings.entrySet().stream()
                                         .anyMatch(e -> e.getKey().isBlank()
                                                         && e.getValue().isBlank()
                                                         && dereferenceIfVariable(e.getKey()).isEmpty());
@@ -269,20 +269,30 @@ public class VariableBindings {
         return false;
     }
 
+    /**
+     * Applies {@link #dereferenceIfVariable(Node)} to each element, returning the result if present, otherwise the
+     * provided node, collected as a List.
+     *
+     * @param variables
+     * @return
+     */
     public List<Node> dereferenceIfVariableToList(List<Node> variables) {
         return variables.stream()
-                        .map(n -> dereferenceIfVariable(n))
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
+                        .map(n -> dereferenceIfVariable(n).orElse(n))
                         .collect(Collectors.toList());
     }
 
-    public List<Node> dereferenceIfVariableToSet(Set<Node> variables) {
+    /**
+     * Applies {@link #dereferenceIfVariable(Node)} to each element, returning the result if present, otherwise the
+     * * provided node, collected as a Set.
+     *
+     * @param variables
+     * @return
+     */
+    public Set<Node> dereferenceIfVariableToSet(Set<Node> variables) {
         return variables.stream()
-                        .map(n -> dereferenceIfVariable(n))
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(Collectors.toList());
+                        .map(n -> dereferenceIfVariable(n).orElse(n))
+                        .collect(Collectors.toSet());
     }
 
     @Override
@@ -318,10 +328,21 @@ public class VariableBindings {
     }
 
     public boolean conflictsWith(VariableBindings other) {
+        return conflictsWith(other, false);
+    }
+
+    public boolean conflictsWithAllowOverrideUnbound(VariableBindings other){
+        return conflictsWith(other, true);
+    }
+
+    public boolean conflictsWith(VariableBindings other, boolean allowOverrideUnbound) {
         for (Node var : variables) {
             Node ourValue = bindings.get(var);
             Node theirValue = other.bindings.get(var);
             if (ourValue != null && theirValue != null && !ourValue.equals(theirValue)) {
+                if (allowOverrideUnbound && (theirValue.equals(BLEND.unbound) || ourValue.equals(BLEND.unbound))){
+                    continue;
+                }
                 return true;
             }
         }
@@ -333,7 +354,20 @@ public class VariableBindings {
             throw new IllegalArgumentException("Cannot merge bindings: underlying variables differ");
         }
         Map<Node, Node> mergedBindings = new HashMap<>(this.bindings);
-        mergedBindings.putAll(bindings.bindings);
+        for (Map.Entry<Node, Node> entry: bindings.bindings.entrySet()){
+            mergedBindings.merge(entry.getKey(), entry.getValue(), (l, r ) -> {
+                if (l.equals(BLEND.unbound)){
+                    return r;
+                }
+                if (r.equals(BLEND.unbound)) {
+                    return l;
+                }
+                if (l.equals(r)){
+                    return r;
+                }
+                throw new IllegalArgumentException("cannot merge, conflict for bindings of " + entry.getKey() + ": bound to " + l + " and " + r );
+            } );
+        }
         return new VariableBindings(variables, mergedBindings);
     }
 
@@ -503,5 +537,13 @@ public class VariableBindings {
                         .filter(var -> dereferenceIfVariable(var).map(boundNode -> node.equals(boundNode))
                                         .orElse(false))
                         .collect(Collectors.toUnmodifiableSet());
+    }
+
+    public void setUndecidedToExplicitlyUnbound() {
+        variables.stream().forEach(var -> {
+            if (!bindings.containsKey(var)) {
+                bindings.put(var, BLEND.unbound);
+            }
+        });
     }
 }

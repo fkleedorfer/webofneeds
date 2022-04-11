@@ -22,7 +22,6 @@
 @prefix bl:      <https://w3id.org/won/blending#> .
 
 
-
 # Note: more info on validation rules:
 #
 # https://github.com/valueflows/vf-apps/issues/5
@@ -68,39 +67,27 @@ vf:
 .
 
 :EconomicEventCandidateShape
-    a              sh:NodeShape .
+    a sh:NodeShape .
 
 # drop all solutions in which provider = receiver
 
 ex:providerDiffersFromReceiverShape
-    a             sh:NodeShape ;
+    a              sh:NodeShape ;
     sh:targetClass vf:Intent, vf:Commitment, vf:EconomicEvent ;
-    sh:not        [ sh:path     vf:provider ;
-                    sh:equals   vf:receiver ;
-                    sh:message "vf:provider and vf:receiver must be different" ;
-                    sh:maxCount 1 ;
-                    sh:minCount 1 ; ] .
+    sh:not         [ sh:path     vf:provider ;
+                     sh:equals   vf:receiver ;
+                     sh:message  "vf:provider and vf:receiver must be different" ;
+                     sh:minCount 1 ; ] .
 
 # drop all solutions in which resource = toResource
 
 ex:resourceDiffersFromToResourceShape
-    a             sh:NodeShape ;
+    a              sh:NodeShape ;
     sh:targetClass vf:Intent, vf:Commitment, vf:EconomicEvent ;
-    sh:property [
-                  sh:path vf:resourceInventoriedAs ;
-                  sh:minCount 1 ;
-                  sh:maxCount 1 ;
-                ] ;
-    sh:property [
-                  sh:path vf:toResourceInventoriedAs ;
-                  sh:minCount 1 ;
-                  sh:maxCount 1 ;
-    ] ;
-    sh:not        [ sh:path     vf:resourceInventoriedAs ;
-                    sh:equals   vf:toResourceInventoriedAs ;
-                    sh:message "vf:resource and vf:toResource must be different" ;
-                    sh:maxCount 1 ;
-                    sh:minCount 1 ; ] .
+    sh:not         [ sh:path     vf:resourceInventoriedAs ;
+                     sh:equals   vf:toResourceInventoriedAs ;
+                     sh:message  "vf:resource and vf:toResource must be different" ;
+                     sh:minCount 1 ; ] .
 
 :quantityFullyBlendedOrNotAtAll
     a                  sh:NodeShape ;
@@ -125,73 +112,89 @@ ex:resourceDiffersFromToResourceShape
 
 
 :IntentShape
-    a           sh:NodeShape ;
+    a              sh:NodeShape ;
     sh:targetClass vf:Intent ;
-    sh:property :ProviderRequiredShape ;
-    sh:property :ReceiverRequiredShape ;
-    sh:property :ActionRequiredShape ;
-    sh:property :ResourceInventoriedAsShape ;
-    sh:property :ToResourceInventoriedAsShape ;
-    sh:xone     ( [ sh:property :ResourceQuantityRequiredShape ]
-                  [ sh:property :EffortQuantityRequiredShape ; ] ) ;
-    sh:property :ResourceClassifiedAsRequiredShape ;
+    sh:property    :ProviderRequiredShape ;
+    sh:property    :ReceiverRequiredShape ;
+    sh:property    :ActionRequiredShape ;
+    sh:property    :ResourceInventoriedAsShape ;
+    sh:property    :ToResourceInventoriedAsShape ;
+    sh:xone        ( [ sh:property :ResourceQuantityRequiredShape ]
+                     [ sh:property :EffortQuantityRequiredShape ; ] ) ;
+    sh:property    :ResourceClassifiedAsRequiredShape .
+
+:IntentResourceClassMatchesShape
+    a              sh:NodeShape ;
+    sh:targetClass vf:Intent ;
+    sh:property    [ sh:path     ( vf:resourceInventoriedAs vf:classifiedAs ) ;
+                     sh:equals   vf:resourceClassifiedAs ;
+                     sh:minCount 1 ;
+                     sh:maxCount 1 ; ] .
+
+:IntentToResourceClassMatchesShape
+    a              sh:NodeShape ;
+    sh:targetClass vf:Intent ;
+    sh:property    [ sh:path     ( vf:toResourceInventoriedAs vf:classifiedAs ) ;
+                     sh:equals   vf:resourceClassifiedAs ;
+                     sh:minCount 1 ;
+                     sh:maxCount 1 ; ]
 .
 
 :IntentCandidateShape
-    a           sh:NodeShape ;
+    a              sh:NodeShape ;
     sh:targetClass vf:Intent ;
     sh:deactivated true .
 
 :RecipeFlowShape
-    a           sh:NodeShape ;
+    a              sh:NodeShape ;
     sh:targetClass vf:RecipeFlow ;
-    sh:property :ProviderShape ;
-    sh:property :ReceiverShape ;
-    sh:property :ActionRequiredShape ;
-    sh:xone     ( [ sh:property :ResourceQuantityRequiredShape ]
-                  [ sh:property :EffortQuantityRequiredShape ; ] ) ;
+    sh:property    :ProviderShape ;
+    sh:property    :ReceiverShape ;
+    sh:property    :ActionRequiredShape ;
+    sh:xone        ( [ sh:property :ResourceQuantityRequiredShape ]
+                     [ sh:property :EffortQuantityRequiredShape ; ] ) ;
 .
 
 :RecipeFlowCandidateShape
-    a           sh:NodeShape ;
+    a              sh:NodeShape ;
     sh:targetClass vf:RecipeFlow ;
     sh:deactivated true .
 
 :CommitmentShape
-    a           sh:NodeShape ;
+    a              sh:NodeShape ;
     sh:targetClass vf:Commitment ;
-    sh:property :ProviderRequiredShape ;
-    sh:property :ReceiverRequiredShape ;
-    sh:property :ActionRequiredShape ;
-    sh:property :ResourceInventoriedAsShape ;
-    sh:property :ToResourceInventoriedAsShape ;
-    sh:xone     ( [ sh:property :ResourceQuantityRequiredShape ; ]
-                  [ sh:property :EffortQuantityRequiredShape ; ] ) ;
-    sh:property :ResourceClassifiedAsShape ;
-    sh:property [ sh:path     [ sh:inversePath vf:satisfiedBy ] ;
-                  sh:minCount 1 ; ] ;
+    sh:property    :ProviderRequiredShape ;
+    sh:property    :ReceiverRequiredShape ;
+    sh:property    :ActionRequiredShape ;
+    sh:property    :ResourceInventoriedAsShape ;
+    sh:property    :ToResourceInventoriedAsShape ;
+    sh:xone        ( [ sh:property :ResourceQuantityRequiredShape ; ]
+                     [ sh:property :EffortQuantityRequiredShape ; ] ) ;
+    sh:property    :ResourceClassifiedAsShape ;
+    sh:property    [ sh:path     [ sh:inversePath vf:satisfiedBy ] ;
+                     sh:minCount 1 ; ] ;
 .
 
 :CommitmentCandidateShape
-    a           sh:NodeShape ;
+    a              sh:NodeShape ;
     sh:targetClass vf:Commitment ;
     sh:deactivated true .
 
 :SatisfactionShape
-    a           sh:NodeShape ;
-    sh:targetClass  vf:Satisfaction ;
-    sh:property :ResourceQuantityRequiredShape ;
-    sh:property [ sh:path     vf:satisfies ;
-                  sh:class    vf:Intent ;
-                  sh:minCount 1 ; ] ;
-    sh:property [ sh:path     vf:satisfiedBy ;
-                  sh:class    vf:Commitment ;
-                  sh:minCount 1 ; ] ;
+    a              sh:NodeShape ;
+    sh:targetClass vf:Satisfaction ;
+    sh:property    :ResourceQuantityRequiredShape ;
+    sh:property    [ sh:path     vf:satisfies ;
+                     sh:class    vf:Intent ;
+                     sh:minCount 1 ; ] ;
+    sh:property    [ sh:path     vf:satisfiedBy ;
+                     sh:class    vf:Commitment ;
+                     sh:minCount 1 ; ] ;
 .
 
 :SatisfactionCandidateShape
-    a           sh:NodeShape ;
-    sh:targetClass  vf:Satisfaction ;
+    a              sh:NodeShape ;
+    sh:targetClass vf:Satisfaction ;
     sh:deactivated true .
 
 :EconomicResourceShape
@@ -217,33 +220,35 @@ ex:resourceDiffersFromToResourceShape
     sh:targetClass vf:EconomicResource ;
     sh:deactivated true .
 
-:ResourceClassCandidateShape a sh:NodeShape ;
+:ResourceClassCandidateShape
+    a                  sh:NodeShape ;
     sh:targetObjectsOf vf:classifiedAs ;
     sh:targetObjectsOf vf:resourceClassifiedAs ;
     sh:targetObjectsOf vf:toResourceClassifiedAs .
 
 
 :PrimaryAccountableShape
-    a           sh:PropertyShape ;
-    sh:path     vf:primaryAccountable ;
-    sh:targetSubjectsOf     vf:primaryAccountable ;
-    sh:class    foaf:Agent ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:primaryAccountable ;
+    sh:targetSubjectsOf vf:primaryAccountable ;
+    sh:class            foaf:Agent ;
+    sh:maxCount         1 ;
 .
 
-:LocationCandidateShape a sh:NodeShape ;
+:LocationCandidateShape
+    a                  sh:NodeShape ;
     sh:targetObjectsOf vf:atLocation ;
     sh:targetObjectsOf vf:toLocation ;
     sh:targetObjectsOf vf:currentLocation ;
     sh:targetObjectsOf vf:elegibleLocation ;
-       sh:targetObjectsOf vf:primaryLocation ;
-                        sh:deactivated true .
+    sh:targetObjectsOf vf:primaryLocation ;
+    sh:deactivated     true .
 
 :AtLocationShape
-    a           sh:PropertyShape ;
-    sh:path     vf:atLocation ;
-    sh:targetSubjectsOf     vf:atLocation ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:atLocation ;
+    sh:targetSubjectsOf vf:atLocation ;
+    sh:maxCount         1 ;
 .
 
 :AtLocationRequiredShape
@@ -254,10 +259,10 @@ ex:resourceDiffersFromToResourceShape
 .
 
 :ToLocationShape
-    a           sh:PropertyShape ;
-    sh:path     vf:toLocation ;
-    sh:targetSubjectsOf     vf:toLocation ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:toLocation ;
+    sh:targetSubjectsOf vf:toLocation ;
+    sh:maxCount         1 ;
 .
 
 :ToLocationRequiredShape
@@ -268,41 +273,41 @@ ex:resourceDiffersFromToResourceShape
 .
 
 :CurrentLocationShape
-    a           sh:PropertyShape ;
-    sh:path     vf:currentLocation ;
-    sh:targetSubjectsOf     vf:currentLocation ;
-    sh:nodeKind sh:IRI ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:currentLocation ;
+    sh:targetSubjectsOf vf:currentLocation ;
+    sh:nodeKind         sh:IRI ;
+    sh:maxCount         1 ;
 .
 
 :ConformsToShape
-    a        sh:PropertyShape ;
-    sh:path  vf:conformsTo ;
-    sh:targetSubjectsOf  vf:conformsTo ;
-    sh:class vf:ResourceSpecification ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:conformsTo ;
+    sh:targetSubjectsOf vf:conformsTo ;
+    sh:class            vf:ResourceSpecification ;
 .
 
 :ContainedInShape
-    a        sh:PropertyShape ;
-    sh:path  vf:containedIn ;
-    sh:targetSubjectsOf  vf:containedIn ;
-    sh:class vf:EconomicResource ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:containedIn ;
+    sh:targetSubjectsOf vf:containedIn ;
+    sh:class            vf:EconomicResource ;
 .
 
 :TrackingIdentifierShape
-    a           sh:PropertyShape ;
-    sh:path     vf:trackingIdentifier ;
-    sh:targetSubjectsOf     vf:trackingIdentifier ;
-    sh:nodeKind sh:IRIOrLiteral ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:trackingIdentifier ;
+    sh:targetSubjectsOf vf:trackingIdentifier ;
+    sh:nodeKind         sh:IRIOrLiteral ;
+    sh:maxCount         1 ;
 .
 
 :ResourceClassifiedAsShape
-    a           sh:PropertyShape ;
-    sh:targetSubjectsOf vf:resourceClassifiedAs;
-    sh:path     vf:resourceClassifiedAs ;
-    sh:nodeKind sh:IRI ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:targetSubjectsOf vf:resourceClassifiedAs ;
+    sh:path             vf:resourceClassifiedAs ;
+    sh:nodeKind         sh:IRI ;
+    sh:maxCount         1 ;
 .
 
 
@@ -315,30 +320,32 @@ ex:resourceDiffersFromToResourceShape
 .
 
 :ClassifiedAsShape
-    a           sh:PropertyShape ;
-    sh:path     vf:classifiedAs ;
-    sh:targetSubjectsOf     vf:classifiedAs ;
-    sh:nodeKind sh:IRI ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:classifiedAs ;
+    sh:targetSubjectsOf vf:classifiedAs ;
+    sh:nodeKind         sh:IRI ;
+    sh:maxCount         1 ;
 .
 
 :AccountingQuantityShape
-    a           sh:PropertyShape ;
-    sh:path     vf:accountingQuantity ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:accountingQuantity ;
     sh:targetSubjectsOf vf:accountingQuantity ;
-    sh:node     :QuantityNodeShape ;
-    sh:maxCount 1 ;
-    sh:nodeKind sh:BlankNodeOrIRI ;
+    sh:node             :QuantityNodeShape ;
+    sh:maxCount         1 ;
+    sh:nodeKind         sh:BlankNodeOrIRI ;
 .
 
 :QuantityNodeShape
     a           sh:NodeShape ;
-    sh:property [ sh:path [ sh:inversePath [ sh:alternativePath  ( vf:onhandQuantity vf:accountingQuantity vf:resourceQuantity vf:effortQuantity ) ] ] ;
-                  sh:maxCount 1;
-                  sh:minCount 1;
-                ] ;
+    sh:property [ sh:path     [ sh:inversePath
+                                        [ sh:alternativePath
+                                                  ( vf:onhandQuantity vf:accountingQuantity vf:resourceQuantity
+                                                    vf:effortQuantity ) ] ] ;
+                  sh:maxCount 1 ;
+                  sh:minCount 1 ; ] ;
     sh:property [ sh:path     om2:hasUnit ;
-                  sh:class om2:Unit ;
+                  sh:class    om2:Unit ;
                   sh:minCount 1 ;
                   sh:maxCount 1 ; ] ;
     sh:property [ sh:path     om2:hasNumericalValue ;
@@ -355,21 +362,21 @@ ex:resourceDiffersFromToResourceShape
 .
 
 :OnhandQuantityShape
-    a           sh:PropertyShape ;
-    sh:node     :QuantityNodeShape ;
-    sh:targetSubjectsOf     vf:onhandQuantity ;
-    sh:path     vf:onhandQuantity ;
-    sh:maxCount 1 ;
-    sh:nodeKind sh:BlankNodeOrIRI ;
+    a                   sh:PropertyShape ;
+    sh:node             :QuantityNodeShape ;
+    sh:targetSubjectsOf vf:onhandQuantity ;
+    sh:path             vf:onhandQuantity ;
+    sh:maxCount         1 ;
+    sh:nodeKind         sh:BlankNodeOrIRI ;
 .
 
 :ResourceQuantityRequiredShape
-    a           sh:PropertyShape ;
-    sh:node     :QuantityNodeShape ;
-    sh:path     vf:resourceQuantity ;
-    sh:targetSubjectsOf     vf:resourceQuantity ;
-    sh:minCount 1 ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:node             :QuantityNodeShape ;
+    sh:path             vf:resourceQuantity ;
+    sh:targetSubjectsOf vf:resourceQuantity ;
+    sh:minCount         1 ;
+    sh:maxCount         1 ;
 .
 
 
@@ -381,50 +388,53 @@ ex:resourceDiffersFromToResourceShape
     sh:maxCount 1 ;
 .
 
-:QuantityUnitCandidateShape a sh:NodeShape ;
+:QuantityUnitCandidateShape
+    a              sh:NodeShape ;
     sh:targetClass om2:Unit ;
-                            sh:deactivated true .
+    sh:deactivated true .
 
-:QuantityValueCandidateShape a sh:NodeShape ;
-                     sh:targetObjectsOf om2:hasNumericalValue ;
-                     sh:nodeKind sh:Literal ;
-                   sh:or       ( [ sh:datatype xsd:int ]
-                                 [ sh:datatype xsd:integer ]
-                                 [ sh:datatype xsd:double ]
-                                 [ sh:datatype xsd:float ]
-                                 [ sh:datatype xsd:decimal ]
-                                 [ sh:datatype xsd:long ]
-                                 [ sh:datatype xsd:short ] )  ;
-                             sh:deactivated true .
+:QuantityValueCandidateShape
+    a                  sh:NodeShape ;
+    sh:targetObjectsOf om2:hasNumericalValue ;
+    sh:nodeKind        sh:Literal ;
+    sh:or              ( [ sh:datatype xsd:int ]
+                         [ sh:datatype xsd:integer ]
+                         [ sh:datatype xsd:double ]
+                         [ sh:datatype xsd:float ]
+                         [ sh:datatype xsd:decimal ]
+                         [ sh:datatype xsd:long ]
+                         [ sh:datatype xsd:short ] ) ;
+    sh:deactivated     true .
 
 :ResourceInventoriedAsShape
-    a           sh:PropertyShape ;
-    sh:class    vf:EconomicResource ;
-    sh:path     vf:resourceInventoriedAs ;
-    sh:targetSubjectsOf     vf:resourceInventoriedAs ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:class            vf:EconomicResource ;
+    sh:path             vf:resourceInventoriedAs ;
+    sh:targetSubjectsOf vf:resourceInventoriedAs ;
+    sh:maxCount         1 ;
 .
 
 :ToResourceInventoriedAsShape
-    a           sh:PropertyShape ;
-    sh:class    vf:EconomicResource ;
-    sh:path     vf:toResourceInventoriedAs ;
-    sh:targetSubjectsOf     vf:toResourceInventoriedAs ;
-    sh:maxCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:class            vf:EconomicResource ;
+    sh:path             vf:toResourceInventoriedAs ;
+    sh:targetSubjectsOf vf:toResourceInventoriedAs ;
+    sh:maxCount         1 ;
 .
 
-:AgentCandidateShape a sh:NodeShape ;
+:AgentCandidateShape
+    a              sh:NodeShape ;
     sh:targetClass foaf:Agent ;
-                     sh:deactivated true .
+    sh:deactivated true .
 
 :ProviderShape
-    a           sh:PropertyShape ;
-    sh:path     vf:provider ;
-    sh:targetSubjectsOf     vf:provider ;
-    sh:class    foaf:Agent ;
-    sh:maxCount 1 ;
-    sh:minCount 0 ;
-    sh:nodeKind sh:IRI ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:provider ;
+    sh:targetSubjectsOf vf:provider ;
+    sh:class            foaf:Agent ;
+    sh:maxCount         1 ;
+    sh:minCount         0 ;
+    sh:nodeKind         sh:IRI ;
 .
 
 :ProviderRequiredShape
@@ -437,13 +447,13 @@ ex:resourceDiffersFromToResourceShape
 .
 
 :ReceiverShape
-    a           sh:PropertyShape ;
-    sh:path     vf:receiver ;
-    sh:targetSubjectsOf     vf:receiver ;
-    sh:class    foaf:Agent ;
-    sh:maxCount 1 ;
-    sh:minCount 0 ;
-    sh:nodeKind sh:IRI ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:receiver ;
+    sh:targetSubjectsOf vf:receiver ;
+    sh:class            foaf:Agent ;
+    sh:maxCount         1 ;
+    sh:minCount         0 ;
+    sh:nodeKind         sh:IRI ;
 .
 
 :ReceiverRequiredShape
@@ -456,12 +466,12 @@ ex:resourceDiffersFromToResourceShape
 .
 
 :ActionRequiredShape
-    a           sh:PropertyShape ;
-    sh:path     vf:action ;
-    sh:targetSubjectsOf     vf:action ;
-    sh:class    vf:Action ;
-    sh:maxCount 1 ;
-    sh:minCount 1 ;
+    a                   sh:PropertyShape ;
+    sh:path             vf:action ;
+    sh:targetSubjectsOf vf:action ;
+    sh:class            vf:Action ;
+    sh:maxCount         1 ;
+    sh:minCount         1 ;
 .
 
 

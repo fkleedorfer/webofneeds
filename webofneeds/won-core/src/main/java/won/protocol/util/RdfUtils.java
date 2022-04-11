@@ -1142,7 +1142,7 @@ public class RdfUtils {
         // model.getResource(resourceURI.toString()).asNode(),
         // propertyPath);
         Iterator<Node> result = PathEval.eval(model.getGraph(), model.getResource(resourceURI.toString()).asNode(),
-                        propertyPath, Context.emptyContext);
+                        propertyPath, Context.emptyContext());
         if (!result.hasNext()) {
             return null;
         }
@@ -1153,7 +1153,7 @@ public class RdfUtils {
         // Iterator<Node> result = PathEval.eval(model.getGraph(),
         // model.getResource(resourceURI.toString()).asNode(),
         // propertyPath);
-        Iterator<Node> result = PathEval.eval(model.getGraph(), node, propertyPath, Context.emptyContext);
+        Iterator<Node> result = PathEval.eval(model.getGraph(), node, propertyPath, Context.emptyContext());
         if (!result.hasNext()) {
             return null;
         }
@@ -1184,7 +1184,7 @@ public class RdfUtils {
      */
     public static Iterator<Node> getNodesForPropertyPath(final Model model, URI resourceURI, Path propertyPath) {
         return PathEval.eval(model.getGraph(), model.getResource(resourceURI.toString()).asNode(),
-                        propertyPath, Context.emptyContext);
+                        propertyPath, Context.emptyContext());
     }
 
     /**
@@ -1204,7 +1204,7 @@ public class RdfUtils {
     public static <T> Stream<T> getObjectStreamForPropertyPath(final Model model, URI resourceURI, Path propertyPath,
                     Function<Node, T> mapper) {
         Iterator<Node> result = PathEval.eval(model.getGraph(), model.getResource(resourceURI.toString()).asNode(),
-                        propertyPath, Context.emptyContext);
+                        propertyPath, Context.emptyContext());
         return StreamSupport.stream(Spliterators.spliteratorUnknownSize(result, Spliterator.ORDERED), false)
                         .map(mapper);
     }

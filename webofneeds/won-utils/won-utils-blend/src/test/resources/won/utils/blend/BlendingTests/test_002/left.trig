@@ -44,7 +44,8 @@ ex:template1-config {
 ex:template1-shapes {
 
     ex:PersonCandidateShape a sh:NodeShape ;
-        sh:targetClass ex:Person .
+        sh:targetClass ex:Person ;
+        sh:deactivated true .
 
     ex:einsteinShape a sh:NodeShape ;
             sh:targetNode var:einstein1 ;

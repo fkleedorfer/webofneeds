@@ -6,21 +6,27 @@ import won.utils.blend.support.bindings.VariableBindings;
 import won.utils.blend.support.graph.BlendedGraphs;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class SearchNodeLogic {
-    public static SearchNode forInitialShapeAndBindings(AlgorithmState state, Shape initialShape,
+    public static SearchNode forInitialShapeAndBindings(AlgorithmState state, Shape initialShape, Node focusNode,
                     VariableBindings initialBindings, Set<Node> variables) {
         SearchNode newNode = new SearchNode(state, variables);
         newNode.untestedShapes.add(initialShape);
         newNode.bindings.setAll(initialBindings.getBindingsAsSet());
+        newNode.shapeToFocusNodes.put(initialShape.getShapeNode(), Set.of(focusNode));
         return newNode;
     }
 
-    public static Optional<SearchNode> join(SearchNode left, SearchNode right) {
-        if (left.bindings.conflictsWith(right.bindings)) {
+    public static Optional<SearchNode> join(SearchNode left, SearchNode right){
+        return join(left, right, false);
+    }
+
+    public static Optional<SearchNode> join(SearchNode left, SearchNode right, boolean allowOverrideUnbound) {
+        if (left.bindings.conflictsWith(right.bindings, allowOverrideUnbound)) {
             return Optional.empty();
         }
         try {
@@ -45,6 +51,14 @@ public abstract class SearchNodeLogic {
         mergeUnsatisfied(combined, left);
         combined.exploring.addAll(left.exploring);
         combined.exploring.addAll(right.exploring);
+        combined.shapeToFocusNodes.putAll(left.shapeToFocusNodes);
+        for (Map.Entry<Node, Set<Node>> nodeSetEntry : right.shapeToFocusNodes.entrySet()) {
+            combined.shapeToFocusNodes.merge(nodeSetEntry.getKey(), nodeSetEntry.getValue(), (l, r) -> {
+                Set<Node> ret = new HashSet<>(l);
+                ret.addAll(r);
+                return ret;
+            });
+        }
         return combined;
     }
 

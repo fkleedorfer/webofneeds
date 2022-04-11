@@ -1,7 +1,6 @@
 package won.utils.blend.algorithm.join;
 
 import org.apache.jena.graph.Node;
-import org.apache.jena.shacl.parser.Shape;
 import won.utils.blend.support.bindings.VariableBindings;
 
 import java.util.*;
@@ -18,7 +17,7 @@ public abstract class AlgorithmStateLogic {
      * @param bindings
      * @return
      */
-    public static Set<Shape> getApplicableShapes(AlgorithmState state, VariableBindings bindings) {
+    public static Set<ShapeFocusNode> getApplicableShapes(AlgorithmState state, VariableBindings bindings) {
         Set<Node> varsToFindShapesFor = new HashSet<>();
         varsToFindShapesFor.addAll(bindings.getBoundVariables());
         // leaving this line here to remind my future self that we actually do NOT want
@@ -26,20 +25,37 @@ public abstract class AlgorithmStateLogic {
         // add shapes to validate bound nodes that are variables - they are wildcards
         // that should not be validated.
         // varsToFindShapesFor.addAll(bindings.getBoundNodes());
-        Set<Shape> ret = state.requiredVariablesByShapes.entrySet()
-                        .stream()
-                        .filter(e -> e.getValue().stream().anyMatch(vars -> varsToFindShapesFor.containsAll(vars)))
-                        .map(Map.Entry::getKey)
+        Set<ShapeFocusNode> ret = state.boundVarsToShapesToCheck.entrySet().stream()
+                        .filter(e -> varsToFindShapesFor.containsAll(e.getKey()))
+                        .map(Map.Entry::getValue)
+                        .flatMap(Collection::stream)
                         .collect(Collectors.toSet());
         return ret;
     }
 
-    public static void recordRequiredVariablesForShape(AlgorithmState state, Shape shape,
-                    Set<Set<Node>> encounteredVariables) {
-        state.requiredVariablesByShapes.put(shape, Collections.unmodifiableSet(encounteredVariables));
+    public static void recordBoundVarsToShapesToCheck(AlgorithmState state, SearchNode searchNode) {
+        for (Set<Node> encounteredVariables : searchNode.encounteredVariables) {
+            for (Node shape : searchNode.shapeToFocusNodes.keySet()) {
+                for (Node focusNode : searchNode.shapeToFocusNodes.getOrDefault(shape, Collections.emptySet())) {
+                    ShapeFocusNode shapeFocusNode = new ShapeFocusNode(shape, focusNode);
+                    state.boundVarsToShapesToCheck.compute(encounteredVariables, (k, v) -> {
+                        if (v == null) {
+                            return new HashSet<>(Set.of(shapeFocusNode));
+                        } else {
+                            v.add(shapeFocusNode);
+                            return v;
+                        }
+                    });
+                }
+            }
+        }
     }
 
     public static boolean addToOpenNodes(AlgorithmState state, SearchNode searchNode) {
+        state.log.debugFmt("considering node with bindings "
+                        + (searchNode.bindings.isEmptyWhichMeansAllVariablesUndecided() ?
+                        "[]" :
+                        searchNode.bindings.toString()));
         if (searchNode.invalid) {
             state.log.debugFmt("Skipping invalid node. Violated shape: %s", searchNode.invalidShape);
             return false;
@@ -62,21 +78,38 @@ public abstract class AlgorithmStateLogic {
                 return false;
             }
         }
+        SearchNode nodeToAdd = searchNode;
+        /*
+        Optional<SearchNode> nodeWithSameBindings = state.openNodes.stream()
+                        .filter(n -> n.id != searchNode.id
+                                        && ! n.bindings.isEmptyWhichMeansAllVariablesUndecided()
+                                        && n.bindings.equals(searchNode.bindings)).findFirst();
+        if (nodeWithSameBindings.isPresent()){
+            state.log.debug(() ->"found node with same bindings in open list, attempting to join...");
+            Optional<SearchNode> joinResult = SearchNodeLogic.join(searchNode, nodeWithSameBindings.get());
+            if (joinResult.isPresent()) {
+                nodeToAdd = joinResult.get();
+                state.log.debug(() ->"nodes joined");
+            } else {
+                state.log.debug(() ->"nodes are not compatible");
+            }
+
+        }
+         */
         int sizeBeforeAdd = state.openNodes.size();
-        state.openNodes.add(searchNode);
+        state.openNodes.add(nodeToAdd);
+        final SearchNode finalNodeToAdd = nodeToAdd;
         if (state.openNodes.size() > sizeBeforeAdd) {
             SearchNodeFormatter formatter = new SearchNodeFormatter(state);
             state.log.debug(() -> "adding search node:");
-            state.log.logIndented(() -> state.log.debug(() -> formatter.format(searchNode)));
+            state.log.logIndented(() -> state.log.debug(() -> formatter.format(finalNodeToAdd)));
         } else {
             SearchNodeFormatter formatter = new SearchNodeFormatter(state);
             state.log.debug(() -> "node already in open set, ignoring");
-            state.log.logIndented(() -> state.log.debug(() -> formatter.format(searchNode)));
+            state.log.logIndented(() -> state.log.debug(() -> formatter.format(finalNodeToAdd)));
             if (state.log.isDebugEnabled()) {
                 state.log.debug(() -> "identical node(s) in open set:");
-                state.openNodes
-                                .stream()
-                                .filter(s -> s.equals(searchNode))
+                state.openNodes.stream().filter(s -> s.equals(finalNodeToAdd))
                                 .forEach(s -> state.log.logIndented(() -> state.log.debug(() -> formatter.format(s))));
             }
             return false;
@@ -151,14 +184,14 @@ public abstract class AlgorithmStateLogic {
         return false;
     }
 
-    public static void addResult(AlgorithmState state,
-                    SearchNode currentNode) {
+    public static void addResult(AlgorithmState state, SearchNode currentNode) {
         // state.boundVariablesInResult.addAll(currentNode.bindings.getBoundVariables());
         // state.unboundVariablesInResult.addAll(currentNode.bindings.getUnboundVariables());
         state.results.add(currentNode);
         if (state.blendingInstance.blendingOptions.getUnboundHandlingMode().isUnboundAllowedIfNoOtherBinding()) {
-            state.results.removeIf(n -> isAllVariablesBoundOrSubsetUnboundInNode(
-                            n.bindings.getUnboundNonBlankVariables(), currentNode));
+            state.results.removeIf(
+                            n -> isAllVariablesBoundOrSubsetUnboundInNode(n.bindings.getUnboundNonBlankVariables(),
+                                            currentNode));
             state.openNodes.removeIf(n -> isAllVariablesBoundOrSubsetUnboundInNode(
                             n.bindings.getExplicitlyUnboundNonBlankVariables(), currentNode));
         }

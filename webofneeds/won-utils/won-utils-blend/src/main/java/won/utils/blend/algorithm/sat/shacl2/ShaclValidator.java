@@ -19,7 +19,7 @@ import won.utils.blend.algorithm.support.instance.BlendingInstanceLogic;
 import won.utils.blend.support.bindings.VariableBinding;
 import won.utils.blend.support.bindings.VariableBindings;
 import won.utils.blend.support.graph.BlendedGraphs;
-import won.utils.blend.support.graph.VariableAwareGraph;
+import won.utils.blend.support.graph.VariableAwareGraphImpl;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,15 +33,15 @@ import static java.util.stream.Collectors.toSet;
 public abstract class ShaclValidator {
     public static Set<BindingValidationResult> validateShape(BlendingInstance instance, Shape shape,
                     VariableBindings bindings, AlgorithmState state) {
-        VariableAwareGraph data = blendDataGraphs(instance, bindings);
+        VariableAwareGraphImpl data = blendDataGraphs(instance, bindings);
         Set<BindingValidationResult> results = validateShapeOnData(
                         instance, shape, bindings, state, data);
         return results;
     }
 
-    public static VariableAwareGraph blendDataGraphs(BlendingInstance instance, VariableBindings bindings) {
+    public static VariableAwareGraphImpl blendDataGraphs(BlendingInstance instance, VariableBindings bindings) {
         BlendingInstanceLogic instanceLogic = new BlendingInstanceLogic(instance);
-        VariableAwareGraph data = new VariableAwareGraph(
+        VariableAwareGraphImpl data = new VariableAwareGraphImpl(
                         instance.blendingBackground.combineWithBackgroundData(new BlendedGraphs(
                                         instance.leftTemplate.getTemplateGraphs()
                                                         .getDataGraph(),
@@ -51,7 +51,7 @@ public abstract class ShaclValidator {
         return data;
     }
 
-    public static Set<Shape> getShapesTargetedOnBindings(AlgorithmState state, VariableAwareGraph data,
+    public static Set<Shape> getShapesTargetedOnBindings(AlgorithmState state, VariableAwareGraphImpl data,
                     VariableBindings bindings) {
         Set<Node> mainNodes = new HashSet<>(bindings.getDecidedVariables());
         state.log.trace(() -> "main nodes: " + mainNodes);
@@ -63,11 +63,11 @@ public abstract class ShaclValidator {
     }
 
     public static Set<BindingValidationResult> validateShapeOnData(BlendingInstance instance, Shape shape,
-                    VariableBindings bindings, AlgorithmState state, VariableAwareGraph data) {
+                    VariableBindings bindings, AlgorithmState state, VariableAwareGraphImpl data) {
         state.log.trace(() -> "validating shape " + shape.getShapeNode() + " with bindings " + bindings
                         .getBindingsAsSet());
         Collection<Node> focusNodes = VLib.focusNodes(data, shape);
-        data.reset();
+        data.resetEncounteredVariables();
         state.debugWriter.incIndent();
         Set<BindingValidationResult> results = new HashSet<>();
         state.log.trace(() -> String.format("found %d focus nodes", focusNodes.size()));
@@ -84,7 +84,7 @@ public abstract class ShaclValidator {
     public static BindingValidationResult validateFocusNode(BlendingInstance instance, AlgorithmState state,
                     Shape shape,
                     Node focusNode, VariableBindings bindings) {
-        VariableAwareGraph data = blendDataGraphs(instance, bindings);
+        VariableAwareGraphImpl data = blendDataGraphs(instance, bindings);
         return validateFocusNodeOnData(instance, state, shape, focusNode, bindings, data);
     }
 
@@ -92,12 +92,12 @@ public abstract class ShaclValidator {
                     AlgorithmState state, Shape shape,
                     Node focusNode,
                     VariableBindings bindings,
-                    VariableAwareGraph data) {
+                    VariableAwareGraphImpl data) {
         ShaclErrorHandler errorHandler = new ShaclErrorHandler();
         ValidationContext shaclValidationContext = ValidationContext.create(state.shapes, data, errorHandler);
         state.debugWriter.incIndent();
         state.log.trace(() -> "Checking focus node " + focusNode);
-        data.reset();
+        data.resetEncounteredVariables();
         VLib.validateShape(shaclValidationContext, data, shape, focusNode);
         Set<Node> encounteredVariables = data.getEncounteredVariables();
         BlendingInstanceLogic instanceLogic = new BlendingInstanceLogic(instance);
@@ -135,7 +135,7 @@ public abstract class ShaclValidator {
         Set<BindingValidationResult> validationResults = new HashSet<>();
         VariableBindings bindings = searchNode.bindings.getVariableBindings();
         Set<Shape> shapes = new HashSet<>(searchNode.shapes);
-        VariableAwareGraph data = blendDataGraphs(instance, bindings);
+        VariableAwareGraphImpl data = blendDataGraphs(instance, bindings);
         shapes.addAll(getShapesTargetedOnBindings(state, data, bindings));
         for (Shape toValidate : shapes) {
             Set<BindingValidationResult> results = ShaclValidator.validateShapeOnData(instance, toValidate,
@@ -212,7 +212,7 @@ public abstract class ShaclValidator {
         if (searchNode.valid.isFalse() || searchNode.encounteredVariables.size() > 0) {
             return searchNode;
         }
-        VariableAwareGraph data = new VariableAwareGraph(
+        VariableAwareGraphImpl data = new VariableAwareGraphImpl(
                         instance.blendingBackground.combineWithBackgroundData(new BlendedGraphs(
                                         instance.leftTemplate.getTemplateGraphs()
                                                         .getDataGraph(),

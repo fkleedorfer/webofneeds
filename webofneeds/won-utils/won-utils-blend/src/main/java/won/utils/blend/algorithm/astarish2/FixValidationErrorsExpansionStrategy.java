@@ -128,7 +128,7 @@ public class FixValidationErrorsExpansionStrategy extends BaseExpansionStrategy 
     }
 
     private Node evaluatePath(Graph dataGraph, Node focusNode, Path pathToExpectedValue) {
-        Iterator<Node> it = PathEval.eval(dataGraph, focusNode, pathToExpectedValue, Context.emptyContext);
+        Iterator<Node> it = PathEval.eval(dataGraph, focusNode, pathToExpectedValue, Context.emptyContext());
         if (!it.hasNext()) {
             return null;
         }

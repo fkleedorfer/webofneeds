@@ -1,5 +1,8 @@
 package won.utils.blend.algorithm.join;
 
+import org.apache.jena.graph.Node;
+import won.utils.blend.BLEND;
+import won.utils.blend.support.bindings.VariableBinding;
 import won.utils.blend.support.bindings.VariableBindings;
 
 import java.util.Collection;
@@ -38,15 +41,25 @@ public class SearchNodeFormatter {
                         .append("\tunsatisfied shapes      : ")
                         .append(node.unsatisfiedShapesByRequiredVariable.values().stream().flatMap(
                                         Collection::stream).collect(
-                                                        Collectors.toSet()))
+                                                        Collectors.toSet())).append("\n")
+                        .append("\tshapes/focusNodes: ").append(node.shapeToFocusNodes).append("\n")
                         .toString();
     }
 
     public static String bindingsToString(VariableBindings bindings, String delimiter) {
         return bindings.getBindingsAsSet()
                         .stream()
-                        .map(b -> b.getVariable() + " -> " + b.getBoundNode())
+                        .map(b -> b.getVariable() + " -> " + formatBoundNode(b))
                         .sorted()
                         .collect(joining(delimiter));
+    }
+
+    private static String formatBoundNode(VariableBinding b) {
+        Node boundNode = b.getBoundNode();
+        if (boundNode.equals(BLEND.unbound)){
+            return "[explicitly unbound]";
+        } else {
+            return boundNode.toString();
+        }
     }
 }

@@ -9,7 +9,7 @@ import won.utils.blend.BLEND;
 import won.utils.blend.algorithm.BlendingInstance;
 import won.utils.blend.algorithm.sat.support.Ternary;
 import won.utils.blend.support.bindings.VariableBinding;
-import won.utils.blend.support.graph.VariableAwareGraph;
+import won.utils.blend.support.graph.VariableAwareGraphImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -183,7 +183,7 @@ public class BindingExtractionState {
                         .forEach(blended::add);
         blended.getPrefixMapping()
                         .setNsPrefixes(instance.leftTemplate.getTemplateGraphs().getDataGraph().getPrefixMapping());
-        return new VariableAwareGraph(blended, this::isVariable);
+        return new VariableAwareGraphImpl(blended, this::isVariable);
     }
 
     private Triple blendTriple(Triple t, List<VariableBinding> bindings) {

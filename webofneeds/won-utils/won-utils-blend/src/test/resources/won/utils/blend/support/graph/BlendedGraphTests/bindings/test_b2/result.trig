@@ -13,7 +13,9 @@
 @prefix wd:     <http://www.wikidata.org/entity/> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
-var:transferIntent  bl:boundTo  ex:transferIntentAlice .
+var:transferIntent
+    a bl:Variable ;
+    bl:boundTo  ex:transferIntentAlice .
 
 ex:transferIntentAlice
         rdf:type                    vf:Intent ;

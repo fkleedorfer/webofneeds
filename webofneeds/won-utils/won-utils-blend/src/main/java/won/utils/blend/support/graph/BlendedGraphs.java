@@ -14,11 +14,12 @@ import won.utils.blend.support.bindings.VariableBinding;
 import won.utils.blend.support.bindings.VariableBindings;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class BlendedGraphs extends Union {
     private VariableBindings bindings;
-    private final Graph bindingsGraph;
+    protected final Graph bindingsGraph;
     private final boolean addBindingMetadata;
 
     public BlendedGraphs(Graph L, Graph R, Iterable<VariableBinding> bindings) {
@@ -33,11 +34,15 @@ public class BlendedGraphs extends Union {
     }
 
     public BlendedGraphs(Graph L, Graph R, VariableBindings bindings, boolean addBindingMetadata) {
+        this(L, R, bindings, addBindingMetadata, () -> GraphFactory.createGraphMem());
+    }
+
+    public BlendedGraphs(Graph L, Graph R, VariableBindings bindings, boolean addBindingMetadata, Supplier<Graph> bindingsGraphSupplier) {
         super(L, R);
         this.bindings = new ImmutableVariableBindings(new VariableBindings(bindings));
         this.addBindingMetadata = addBindingMetadata;
         if (this.addBindingMetadata) {
-            this.bindingsGraph = GraphFactory.createGraphMem();
+            this.bindingsGraph = bindingsGraphSupplier.get();
             for (Node variable : bindings.getVariables()) {
                 Optional<Node> boundTo = this.bindings.dereferenceIfVariable(variable);
                 if (variable.isBlank()) {
@@ -150,5 +155,11 @@ public class BlendedGraphs extends Union {
         Set<Node> nodes = new HashSet<>(bindings.getVariablesBoundToNode(node));
         nodes.add(node);
         return nodes;
+    }
+
+    @Override public String toString() {
+        return "BlendedGraphs{" + bindings.size() + " bindings," +
+                        "addBindingMetadata=" + addBindingMetadata +
+                        '}';
     }
 }

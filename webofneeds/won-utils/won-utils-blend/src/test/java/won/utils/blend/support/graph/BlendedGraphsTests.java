@@ -1,26 +1,31 @@
 package won.utils.blend.support.graph;
 
+import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.riot.other.G;
 import org.apache.jena.sparql.core.DatasetGraph;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import won.utils.blend.BLEND;
 import won.utils.blend.EXVAR;
 import won.utils.blend.Template;
 import won.utils.blend.support.bindings.VariableBinding;
+import won.utils.blend.support.bindings.VariableBindings;
 import won.utils.blend.support.io.TemplateIO;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static won.utils.blend.Utils.*;
 
@@ -38,13 +43,18 @@ public class BlendedGraphsTests {
         TemplateIO templateIO = new TemplateIO();
         Template leftTemplate = templateIO.fromDatasetGraph(leftDataset).stream().findAny().get();
         Template rightTemplate = templateIO.fromDatasetGraph(rightDataset).stream().findAny().get();
-        Set<VariableBinding> bindings = Set.of(
-                        new VariableBinding(EXVAR.uri("firstName"), NodeFactory.createLiteral("Albert")),
-                        new VariableBinding(EXVAR.uri("lastName"), NodeFactory.createLiteral("Einstein")));
+        Node varFirstName = EXVAR.uri("firstName");
+        Node varLastName = EXVAR.uri("lastName");
+        VariableBindings bindings = new VariableBindings(Set.of(varFirstName, varLastName), Set.of(
+                        new VariableBinding(varFirstName, NodeFactory.createLiteral("Albert")),
+                        new VariableBinding(varLastName, NodeFactory.createLiteral("Einstein"))));
         BlendedGraphs blended = new BlendedGraphs(
                         leftTemplate.getTemplateGraphs().getDataGraph(),
                         rightTemplate.getTemplateGraphs().getDataGraph(),
                         bindings);
+        assertTrue(G.allSP(blended, varFirstName, BLEND.boundTo).stream().collect(Collectors.toUnmodifiableSet()).contains(NodeFactory.createLiteral("Albert")));
+        assertTrue(G.allSP(blended, NodeFactory.createLiteral("Albert"), BLEND.boundTo).stream().count() == 0);
+
         RDFDataMgr.write(System.out, blended, Lang.TTL);
         assertGraphsAreIsomorphic(expectedDataset.getDefaultGraph(), blended, testIdentifier);
     }
@@ -60,10 +70,13 @@ public class BlendedGraphsTests {
         TemplateIO templateIO = new TemplateIO();
         Template leftTemplate = templateIO.fromDatasetGraph(leftDataset).stream().findAny().get();
         Template rightTemplate = templateIO.fromDatasetGraph(rightDataset).stream().findAny().get();
-        Set<VariableBinding> bindings = Set.of(
-                        new VariableBinding(
-                                        NodeFactory.createURI("http://example.org/var#transferIntent"),
-                                        NodeFactory.createURI("http://example.org/ns#transferIntentAlice")));
+        VariableBindings bindings = new VariableBindings(
+                        Set.of(NodeFactory.createURI("http://example.org/var#transferIntent")),
+                        Set.of(
+                                        new VariableBinding(
+                                                        NodeFactory.createURI("http://example.org/var#transferIntent"),
+                                                        NodeFactory.createURI(
+                                                                        "http://example.org/ns#transferIntentAlice"))));
         BlendedGraphs blended = new BlendedGraphs(
                         leftTemplate.getTemplateGraphs().getDataGraph(),
                         rightTemplate.getTemplateGraphs().getDataGraph(),
@@ -85,7 +98,7 @@ public class BlendedGraphsTests {
         BlendedGraphs blended = new BlendedGraphs(
                         leftTemplate.getTemplateGraphs().getDataGraph(),
                         rightTemplate.getTemplateGraphs().getDataGraph(),
-                        Collections.emptySet());
+                        new VariableBindings(Set.of()));
         RDFDataMgr.write(System.out, blended, Lang.TTL);
     }
 

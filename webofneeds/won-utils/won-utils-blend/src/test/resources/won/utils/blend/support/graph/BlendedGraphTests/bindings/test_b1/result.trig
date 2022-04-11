@@ -13,9 +13,13 @@
 @prefix wd:     <http://www.wikidata.org/entity/> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 
-var:lastName  bl:boundTo  "Einstein" .
+var:lastName
+    a bl:Variable ;
+    bl:boundTo  "Einstein" .
 
-var:firstName  bl:boundTo  "Albert" .
+var:firstName
+    a bl:Variable ;
+    bl:boundTo  "Albert" .
 
 ex:p1   rdf:type ex:Person ;
         ex:firstName  "Albert" ;

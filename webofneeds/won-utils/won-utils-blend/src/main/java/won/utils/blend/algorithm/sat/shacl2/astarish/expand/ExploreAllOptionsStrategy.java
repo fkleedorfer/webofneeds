@@ -12,7 +12,7 @@ import won.utils.blend.algorithm.sat.shacl2.astarish.SearchNode;
 import won.utils.blend.algorithm.support.instance.BlendingInstanceLogic;
 import won.utils.blend.support.bindings.VariableBinding;
 import won.utils.blend.support.bindings.VariableBindings;
-import won.utils.blend.support.graph.VariableAwareGraph;
+import won.utils.blend.support.graph.VariableAwareGraphImpl;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -68,7 +68,7 @@ public class ExploreAllOptionsStrategy implements ExpansionStrategy {
     public static Optional<SearchNode> generateSearchNodeForBindings(Set<Shape> shapes, VariableBindings bindings,
                     BlendingInstance instance, AlgorithmState state) {
         state.debugWriter.incIndent();
-        VariableAwareGraph data = ShaclValidator.blendDataGraphs(instance, bindings);
+        VariableAwareGraphImpl data = ShaclValidator.blendDataGraphs(instance, bindings);
         Set<Shape> impliedShapes = ShaclValidator.getShapesTargetedOnBindings(state, data, bindings);
         Set<Shape> shapesToCheck = new HashSet<>(shapes);
         shapesToCheck.addAll(impliedShapes);

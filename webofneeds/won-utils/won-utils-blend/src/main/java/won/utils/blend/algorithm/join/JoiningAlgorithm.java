@@ -7,6 +7,7 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.shacl.Shapes;
 import org.apache.jena.shacl.parser.Shape;
+import org.apache.jena.shacl.validation.VLib;
 import won.utils.blend.algorithm.BlendingAlgorithm;
 import won.utils.blend.algorithm.BlendingInstance;
 import won.utils.blend.algorithm.sat.support.Ternary;
@@ -18,6 +19,7 @@ import won.utils.blend.support.bindings.VariableBindings;
 import won.utils.blend.support.graph.BlendedGraphs;
 import won.utils.blend.support.graph.TemplateGraphs;
 import won.utils.blend.support.graph.VariableAwareGraph;
+import won.utils.blend.support.graph.VariableAwareGraphImpl;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -45,6 +47,7 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
             state.openNodes.remove(currentNode);
             state.closedNodes.add(currentNode);
         }
+
         Set<VariableBindings> resultingBindings = state.results
                         .stream()
                         .map(r -> r.bindings)
@@ -113,8 +116,11 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
                 // in each joined node
                 currentNode.exploring.addAll(varsToExplore);
             }
-            state.log.logIndented(() -> join(blendingInstance, state, currentNode, varsToJoinOn));
+            boolean atLeastOneJoinResult = state.log.logIndented(() -> join(blendingInstance, state, currentNode, varsToJoinOn));
+            state.log.debug(() -> "node consumed by join");
+            return;
         }
+        state.log.logIndented(() -> outerJoin(blendingInstance, state, currentNode));
         if (currentNode.bindings.isAllVariablesDecided()) {
             if (state.results.contains(currentNode)) {
                 state.log.debug(() -> "ignoring duplicate result");
@@ -127,16 +133,54 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
                 }
             }
             state.log.debug(() -> "all satisfied or all bound - evaluating globally");
-            validateSearchNodeGlobally(blendingInstance, state, currentNode);
-            if (!currentNode.invalid) {
-                state.log.debug(() -> "accepting node as final result!");
-                AlgorithmStateLogic.addResult(state, currentNode);
-                if (state.log.isDebugEnabled()) {
-                    logBlendedGraphs(blendingInstance, state, currentNode);
-                }
-            } else {
-                state.log.debug(() -> "node failed final test, ignoring");
+            addResultIfValid(blendingInstance, state, currentNode);
+        } else {
+            state.log.debug(() -> "nothing else to do with this search node - setting all unbound variables to explicitly unbound and trying again");
+            SearchNode copy = new SearchNode(state, currentNode);
+            copy.bindings.setUndecidedToExplicitlyUnbound();
+            AlgorithmStateLogic.addToOpenNodes(state, copy);
+        }
+
+    }
+
+    private void addResultIfValid(BlendingInstance blendingInstance, AlgorithmState state, SearchNode currentNode) {
+        validateSearchNodeGlobally(blendingInstance, state, currentNode);
+        if (currentNode.invalid) {
+            state.log.debugFmt("node failed final test on shape %s, ignoring", currentNode.invalidShape);
+        } else {
+            state.log.debug(() -> "accepting node as final result!");
+            AlgorithmStateLogic.addResult(state, currentNode);
+            if (state.log.isDebugEnabled()) {
+                logBlendedGraphs(blendingInstance, state, currentNode);
             }
+        }
+    }
+
+    private void outerJoin(BlendingInstance blendingInstance, AlgorithmState state, SearchNode currentNode) {
+        if (state.log.isDebugEnabled()) {
+            state.log.debug(() -> "calculating outer join with open nodes" );
+        }
+        Set<SearchNode> joinCandidates = new HashSet<>();
+        state.log.logIndented(() -> {
+            for( SearchNode other: state.openNodes){
+                if (!other.encounteredVariablesFlat.isEmpty()){
+                    continue;
+                }
+                if (!other.bindings.conflictsWithAllowOverrideUnbound(currentNode.bindings)){
+                    Optional<SearchNode> outerJoined = SearchNodeLogic.join(currentNode, other, true);
+                    if (outerJoined.isPresent()){
+                        joinCandidates.add(outerJoined.get());
+                    }
+                }
+            }
+            if (joinCandidates.size() == 0) {
+                state.log.debug(() -> " no outer join candidates");
+            } else {
+                state.log.debugFmt("outer join results in %d candidates", joinCandidates.size());
+            }
+        });
+        for( SearchNode node: joinCandidates) {
+            AlgorithmStateLogic.addToOpenNodes(state, node);
         }
     }
 
@@ -162,17 +206,25 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
         return state;
     }
 
-    private void join(BlendingInstance blendingInstance, AlgorithmState state,
+    /**
+     *
+     * @param blendingInstance
+     * @param state
+     * @param node
+     * @param joinVars
+     * @return true if at least one join was successful
+     */
+    private boolean join(BlendingInstance blendingInstance, AlgorithmState state,
                     SearchNode node, Set<Node> joinVars) {
         if (state.log.isDebugEnabled()) {
             state.log.debug(() -> "joining on " + joinVars);
         }
-        state.log.logIndented(() -> {
+        return state.log.logIndented(() -> {
             if (joinVars.isEmpty()) {
-                return;
+                return false;
             }
             if (state.openNodes.isEmpty()) {
-                return;
+                return false;
             }
             Set<SearchNode> newNodes = new HashSet<>();
             Set<SearchNode> usedNodes = new HashSet<>();
@@ -180,8 +232,14 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
             for (Node var : joinVars) {
                 Set<SearchNode> joinNodes = newNodes.isEmpty() ? Collections.singleton(node) : newNodes;
                 Set<SearchNode> joinedNodes = new HashSet<>();
-                Set<SearchNode> candidates = state.openNodes.stream()
-                                .filter(n -> n.bindings.isAlreadyDecidedVariable(var)).collect(toSet());
+                Set<SearchNode> candidates = Stream.concat(state.openNodes.stream(), state.closedNodes.stream())
+                                .filter(n -> !n.invalid)
+                                .filter(n -> n.bindings.isAlreadyDecidedVariable(var)) //we don't know what we need yet...
+                                .collect(toSet());
+
+                Set<SearchNode> predecessors = candidates.stream().flatMap(n -> n.predecessors.stream()).collect(toSet());
+                candidates.removeAll(predecessors);
+                //TODO CONTINUE HERE: optionally, set an undecided var to bl:unbound on a cloned node.
                 for (SearchNode candidate : candidates) {
                     if (candidate.bindings.isAlreadyDecidedVariable(var)) {
                         for (SearchNode toJoin : joinNodes) {
@@ -206,11 +264,11 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
                     validJoinNodes.add(newNode);
                 }
             }
-            Set<SearchNode> removeFromState = new HashSet<>();
+            Set<SearchNode> removeFromOpenNodes = new HashSet<>();
             for (SearchNode validJoinNode : validJoinNodes) {
-                removeFromState.addAll(getPredecessorsFromSet(validJoinNode, usedNodes));
+                removeFromOpenNodes.addAll(getPredecessorsFromSet(validJoinNode, usedNodes));
             }
-            state.openNodes.removeAll(removeFromState);
+            state.openNodes.removeAll(removeFromOpenNodes);
             if (validJoinNodes.isEmpty()) {
                 state.log.debug(() -> "no valid join results");
             } else {
@@ -219,10 +277,10 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
                     state.log.debugFmt(
                                     "join results in %d valid nodes, closing these %d nodes that are now predecessors:",
                                     validJoinNodes.size(),
-                                    removeFromState.size());
-                    removeFromState.forEach(n -> recalculateDependentValues(n, state));
+                                    removeFromOpenNodes.size());
+                    removeFromOpenNodes.forEach(n -> recalculateDependentValues(n, state));
                     state.log.logIndented(
-                                    () -> removeFromState.forEach(n -> state.log.debug(() -> formatter.format(n))));
+                                    () -> removeFromOpenNodes.forEach(n -> state.log.debug(() -> formatter.format(n))));
                     if (state.log.isTraceEnabled()) {
                         state.log.trace(() -> "intermediate join nodes:");
                         intermediateNodes.forEach(n -> recalculateDependentValues(n, state));
@@ -231,6 +289,9 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
                     }
                 }
             }
+            state.closedNodes.addAll(intermediateNodes);
+            state.closedNodes.addAll(removeFromOpenNodes);
+            return ! validJoinNodes.isEmpty();
         });
     }
 
@@ -336,7 +397,7 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
         searchNode.encounteredVariablesFlat.clear();
         VariableAwareGraph data = ShaclValidator.blendDataGraphs(instance, searchNode.bindings);
         Set<Node> decidedVars = searchNode.bindings.getDecidedVariables();
-        Set<Shape> checkButDontCollectEncountered = AlgorithmStateLogic.getApplicableShapes(state, searchNode.bindings);
+        Set<ShapeFocusNode> checkButDontCollectEncountered = AlgorithmStateLogic.getApplicableShapes(state, searchNode.bindings);
         Set<Shape> checkAndCollectEncountered = new HashSet<>();
         checkAndCollectEncountered.addAll(searchNode.untestedShapes);
         checkAndCollectEncountered.addAll(searchNode.unsatisfiedShapesByRequiredVariable
@@ -346,16 +407,23 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
                         .map(Map.Entry::getValue)
                         .flatMap(Collection::stream)
                         .collect(Collectors.toList()));
-        checkButDontCollectEncountered.removeAll(checkAndCollectEncountered);
-        for (Shape shape : checkButDontCollectEncountered) {
-            evaluateShapeForSearchNode(instance, state, data, searchNode, shape, false);
+        checkButDontCollectEncountered
+                        .removeIf(
+                                        shapeFocusNode ->  checkAndCollectEncountered.stream()
+                                                        .anyMatch(shape -> shapeFocusNode.shape.equals(shape.getShapeNode())
+                                                                        && searchNode.shapeToFocusNodes.getOrDefault(shape.getShapeNode(), Collections.emptySet())
+                                                                        .contains(shapeFocusNode.focusNode)));
+        for (ShapeFocusNode shapeFocusNode : checkButDontCollectEncountered) {
+            evaluateShapeForSearchNodeOnFocusNodes(instance, state, data, searchNode, state.shapes.getShape(shapeFocusNode.shape), false, Collections.singleton(shapeFocusNode.focusNode));
             if (searchNode.invalid) {
+                state.log.debugFmt("shape %s->%s, required for bound variables, is violated", shapeFocusNode.shape, shapeFocusNode.focusNode);
                 return;
             }
         }
         for (Shape shape : checkAndCollectEncountered) {
             evaluateShapeForSearchNode(instance, state, data, searchNode, shape, true);
             if (searchNode.invalid) {
+                state.log.debugFmt("shape %s->%s of search node is violated", shape.getShapeNode(), searchNode.shapeToFocusNodes.get(shape));
                 return;
             }
         }
@@ -363,19 +431,44 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
 
     private void validateSearchNodeGlobally(BlendingInstance instance, AlgorithmState state, SearchNode searchNode) {
         VariableAwareGraph data = ShaclValidator.blendDataGraphs(instance, searchNode.bindings);
-        state.shapes.getTargetShapes()
-                        .forEach(shape -> evaluateShapeForSearchNode(instance, state, data, searchNode, shape, true));
+        for (Shape shape: state.shapes.getTargetShapes()){
+            state.log.finerTraceFmt("validating shape %s", shape.getShapeNode());
+            Set<BindingValidationResult> validationResults = ShaclValidator.validateShapeForFocusNodesOnData(instance, state,
+                            data, searchNode.bindings, shape, VLib.focusNodes(data, shape).stream().collect(toSet()));
+            if (validationResults.isEmpty()) {
+                throw new IllegalStateException("No validation results for shape " + shape.getShapeNode() + "!");
+            }
+            Ternary valid = validationResults.stream().map(r -> r.valid).reduce((l, r) -> l.and(r)).get();
+            Set<Set<Node>> encounteredVariables = validationResults
+                            .stream()
+                            .map(r -> new HashSet<>(r.encounteredVariables))
+                            .filter(s -> !s.isEmpty())
+                            .collect(Collectors.toUnmodifiableSet());
+            searchNode.untestedShapes.remove(shape);
+            if (valid.isFalse()) {
+                searchNode.invalid = true;
+                searchNode.invalidShape = shape;
+                return;
+            }
+            if (valid.isTrue()) {
+                for (Node variable : searchNode.bindings.getDecidedVariables()) {
+                    SearchNodeLogic.removeUnsatisfiedShapeByVariable(searchNode, shape, variable);
+                }
+                searchNode.satisfiedShapes.add(shape);
+            }
+        }
     }
 
     private void initializeSearchNodes(BlendingInstance blendingInstance, AlgorithmState state) {
-        Set<SearchNode> initialNodes = generateInitialSearchNodes(state);
+        VariableAwareGraph data = ShaclValidator.blendDataGraphs(blendingInstance, new BlendingInstanceLogic(blendingInstance).getFixedBindings());
+        Set<SearchNode> initialNodes = generateInitialSearchNodes(state, data);
+        Set<Node> potentiallyUnsatisfiableShapes = initialNodes.stream().flatMap(n -> n.shapeToFocusNodes.keySet().stream()).collect(toSet());
         state.log.debugFmt("generated %d initial search nodes", initialNodes.size());
         Set<SearchNode> effectiveNodes = new HashSet<>();
         for (SearchNode node : initialNodes) {
             Shape shape = node.untestedShapes.stream().findFirst().get();
-            VariableAwareGraph data = ShaclValidator.blendDataGraphs(blendingInstance, node.bindings);
             evaluateShapeForSearchNode(blendingInstance, state, data, node, shape, true);
-            AlgorithmStateLogic.recordRequiredVariablesForShape(state, shape, node.encounteredVariables);
+            AlgorithmStateLogic.recordBoundVarsToShapesToCheck(state, node);
             recalculateDependentValues(node, state);
             if (node.encounteredVariables.isEmpty()) {
                 // special case: no variables encountered when evaluating the shape.
@@ -384,28 +477,40 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
                 // will always be valid
                 // b) at least one invalid node: no bindings can change this result, we can stop
                 // the algorithm
-                if (node.satisfiedShapes.isEmpty()) {
-                    state.noSolution = true;
-                    effectiveNodes.clear();
-                    state.log.infoFmt("shape %s cannot be satisfied, aborting search", shape.toString());
-                    break;
-                } else {
+                if (!node.satisfiedShapes.isEmpty()) {
                     state.log.debugFmt("no variables encountered while validating shape %s - excluding from search",
                                     shape.toString());
                     state.closedAsIneffective.add(node);
+                    potentiallyUnsatisfiableShapes.remove(shape.getShapeNode());
                 }
             } else {
                 effectiveNodes.add(node);
+                potentiallyUnsatisfiableShapes.remove(shape.getShapeNode());
             }
+        }
+        if (!potentiallyUnsatisfiableShapes.isEmpty()) {
+            state.noSolution = true;
+            effectiveNodes.clear();
+            state.log.infoFmt("shapes %s cannot be satisfied, aborting search", potentiallyUnsatisfiableShapes);
+            return;
         }
         AlgorithmStateLogic.addSearchNodes(state, effectiveNodes);
     }
 
+
+
     private void evaluateShapeForSearchNode(BlendingInstance blendingInstance, AlgorithmState state,
                     VariableAwareGraph data, SearchNode searchNode, Shape shape,
                     boolean collectEncounteredVariables) {
-        Set<BindingValidationResult> validationResults = ShaclValidator.validateShapeOnData(blendingInstance, shape,
-                        searchNode.bindings, state, data);
+        Set<Node> focusNodes = searchNode.shapeToFocusNodes.getOrDefault(shape.getShapeNode(), Collections.emptySet());
+        evaluateShapeForSearchNodeOnFocusNodes(blendingInstance, state, data, searchNode, shape, collectEncounteredVariables, focusNodes);
+    }
+
+    private void evaluateShapeForSearchNodeOnFocusNodes(BlendingInstance blendingInstance, AlgorithmState state, VariableAwareGraph data,
+                    SearchNode searchNode, Shape shape, boolean collectEncounteredVariables, Set<Node> focusNodes) {
+        Set<BindingValidationResult> validationResults = ShaclValidator.validateShapeForFocusNodesOnData(
+                        blendingInstance, state,
+                        data, searchNode.bindings, shape, focusNodes);
         if (validationResults.isEmpty()) {
             throw new IllegalStateException("No validation results for shape " + shape.getShapeNode() + "!");
         }
@@ -441,13 +546,13 @@ public class JoiningAlgorithm implements BlendingAlgorithm {
         }
     }
 
-    private Set<SearchNode> generateInitialSearchNodes(AlgorithmState state) {
+    private Set<SearchNode> generateInitialSearchNodes(AlgorithmState state, Graph data) {
         return state.shapes
                         .getTargetShapes()
                         .stream()
                         .filter(not(Shape::deactivated))
-                        .map(shape -> SearchNodeLogic.forInitialShapeAndBindings(state, shape, state.initialBindings,
-                                        state.allVariables))
+                        .flatMap(shape -> VLib.focusNodes(data, shape).stream()
+                                        .map(focusNode -> SearchNodeLogic.forInitialShapeAndBindings(state, shape, focusNode, state.initialBindings, state.allVariables)))
                         .collect(toSet());
     }
 

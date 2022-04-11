@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public class GraphAccessObserver {
     private Function<Node, Boolean> isVariableCheck;
-    private VariableAwareGraph wrapper;
+    private VariableAwareGraphImpl wrapper;
     private Set<Node> encounteredVariables = new HashSet<>();
 
     public GraphAccessObserver(Function<Node, Boolean> isVariableCheck) {
@@ -18,7 +18,7 @@ public class GraphAccessObserver {
 
     public Graph wrap(Graph graph) {
         getEncounteredVariablesFromWrapper();
-        wrapper = new VariableAwareGraph(graph, isVariableCheck);
+        wrapper = new VariableAwareGraphImpl(graph, isVariableCheck);
         return wrapper;
     }
 

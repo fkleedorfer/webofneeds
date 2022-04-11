@@ -18,6 +18,7 @@ public class SearchNode implements Comparable<SearchNode> {
     public final VariableBindings bindings;
     public final Set<Shape> untestedShapes = new HashSet<>();
     public final Set<Set<Node>> encounteredVariables = new HashSet<>();
+    public final Map<Node, Set<Node>> shapeToFocusNodes = new HashMap<>();
     public final Set<Node> encounteredVariablesFlat = new HashSet<>();
     public final Map<Node, Set<Shape>> unsatisfiedShapesByRequiredVariable = new HashMap<>();
     public final Set<Shape> satisfiedShapes = new HashSet<>();
@@ -42,6 +43,7 @@ public class SearchNode implements Comparable<SearchNode> {
         this.invalidShape = toCopy.invalidShape;
         this.exploring.addAll(toCopy.exploring);
         this.predecessors = Set.of(toCopy);
+        this.shapeToFocusNodes.putAll(toCopy.shapeToFocusNodes);
     }
 
     public SearchNode(SearchNode left, SearchNode right) {
@@ -59,13 +61,14 @@ public class SearchNode implements Comparable<SearchNode> {
         SearchNode that = (SearchNode) o;
         return bindings.equals(that.bindings)
                         && encounteredVariablesFlat.equals(that.encounteredVariablesFlat)
+                        && shapeToFocusNodes.equals(that.shapeToFocusNodes)
                         && unsatisfiedShapesByRequiredVariable.equals(that.unsatisfiedShapesByRequiredVariable)
                         && untestedShapes.equals(that.untestedShapes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bindings, encounteredVariablesFlat, unsatisfiedShapesByRequiredVariable, untestedShapes);
+        return Objects.hash(bindings, shapeToFocusNodes, encounteredVariablesFlat, unsatisfiedShapesByRequiredVariable, untestedShapes);
     }
 
     @Override

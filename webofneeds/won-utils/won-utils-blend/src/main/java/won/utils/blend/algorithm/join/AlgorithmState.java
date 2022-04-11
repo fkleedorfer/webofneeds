@@ -3,14 +3,12 @@ package won.utils.blend.algorithm.join;
 import org.apache.jena.atlas.io.IndentedWriter;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shacl.Shapes;
-import org.apache.jena.shacl.parser.Shape;
 import won.utils.blend.algorithm.BlendingInstance;
 import won.utils.blend.algorithm.support.bindings.options.BindingOptionsProvider;
 import won.utils.blend.algorithm.support.bindings.options.CachingBindingOptionsProvider;
 import won.utils.blend.algorithm.support.bindings.options.InstanceBindingOptionProvider;
 import won.utils.blend.support.bindings.VariableBinding;
 import won.utils.blend.support.bindings.VariableBindings;
-import won.utils.blend.support.graph.VariableAwareGraph;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -23,7 +21,7 @@ public class AlgorithmState {
     public final Set<Node> unexploredVariables = new HashSet<>();
     public final Set<SearchNode> openNodes = new HashSet<>();
     public final Set<SearchNode> results = new HashSet<>();
-    public final Map<Shape, Set<Set<Node>>> requiredVariablesByShapes = new HashMap<>();
+    public final Map<Set<Node>, Set<ShapeFocusNode>> boundVarsToShapesToCheck = new HashMap<>();
     public final Set<VariableBinding> allPossibleBindings;
     public final BindingOptionsProvider bindingOptionsProvider;
     public final Set<Node> allVariables;
