@@ -41,7 +41,8 @@ public class SearchNodeFormatter {
                         .append("\tunsatisfied shapes      : ")
                         .append(node.unsatisfiedShapesByRequiredVariable.values().stream().flatMap(
                                         Collection::stream).collect(
-                                                        Collectors.toSet())).append("\n")
+                                                        Collectors.toSet()))
+                        .append("\n")
                         .append("\tshapes/focusNodes: ").append(node.shapeToFocusNodes).append("\n")
                         .toString();
     }
@@ -56,7 +57,7 @@ public class SearchNodeFormatter {
 
     private static String formatBoundNode(VariableBinding b) {
         Node boundNode = b.getBoundNode();
-        if (boundNode.equals(BLEND.unbound)){
+        if (boundNode.equals(BLEND.unbound)) {
             return "[explicitly unbound]";
         } else {
             return boundNode.toString();

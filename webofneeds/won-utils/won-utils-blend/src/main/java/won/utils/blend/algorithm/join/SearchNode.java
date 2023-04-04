@@ -68,7 +68,8 @@ public class SearchNode implements Comparable<SearchNode> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(bindings, shapeToFocusNodes, encounteredVariablesFlat, unsatisfiedShapesByRequiredVariable, untestedShapes);
+        return Objects.hash(bindings, shapeToFocusNodes, encounteredVariablesFlat, unsatisfiedShapesByRequiredVariable,
+                        untestedShapes);
     }
 
     @Override

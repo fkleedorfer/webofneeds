@@ -21,7 +21,7 @@ public abstract class SearchNodeLogic {
         return newNode;
     }
 
-    public static Optional<SearchNode> join(SearchNode left, SearchNode right){
+    public static Optional<SearchNode> join(SearchNode left, SearchNode right) {
         return join(left, right, false);
     }
 

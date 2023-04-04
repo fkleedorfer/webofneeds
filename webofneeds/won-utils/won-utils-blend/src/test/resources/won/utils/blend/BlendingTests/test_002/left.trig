@@ -54,7 +54,6 @@ ex:template1-shapes {
                 sh:class ex:Person ;
                 sh:nodeKind sh:IRI
             ]
-
         .
 
     ex:firstNameVariableShape a sh:NodeShape ;

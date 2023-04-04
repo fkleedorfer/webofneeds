@@ -97,7 +97,7 @@ public class DefaultBlendingResultStatsFormatter
 
     private String formatBoundNode(VariableBinding vb) {
         Node boundNode = vb.getBoundNode();
-        if (boundNode.equals(BLEND.unbound)){
+        if (boundNode.equals(BLEND.unbound)) {
             return "[explicitly unbound]";
         } else {
             return boundNode.toString();

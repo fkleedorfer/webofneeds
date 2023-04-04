@@ -37,7 +37,8 @@ public class BlendedGraphs extends Union {
         this(L, R, bindings, addBindingMetadata, () -> GraphFactory.createGraphMem());
     }
 
-    public BlendedGraphs(Graph L, Graph R, VariableBindings bindings, boolean addBindingMetadata, Supplier<Graph> bindingsGraphSupplier) {
+    public BlendedGraphs(Graph L, Graph R, VariableBindings bindings, boolean addBindingMetadata,
+                    Supplier<Graph> bindingsGraphSupplier) {
         super(L, R);
         this.bindings = new ImmutableVariableBindings(new VariableBindings(bindings));
         this.addBindingMetadata = addBindingMetadata;
@@ -149,7 +150,7 @@ public class BlendedGraphs extends Union {
         if (node == Node.ANY) {
             return Set.of(node);
         }
-        if (bindings.dereferenceIfVariable(node).isPresent()) {
+        if (!bindings.dereferenceIfVariable(node).isPresent()) {
             return Collections.emptySet();
         }
         Set<Node> nodes = new HashSet<>(bindings.getVariablesBoundToNode(node));
@@ -157,7 +158,8 @@ public class BlendedGraphs extends Union {
         return nodes;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "BlendedGraphs{" + bindings.size() + " bindings," +
                         "addBindingMetadata=" + addBindingMetadata +
                         '}';

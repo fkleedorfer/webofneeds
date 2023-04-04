@@ -41,9 +41,9 @@ public abstract class ShaclValidator {
     public static VariableAwareGraph blendDataGraphs(BlendingInstance instance, VariableBindings bindings) {
         VariableAwareGraph data = new VariableAwareBlendedGraphs(
                         instance.blendingBackground.combineWithBackgroundData(instance.leftTemplate.getTemplateGraphs()
-                                                        .getDataGraph()),
-                                                        instance.rightTemplate.getTemplateGraphs().getDataGraph(),
-                                                        bindings);
+                                        .getDataGraph()),
+                        instance.rightTemplate.getTemplateGraphs().getDataGraph(),
+                        bindings);
         return data;
     }
 
@@ -66,7 +66,8 @@ public abstract class ShaclValidator {
         Collection<Node> focusNodes = VLib.focusNodes(data, shape);
         state.log.finerTrace(() -> "found " + focusNodes.size() + " focus nodes");
         data.resetEncounteredVariables();
-        return validateShapeForFocusNodesOnData(instance, state, data, bindings, shape, focusNodes.stream().collect(toSet()));
+        return validateShapeForFocusNodesOnData(instance, state, data, bindings, shape,
+                        focusNodes.stream().collect(toSet()));
     }
 
     public static Set<BindingValidationResult> validateShapeForFocusNodesOnData(BlendingInstance instance,
@@ -81,7 +82,6 @@ public abstract class ShaclValidator {
         return state.log.logIndented(() -> {
             Set<BindingValidationResult> results = new HashSet<>();
             state.log.finerTrace(() -> "validating " + focusNodes.size() + " focus nodes");
-
             for (Node node : focusNodes) {
                 BindingValidationResult result = validateFocusNodeOnData(instance, state, data, shape, bindings, node);
                 if (result != null) {
@@ -117,12 +117,14 @@ public abstract class ShaclValidator {
         return state.log.logIndented(() -> {
             ShaclErrorHandler errorHandler = new ShaclErrorHandler();
             VariableAwareValidationListener validationListener = new VariableAwareValidationListener(data);
-            ValidationContext shaclValidationContext = ValidationContext.create(state.shapes, data, errorHandler, validationListener);
+            ValidationContext shaclValidationContext = ValidationContext.create(state.shapes, data, errorHandler,
+                            validationListener);
             Node effectiveFocusNode = determineFocusNode(shape, bindings, focusNode);
             state.log.finerTrace(() -> "Checking focus node " + effectiveFocusNode);
             data.resetEncounteredVariables();
             VLib.validateShape(shaclValidationContext, data, shape, effectiveFocusNode);
-            state.log.debug(() -> "evaluations: \n" + validationListener.getEvaluations().stream().map(e -> e.toPrettyString()).collect(Collectors.joining("\n")));
+            state.log.debug(() -> "evaluations: \n" + validationListener.getEvaluations().stream()
+                            .map(e -> e.toPrettyString()).collect(Collectors.joining("\n")));
             Set<Node> encounteredVariables = data.getEncounteredVariables();
             encounteredVariables.remove(focusNode);
             BlendingInstanceLogic instanceLogic = new BlendingInstanceLogic(instance);
@@ -159,7 +161,8 @@ public abstract class ShaclValidator {
                             if (state.log.isFinerTraceEnabled()) {
                                 state.log.logIndented(() -> {
                                     state.log.finerTrace(() -> "validation report:");
-                                    state.log.finerTrace(() -> ValidationReportUtils.toString(shaclValidationContext.generateReport()));
+                                    state.log.finerTrace(() -> ValidationReportUtils
+                                                    .toString(shaclValidationContext.generateReport()));
                                 });
                             }
                         }
@@ -184,10 +187,10 @@ public abstract class ShaclValidator {
     }
 
     private static Node determineFocusNode(Shape shape, VariableBindings bindings, Node focusNode) {
-        if (isExplicitTargetOfShape(shape, focusNode)){
+        if (isExplicitTargetOfShape(shape, focusNode)) {
             return focusNode;
         }
-        return  bindings.dereferenceIfVariable(focusNode).orElse(focusNode);
+        return bindings.dereferenceIfVariable(focusNode).orElse(focusNode);
     }
 
     private static boolean isExplicitTargetOfShape(Shape shape, Node focusNode) {

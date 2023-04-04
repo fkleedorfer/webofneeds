@@ -52,9 +52,9 @@ public class BlendedGraphsTests {
                         leftTemplate.getTemplateGraphs().getDataGraph(),
                         rightTemplate.getTemplateGraphs().getDataGraph(),
                         bindings);
-        assertTrue(G.allSP(blended, varFirstName, BLEND.boundTo).stream().collect(Collectors.toUnmodifiableSet()).contains(NodeFactory.createLiteral("Albert")));
+        assertTrue(G.allSP(blended, varFirstName, BLEND.boundTo).stream().collect(Collectors.toUnmodifiableSet())
+                        .contains(NodeFactory.createLiteral("Albert")));
         assertTrue(G.allSP(blended, NodeFactory.createLiteral("Albert"), BLEND.boundTo).stream().count() == 0);
-
         RDFDataMgr.write(System.out, blended, Lang.TTL);
         assertGraphsAreIsomorphic(expectedDataset.getDefaultGraph(), blended, testIdentifier);
     }

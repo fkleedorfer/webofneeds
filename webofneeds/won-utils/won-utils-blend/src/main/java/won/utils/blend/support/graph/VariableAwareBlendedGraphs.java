@@ -26,24 +26,27 @@ public class VariableAwareBlendedGraphs extends BlendedGraphs implements Variabl
         super(
                         new VariableAwareGraphImpl(L, bindings::isVariable),
                         new VariableAwareGraphImpl(R, bindings::isVariable),
-                        bindings, addBindingMetadata, () -> new VariableAwareGraphImpl(GraphFactory.createGraphMem(), bindings::isVariable));
+                        bindings, addBindingMetadata,
+                        () -> new VariableAwareGraphImpl(GraphFactory.createGraphMem(), bindings::isVariable));
         this.leftVAG = (VariableAwareGraph) this.L;
         this.rightVAG = (VariableAwareGraph) this.R;
         this.bindingsGraphVAG = (VariableAwareGraph) this.bindingsGraph;
     }
 
-    @Override public void resetEncounteredVariables() {
+    @Override
+    public void resetEncounteredVariables() {
         leftVAG.resetEncounteredVariables();
         rightVAG.resetEncounteredVariables();
         bindingsGraphVAG.resetEncounteredVariables();
     }
 
-    @Override public Set<Node> getEncounteredVariables() {
+    @Override
+    public Set<Node> getEncounteredVariables() {
         return concat(
                         bindingsGraphVAG.getEncounteredVariables().stream(),
                         concat(
-                            leftVAG.getEncounteredVariables().stream(),
-                            rightVAG.getEncounteredVariables().stream()))
-                        .collect(Collectors.toSet());
+                                        leftVAG.getEncounteredVariables().stream(),
+                                        rightVAG.getEncounteredVariables().stream()))
+                                                        .collect(Collectors.toSet());
     }
 }

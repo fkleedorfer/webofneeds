@@ -13,36 +13,44 @@ import java.util.stream.Stream;
 
 public class ConstraintEvaluation extends ShaclEvaluation {
     private final Constraint constraint;
+    private final Set<Node> valueNodes;
 
-    public ConstraintEvaluation(Shape shape, Constraint constraint, Node focusNode) {
+    public ConstraintEvaluation(Shape shape, Constraint constraint, Node focusNode, Set<Node> valueNodes) {
         super(shape, focusNode);
         this.constraint = constraint;
+        this.valueNodes = Collections.unmodifiableSet(new HashSet<>(valueNodes));
     }
 
-    public ConstraintEvaluation(Shape shape, Constraint constraint, Node focusNode, Boolean valid,
+    public ConstraintEvaluation(Shape shape, Constraint constraint, Node focusNode, Set<Node> valueNodes, Boolean valid,
                     Set<Node> encounteredVariables,
                     Set<ShaclEvaluation> subEvaluations) {
         super(shape, focusNode, valid, encounteredVariables, subEvaluations);
         this.constraint = constraint;
+        this.valueNodes = Collections.unmodifiableSet(new HashSet<>(valueNodes));
     }
 
-
-    @Override public ShaclEvaluation setValid(boolean valid) {
-        return new ConstraintEvaluation(shape, constraint, focusNode, valid, encounteredVariables, subEvaluations);
+    @Override
+    public ShaclEvaluation setValid(boolean valid) {
+        return new ConstraintEvaluation(shape, constraint, focusNode, valueNodes, valid, encounteredVariables,
+                        subEvaluations);
     }
 
-    @Override public ShaclEvaluation addEncounteredVariables(Set<Node> encounteredVariables) {
-        return new ConstraintEvaluation(shape, constraint, focusNode, valid,
+    @Override
+    public ShaclEvaluation addEncounteredVariables(Set<Node> encounteredVariables) {
+        return new ConstraintEvaluation(shape, constraint, focusNode, valueNodes, valid,
                         Stream.concat(encounteredVariables.stream(), this.encounteredVariables.stream()).collect(
-                                        Collectors.toSet()), subEvaluations);
+                                        Collectors.toSet()),
+                        subEvaluations);
     }
 
-    @Override public ShaclEvaluation addEncounteredVariable(Node encounteredVariable) {
+    @Override
+    public ShaclEvaluation addEncounteredVariable(Node encounteredVariable) {
         return addEncounteredVariables(Collections.singleton(encounteredVariable));
     }
 
-    @Override public ShaclEvaluation addSubEvaluation(ShaclEvaluation subEvaluation) {
-        return new ConstraintEvaluation(shape, constraint, focusNode, valid, encounteredVariables,
+    @Override
+    public ShaclEvaluation addSubEvaluation(ShaclEvaluation subEvaluation) {
+        return new ConstraintEvaluation(shape, constraint, focusNode, valueNodes, valid, encounteredVariables,
                         Stream.concat(this.subEvaluations.stream(), Stream.of(subEvaluation)).collect(
                                         Collectors.toSet()));
     }
@@ -52,33 +60,37 @@ public class ConstraintEvaluation extends ShaclEvaluation {
                         + "shape=" + shape
                         + ", focusNode=" + focusNode
                         + ", constraint=" + constraint
+                        + ", valueNode(s)=" + valueNodes
                         + ", valid=" + valid
                         + ", encounteredVars=" + encounteredVariables
                         + ", subEvaluations=" + subEvaluations + "}";
     }
 
-    @Override public String toPrettyString() {
+    @Override
+    public String toPrettyString() {
         return toPrettyString("");
     }
 
-    @Override public String toPrettyString(String linePrefix){
+    @Override
+    public String toPrettyString(String linePrefix) {
         StringBuilder sb = new StringBuilder();
         sb.append(linePrefix).append("ConstraintEvaluation { \n")
-        .append(linePrefix).append( "    constraint : ").append(constraint).append("\n")
-        .append(linePrefix).append( "    valid      : ").append(valid).append("\n")
-        .append(linePrefix).append( "    encounteredVars : ");
+                        .append(linePrefix).append("    constraint      : ").append(constraint).append("\n")
+                        .append(linePrefix).append("    valueNode(s)    : ").append(valueNodes).append("\n")
+                        .append(linePrefix).append("    valid           : ").append(valid).append("\n")
+                        .append(linePrefix).append("    encounteredVars : ");
         if (encounteredVariables.isEmpty()) {
             sb.append("[none]\n");
         } else {
             sb.append("\n").append(encounteredVariables.stream().map(Object::toString)
-                                        .sorted()
-                                        .collect(Collectors.joining("\n" + linePrefix + "        ",
-                                                        linePrefix + "        ",
-                                                        "")))
+                            .sorted()
+                            .collect(Collectors.joining("\n" + linePrefix + "        ",
+                                            linePrefix + "        ",
+                                            "")))
                             .append("\n");
-
         }
-        sb.append(linePrefix).append("    subEvaluations  : ");
+        sb
+                        .append(linePrefix).append("    subEvaluations   : ");
         if (subEvaluations.isEmpty()) {
             sb.append("[none]\n");
         } else {
@@ -92,7 +104,16 @@ public class ConstraintEvaluation extends ShaclEvaluation {
         return sb.toString();
     }
 
-    @Override public Optional<Boolean> isValid() {
+    @Override
+    public Optional<Boolean> isValid() {
         return Optional.ofNullable(valid);
+    }
+
+    public Set<Node> getValueNodes() {
+        return valueNodes;
+    }
+
+    public Constraint getConstraint() {
+        return constraint;
     }
 }

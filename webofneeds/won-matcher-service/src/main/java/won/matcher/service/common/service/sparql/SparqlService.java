@@ -7,9 +7,9 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFFormat;
 import org.apache.jena.sparql.expr.nodevalue.NodeValueBoolean;
-import org.apache.jena.sparql.modify.UpdateProcessRemote;
 import org.apache.jena.tdb.TDB;
 import org.apache.jena.tdb.TDBFactory;
+import org.apache.jena.update.UpdateExecution;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
@@ -235,7 +235,7 @@ public class SparqlService {
                 logger.debug("Update SPARQL Endpoint: {}", sparqlEndpoint);
                 logger.debug("number of updates: {}", updateRequest.getOperations().size());
             }
-            UpdateProcessRemote riStore = (UpdateProcessRemote) UpdateExecutionFactory.createRemote(updateRequest,
+            UpdateExecution riStore = (UpdateExecution) UpdateExecutionFactory.createRemote(updateRequest,
                             sparqlEndpoint);
             riStore.execute();
         } catch (Exception e) {

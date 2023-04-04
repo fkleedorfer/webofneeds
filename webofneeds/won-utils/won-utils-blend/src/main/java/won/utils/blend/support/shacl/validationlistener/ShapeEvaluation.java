@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ShapeEvaluation extends ShaclEvaluation {
-
     public ShapeEvaluation(Shape shape, Node focusNode) {
         super(shape, focusNode);
     }
@@ -32,7 +31,8 @@ public class ShapeEvaluation extends ShaclEvaluation {
     public ShaclEvaluation addEncounteredVariables(Set<Node> encounteredVariables) {
         return new ShapeEvaluation(shape, focusNode, valid,
                         Stream.concat(encounteredVariables.stream(), this.encounteredVariables.stream()).collect(
-                                        Collectors.toSet()), subEvaluations);
+                                        Collectors.toSet()),
+                        subEvaluations);
     }
 
     @Override
@@ -60,23 +60,22 @@ public class ShapeEvaluation extends ShaclEvaluation {
         return toPrettyString("");
     }
 
-    public String toPrettyString(String linePrefix){
+    public String toPrettyString(String linePrefix) {
         StringBuilder sb = new StringBuilder();
         sb.append(linePrefix).append("ShapeEvaluation { \n")
-        .append(linePrefix).append( "    shape      : ").append(shape).append("\n")
-        .append(linePrefix).append( "    focusNode  : ").append(focusNode).append("\n")
-        .append(linePrefix).append( "    valid      : ").append(valid).append("\n")
-        .append(linePrefix).append( "    encounteredVars : ");
+                        .append(linePrefix).append("    shape      : ").append(shape).append("\n")
+                        .append(linePrefix).append("    focusNode  : ").append(focusNode).append("\n")
+                        .append(linePrefix).append("    valid      : ").append(valid).append("\n")
+                        .append(linePrefix).append("    encounteredVars : ");
         if (encounteredVariables.isEmpty()) {
             sb.append("[none]\n");
         } else {
             sb.append("\n").append(encounteredVariables.stream().map(Object::toString)
-                                        .sorted()
-                                        .collect(Collectors.joining("\n" + linePrefix + "        ",
-                                                        linePrefix + "        ",
-                                                        "")))
+                            .sorted()
+                            .collect(Collectors.joining("\n" + linePrefix + "        ",
+                                            linePrefix + "        ",
+                                            "")))
                             .append("\n");
-
         }
         sb.append(linePrefix).append("    subEvaluations  : ");
         if (subEvaluations.isEmpty()) {

@@ -108,13 +108,13 @@ public class BlendingTests {
         writeTestResultToFile(actualResultGraph, getOutputFileName(getClass(), testIdentifier + testSuffix));
         String stats = new DefaultBlendingResultStatsFormatter()
                         .format(BindingResultStatsAccumulator.accumulate(leftTemplate, rightTemplate, results));
-
         try {
             assertDatasetsEqual(expectedResultGraph, actualResultGraph, testIdentifier);
         } catch (AssertionFailedError e) {
             Set<Template> expectedResult = templateIO.fromDatasetGraph(expectedResultGraph);
             System.err.println("expected result statistics: ");
-            System.err.println(new DefaultBlendingResultStatsFormatter().format(BindingResultStatsAccumulator.accumulate(leftTemplate,rightTemplate,expectedResult)));
+            System.err.println(new DefaultBlendingResultStatsFormatter().format(
+                            BindingResultStatsAccumulator.accumulate(leftTemplate, rightTemplate, expectedResult)));
             System.err.println("actual result statistics: ");
             System.err.println(stats);
             throw e;

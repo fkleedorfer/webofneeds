@@ -24,7 +24,7 @@ import org.apache.jena.sparql.algebra.op.OpProject;
 import org.apache.jena.sparql.algebra.op.OpUnion;
 import org.apache.jena.sparql.core.BasicPattern;
 import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.engine.binding.BindingHashMap;
+import org.apache.jena.sparql.engine.binding.BindingBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -215,7 +215,6 @@ public class SparqlMatcherActor extends UntypedActor {
      *
      * @param hintEvents the collection of HintEvent to publish
      * @param atomURI used for logging
-     * @param inverse used for logging
      */
     private void publishHintEvents(Collection<HintEvent> hintEvents, String atomURI) {
         BulkHintEvent bulkHintEvent = new BulkHintEvent();
@@ -312,10 +311,10 @@ public class SparqlMatcherActor extends UntypedActor {
         // we get exactly one result if that uri is found for the atom
         List<Var> valuesBlockVariables = new ArrayList<>();
         // bind the ?thisAtom variable to the atom we are matching for
-        BindingHashMap bindingMap = new BindingHashMap();
-        bindingMap.add(thisAtom, new ResourceImpl(atomURI.toString()).asNode());
+        BindingBuilder bindingBuilder = BindingBuilder.create();
+        bindingBuilder.add(thisAtom, new ResourceImpl(atomURI.toString()).asNode());
         valuesBlockVariables.add(thisAtom);
-        compiledQuery.setValuesDataBlock(valuesBlockVariables, Collections.singletonList(bindingMap));
+        compiledQuery.setValuesDataBlock(valuesBlockVariables, Collections.singletonList(bindingBuilder.build()));
         // make sure we order by score, if present, and we limit the results
         if (compiledQuery.getProjectVars().contains(scoreName)) {
             compiledQuery.addOrderBy(scoreName, Query.ORDER_DESCENDING);

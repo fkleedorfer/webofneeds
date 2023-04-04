@@ -53,9 +53,8 @@ public abstract class AlgorithmStateLogic {
 
     public static boolean addToOpenNodes(AlgorithmState state, SearchNode searchNode) {
         state.log.debugFmt("considering node with bindings "
-                        + (searchNode.bindings.isEmptyWhichMeansAllVariablesUndecided() ?
-                        "[]" :
-                        searchNode.bindings.toString()));
+                        + (searchNode.bindings.isEmptyWhichMeansAllVariablesUndecided() ? "[]"
+                                        : searchNode.bindings.toString()));
         if (searchNode.invalid) {
             state.log.debugFmt("Skipping invalid node. Violated shape: %s", searchNode.invalidShape);
             return false;
@@ -80,21 +79,16 @@ public abstract class AlgorithmStateLogic {
         }
         SearchNode nodeToAdd = searchNode;
         /*
-        Optional<SearchNode> nodeWithSameBindings = state.openNodes.stream()
-                        .filter(n -> n.id != searchNode.id
-                                        && ! n.bindings.isEmptyWhichMeansAllVariablesUndecided()
-                                        && n.bindings.equals(searchNode.bindings)).findFirst();
-        if (nodeWithSameBindings.isPresent()){
-            state.log.debug(() ->"found node with same bindings in open list, attempting to join...");
-            Optional<SearchNode> joinResult = SearchNodeLogic.join(searchNode, nodeWithSameBindings.get());
-            if (joinResult.isPresent()) {
-                nodeToAdd = joinResult.get();
-                state.log.debug(() ->"nodes joined");
-            } else {
-                state.log.debug(() ->"nodes are not compatible");
-            }
-
-        }
+         * Optional<SearchNode> nodeWithSameBindings = state.openNodes.stream()
+         * .filter(n -> n.id != searchNode.id && !
+         * n.bindings.isEmptyWhichMeansAllVariablesUndecided() &&
+         * n.bindings.equals(searchNode.bindings)).findFirst(); if
+         * (nodeWithSameBindings.isPresent()){ state.log.debug(()
+         * ->"found node with same bindings in open list, attempting to join...");
+         * Optional<SearchNode> joinResult = SearchNodeLogic.join(searchNode,
+         * nodeWithSameBindings.get()); if (joinResult.isPresent()) { nodeToAdd =
+         * joinResult.get(); state.log.debug(() ->"nodes joined"); } else {
+         * state.log.debug(() ->"nodes are not compatible"); } }
          */
         int sizeBeforeAdd = state.openNodes.size();
         state.openNodes.add(nodeToAdd);

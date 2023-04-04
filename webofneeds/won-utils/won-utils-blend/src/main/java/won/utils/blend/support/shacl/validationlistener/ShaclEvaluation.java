@@ -46,7 +46,23 @@ public abstract class ShaclEvaluation {
 
     public abstract String toPrettyString(String linePrefix);
 
-    Optional<Boolean> isValid(){
+    Optional<Boolean> isValid() {
         return Optional.ofNullable(this.valid);
+    }
+
+    public Shape getShape() {
+        return shape;
+    }
+
+    public Node getFocusNode() {
+        return focusNode;
+    }
+
+    public Set<Node> getEncounteredVariables() {
+        return encounteredVariables;
+    }
+
+    public Set<ShaclEvaluation> getSubEvaluations() {
+        return subEvaluations;
     }
 }

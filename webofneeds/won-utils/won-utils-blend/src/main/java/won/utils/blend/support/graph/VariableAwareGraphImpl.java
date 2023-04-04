@@ -21,11 +21,13 @@ public class VariableAwareGraphImpl extends WrappedGraph implements VariableAwar
         this.isVariableCheck = isVariableCheck;
     }
 
-    @Override public void resetEncounteredVariables() {
+    @Override
+    public void resetEncounteredVariables() {
         encounteredVariables.clear();
     }
 
-    @Override public Set<Node> getEncounteredVariables() {
+    @Override
+    public Set<Node> getEncounteredVariables() {
         return new HashSet<>(encounteredVariables);
     }
 
@@ -108,7 +110,8 @@ public class VariableAwareGraphImpl extends WrappedGraph implements VariableAwar
         return rememberVariables(super.find());
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "VariableAwareGraphImpl{" +
                         encounteredVariables.size() + " variable(s) encountered since last clear}";
     }
